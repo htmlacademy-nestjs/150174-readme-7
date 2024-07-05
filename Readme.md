@@ -1,7 +1,7 @@
 # Личный проект «Readme»
 
-* Студент: [Анатолий Долгов](https://up.htmlacademy.ru/nodejs-2/7/user/150174).
-* Наставник: `Неизвестно`.
+- Студент: [Анатолий Долгов](https://up.htmlacademy.ru/nodejs-2/7/user/150174).
+- Наставник: [Rail Sakhaviev](https://up.htmlacademy.ru/nodejs-2/7/user/1331891).
 
 ---
 
