@@ -1,4 +1,4 @@
-import { BaseEntity } from '../interfaces/base-entity.interface';
+import { BaseEntity } from '../interfaces/base/base-entity.interface';
 
 export abstract class Entity implements BaseEntity {
   private _id: string = '';

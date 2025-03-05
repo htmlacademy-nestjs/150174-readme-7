@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { StorableEntity } from '../../interfaces/storable-entity.interface';
+import { StorableEntity } from '../../interfaces/base/storable-entity.interface';
 import { Repository } from './repository.interface';
 
 abstract class MemoryRepository<T extends StorableEntity>
