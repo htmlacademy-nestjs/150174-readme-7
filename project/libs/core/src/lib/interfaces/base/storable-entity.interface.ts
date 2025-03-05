@@ -1,4 +1,4 @@
-import { PlainObject } from '../types/base/plain-object.type';
+import { PlainObject } from '../../types/plain-object.type';
 import { BaseEntity } from './base-entity.interface';
 
 export interface StorableEntity<T extends PlainObject = PlainObject>
