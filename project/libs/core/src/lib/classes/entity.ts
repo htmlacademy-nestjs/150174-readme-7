@@ -1,4 +1,6 @@
-export abstract class Entity {
+import { BaseEntity } from '../interfaces/base-entity.interface';
+
+export abstract class Entity implements BaseEntity {
   private _id: string = '';
 
   public get id() {
