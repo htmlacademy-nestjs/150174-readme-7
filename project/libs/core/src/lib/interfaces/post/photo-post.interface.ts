@@ -1,7 +1,7 @@
 import { BasePost } from './base-post.interface';
 
 interface PhotoPost extends BasePost {
-  photo: File;
+  photoSrc: string;
 }
 
 export type { PhotoPost };

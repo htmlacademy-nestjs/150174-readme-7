@@ -5,6 +5,7 @@ interface User extends BaseEntity {
   firstName: string;
   lastName: string;
   email: string;
+  avatarSrc: string;
   role: UserRole;
 }
 
