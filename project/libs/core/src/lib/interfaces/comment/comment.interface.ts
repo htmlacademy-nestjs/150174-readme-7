@@ -2,7 +2,7 @@ import { BaseEntity } from '../base/base-entity.interface';
 import { User } from '../user/user.interface';
 
 interface Comment extends BaseEntity {
-  userId: User['id'];
+  authorId: User['id'];
   content: string;
 }
 
