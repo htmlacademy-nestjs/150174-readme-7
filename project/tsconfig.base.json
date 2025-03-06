@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@avylando-readme/core": ["libs/core/src/index.ts"],
-      "@project/authentication": ["libs/account/authentication/src/index.ts"]
+      "@project/authentication": ["libs/account/authentication/src/index.ts"],
+      "@project/blog-user": ["libs/account/blog-user/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

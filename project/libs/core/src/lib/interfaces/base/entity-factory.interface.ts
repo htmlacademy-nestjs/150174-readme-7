@@ -1,5 +1,10 @@
-import { StorableEntity } from './storable-entity.interface';
+import {
+  StorableEntity,
+  StorablePlainObject,
+} from './storable-entity.interface';
 
-export interface EntityFactory<T extends StorableEntity> {
-  create(entityPlainData: ReturnType<T['toPlainObject']>): T;
+export interface EntityFactory<
+  T extends StorableEntity<StorablePlainObject<T>>
+> {
+  create(entityPlainData: StorablePlainObject<T>): T;
 }

@@ -22,5 +22,9 @@ export { VideoPost } from './lib/interfaces/post/video-post.interface';
 export { TextPost } from './lib/interfaces/post/text-post.interface';
 export { Post } from './lib/interfaces/post/post.type';
 
+// Repository
+export { Repository } from './lib/classes/repository/repository.interface';
+export { MemoryRepository } from './lib/classes/repository/memory-repository';
+
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';
