@@ -5,5 +5,5 @@ export class CreateUserDto implements Omit<User, 'id' | 'role'> {
   public firstName: string;
   public lastName: string;
   public avatarSrc: string;
-  public password: string;
+  public passwordHash: string;
 }

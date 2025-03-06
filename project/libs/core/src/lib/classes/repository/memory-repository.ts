@@ -14,13 +14,17 @@ abstract class MemoryRepository<
 
   constructor(protected entityFactory: EntityFactory<T>) {}
 
-  async save(entity: Omit<T, 'id'>): Promise<T['id']> {
+  public get entitiesArray(): StorablePlainObject<T>[] {
+    return Array.from(this.entities.values());
+  }
+
+  public async save(entity: Omit<T, 'id'>): Promise<T['id']> {
     const createdEntity = Object.assign(entity, { id: randomUUID() });
     this.entities.set(createdEntity.id, createdEntity.toPlainObject());
     return createdEntity.id;
   }
 
-  async update(entity: T): Promise<T> {
+  public async update(entity: T): Promise<T> {
     if (!this.entities.has(entity.id)) {
       throw new Error(`Entity with id ${entity.id} not found in repository`);
     }
@@ -28,7 +32,7 @@ abstract class MemoryRepository<
     return this.entityFactory.create(entity.toPlainObject());
   }
 
-  async findById(id: T['id']): Promise<T | null> {
+  public async findById(id: T['id']): Promise<T | null> {
     if (!this.entities.has(id)) {
       return null;
     }
@@ -36,7 +40,7 @@ abstract class MemoryRepository<
     return this.entities.get(id) as T;
   }
 
-  async deleteById(id: T['id']): Promise<void> {
+  public async deleteById(id: T['id']): Promise<void> {
     this.entities.delete(id);
   }
 }

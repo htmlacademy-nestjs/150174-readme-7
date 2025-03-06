@@ -1,4 +1,6 @@
+import { compare, genSalt, hash } from 'bcrypt';
 import { Entity, StorableEntity, User, UserRole } from '@avylando-readme/core';
+import { SALT_ROUNDS } from './blog-user.constants';
 
 class BlogUserEntity extends Entity implements StorableEntity<User> {
   public email!: string;
@@ -8,12 +10,12 @@ class BlogUserEntity extends Entity implements StorableEntity<User> {
   public role!: UserRole;
   public passwordHash!: string;
 
-  constructor(user: User) {
+  constructor(user: Omit<User, 'id'>) {
     super();
     this.populate(user);
   }
 
-  private populate(user: User) {
+  private populate(user: Omit<User, 'id'>) {
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.email = user.email;
@@ -22,7 +24,7 @@ class BlogUserEntity extends Entity implements StorableEntity<User> {
     this.passwordHash = user.passwordHash;
   }
 
-  toPlainObject(): User {
+  public toPlainObject(): User {
     return {
       id: this.id,
       firstName: this.firstName,
@@ -32,6 +34,16 @@ class BlogUserEntity extends Entity implements StorableEntity<User> {
       role: this.role,
       passwordHash: this.passwordHash,
     };
+  }
+
+  public async setPassword(password: string) {
+    const salt = await genSalt(SALT_ROUNDS);
+    this.passwordHash = await hash(password, salt);
+    return this;
+  }
+
+  public async comparePassword(password: string): Promise<boolean> {
+    return compare(password, this.passwordHash);
   }
 }
 

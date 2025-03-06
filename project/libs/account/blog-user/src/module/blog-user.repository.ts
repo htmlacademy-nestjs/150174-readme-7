@@ -8,6 +8,14 @@ class BlogUserRepository extends MemoryRepository<BlogUserEntity> {
   constructor(entityFactory: BlogUserFactory) {
     super(entityFactory);
   }
+
+  public async findByEmail(email: string): Promise<BlogUserEntity | null> {
+    const user = this.entitiesArray.find((u) => u.email === email);
+    if (!user) {
+      return null;
+    }
+    return this.entityFactory.create(user);
+  }
 }
 
 export { BlogUserRepository };
