@@ -10,18 +10,17 @@ class BlogUserEntity extends Entity implements StorableEntity<User> {
   public role!: UserRole;
   public passwordHash!: string;
 
-  constructor(user: Omit<User, 'id'>) {
-    super();
+  constructor(user: Omit<User, 'id' | 'passwordHash'>, id?: User['id']) {
+    super(id);
     this.populate(user);
   }
 
-  private populate(user: Omit<User, 'id'>) {
+  private populate(user: Omit<User, 'id' | 'passwordHash'>) {
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.email = user.email;
     this.avatarSrc = user.avatarSrc;
     this.role = user.role;
-    this.passwordHash = user.passwordHash;
   }
 
   public toPlainObject(): User {

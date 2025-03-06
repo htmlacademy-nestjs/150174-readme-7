@@ -39,7 +39,7 @@ export class AuthenticationService {
     const user = await new BlogUserEntity({
       ...dto,
       role: 'user',
-    }).setPassword(dto.passwordHash);
+    }).setPassword(dto.password);
 
     await this.blogUserRepository.save(user);
 

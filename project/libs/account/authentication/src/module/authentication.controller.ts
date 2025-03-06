@@ -25,6 +25,7 @@ export class AuthenticationController {
   @Get(':id')
   public async findUser(@Param('id') id: string): Promise<User> {
     const user = await this.authenticationService.findUser(id);
+    console.log(user);
     return user.toPlainObject();
   }
 }

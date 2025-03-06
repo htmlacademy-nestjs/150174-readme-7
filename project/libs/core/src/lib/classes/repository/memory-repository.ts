@@ -18,10 +18,12 @@ abstract class MemoryRepository<
     return Array.from(this.entities.values());
   }
 
-  public async save(entity: Omit<T, 'id'>): Promise<T['id']> {
-    const createdEntity = Object.assign(entity, { id: randomUUID() });
-    this.entities.set(createdEntity.id, createdEntity.toPlainObject());
-    return createdEntity.id;
+  public async save(entity: T): Promise<T> {
+    const id = randomUUID();
+    entity.id = id;
+    console.log('newEntity', entity);
+    this.entities.set(id, entity.toPlainObject());
+    return entity;
   }
 
   public async update(entity: T): Promise<T> {
@@ -37,7 +39,9 @@ abstract class MemoryRepository<
       return null;
     }
 
-    return this.entities.get(id) as T;
+    return this.entityFactory.create(
+      this.entities.get(id) as StorablePlainObject<T>
+    );
   }
 
   public async deleteById(id: T['id']): Promise<void> {
