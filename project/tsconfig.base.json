@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@avylando-readme/core": ["libs/core/src/index.ts"]
+      "@avylando-readme/core": ["libs/core/src/index.ts"],
+      "@project/authentication": ["libs/account/authentication/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
