@@ -1,9 +1,11 @@
-import { EntityFactory, User } from '@avylando-readme/core';
+import { EntityFactory, User, WithOptionalId } from '@avylando-readme/core';
 import { BlogUserEntity } from './blog-user.entity';
 
 class BlogUserFactory implements EntityFactory<BlogUserEntity> {
-  public create(entityPlainData: User): BlogUserEntity {
-    return new BlogUserEntity(entityPlainData, entityPlainData.id);
+  public create(
+    entityPlainData: Omit<WithOptionalId<User>, 'passwordHash'>
+  ): BlogUserEntity {
+    return new BlogUserEntity(entityPlainData);
   }
 }
 

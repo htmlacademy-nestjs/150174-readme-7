@@ -10,10 +10,14 @@ import { BlogUserEntity, BlogUserRepository } from '@project/blog-user';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { AuthError } from './authentication.constants';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { BlogUserFactory } from 'libs/account/blog-user/src/module/blog-user.factory';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(protected readonly blogUserRepository: BlogUserRepository) {}
+  constructor(
+    protected readonly blogUserRepository: BlogUserRepository,
+    protected readonly blogUserFactory: BlogUserFactory
+  ) {}
 
   public async login(dto: LoginUserDto): Promise<BlogUserEntity> {
     const { email, password } = dto;
@@ -36,10 +40,12 @@ export class AuthenticationService {
     if (existedUser) {
       throw new ConflictException(AuthError.USER_EXISTS);
     }
-    const user = await new BlogUserEntity({
-      ...dto,
-      role: 'user',
-    }).setPassword(dto.password);
+    const user = await this.blogUserFactory
+      .create({
+        ...dto,
+        role: 'user',
+      })
+      .setPassword(dto.password);
 
     await this.blogUserRepository.save(user);
 

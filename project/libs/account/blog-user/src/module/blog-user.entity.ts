@@ -1,5 +1,11 @@
 import { compare, genSalt, hash } from 'bcrypt';
-import { Entity, StorableEntity, User, UserRole } from '@avylando-readme/core';
+import {
+  Entity,
+  StorableEntity,
+  User,
+  UserRole,
+  WithOptionalId,
+} from '@avylando-readme/core';
 import { SALT_ROUNDS } from './blog-user.constants';
 
 class BlogUserEntity extends Entity implements StorableEntity<User> {
@@ -10,12 +16,12 @@ class BlogUserEntity extends Entity implements StorableEntity<User> {
   public role!: UserRole;
   public passwordHash!: string;
 
-  constructor(user: Omit<User, 'id' | 'passwordHash'>, id?: User['id']) {
-    super(id);
+  constructor(user: Omit<WithOptionalId<User>, 'passwordHash'>) {
+    super(user.id);
     this.populate(user);
   }
 
-  private populate(user: Omit<User, 'id' | 'passwordHash'>) {
+  private populate(user: Omit<WithOptionalId<User>, 'passwordHash'>) {
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.email = user.email;
