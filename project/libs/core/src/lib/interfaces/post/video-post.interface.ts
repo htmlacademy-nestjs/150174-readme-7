@@ -1,8 +1,9 @@
 import { BasePost } from './base-post.interface';
 
-interface VideoPost extends BasePost {
+type VideoPost = BasePost & {
+  kind: 'video';
   name: string;
-  url: string;
-}
+  videoSrc: string;
+};
 
 export type { VideoPost };

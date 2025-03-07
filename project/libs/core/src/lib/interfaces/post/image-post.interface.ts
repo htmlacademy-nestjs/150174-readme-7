@@ -1,7 +1,8 @@
 import { BasePost } from './base-post.interface';
 
-interface ImagePost extends BasePost {
+type ImagePost = BasePost & {
+  kind: 'image';
   imageSrc: string;
-}
+};
 
 export type { ImagePost };

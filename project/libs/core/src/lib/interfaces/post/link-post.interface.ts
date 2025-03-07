@@ -1,8 +1,9 @@
 import { BasePost } from './base-post.interface';
 
-interface LinkPost extends BasePost {
+type LinkPost = BasePost & {
+  kind: 'link';
   link: string;
   description?: string;
-}
+};
 
 export type { LinkPost };
