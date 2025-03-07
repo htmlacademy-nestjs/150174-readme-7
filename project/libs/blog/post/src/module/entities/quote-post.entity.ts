@@ -1,4 +1,4 @@
-import { QuotePost } from '@avylando-readme/core';
+import { QuotePost, WithOptionalId } from '@avylando-readme/core';
 import { BasePostEntity } from './base-post.entity';
 
 class QuotePostEntity extends BasePostEntity<QuotePost> {
@@ -6,12 +6,12 @@ class QuotePostEntity extends BasePostEntity<QuotePost> {
   public quoteAuthorId!: QuotePost['quoteAuthorId'];
   public content!: QuotePost['content'];
 
-  constructor(post: QuotePost) {
+  constructor(post: WithOptionalId<QuotePost>) {
     super(post);
     this.populate(post);
   }
 
-  private populate(post: QuotePost) {
+  private populate(post: WithOptionalId<QuotePost>) {
     this.quoteAuthorId = post.quoteAuthorId;
     this.content = post.content;
     this.kind = post.kind;

@@ -1,4 +1,9 @@
-import { BasePost, Entity, StorableEntity } from '@avylando-readme/core';
+import {
+  BasePost,
+  Entity,
+  StorableEntity,
+  WithOptionalId,
+} from '@avylando-readme/core';
 
 class BasePostEntity<T extends BasePost = BasePost>
   extends Entity
@@ -8,12 +13,12 @@ class BasePostEntity<T extends BasePost = BasePost>
   public authorId!: BasePost['authorId'];
   public tags?: BasePost['tags'];
 
-  constructor(post: BasePost) {
+  constructor(post: WithOptionalId<BasePost>) {
     super(post.id);
     this.populateBasePost(post);
   }
 
-  private populateBasePost(post: BasePost) {
+  private populateBasePost(post: WithOptionalId<BasePost>): void {
     this.status = post.status;
     this.authorId = post.authorId;
     this.tags = post.tags;

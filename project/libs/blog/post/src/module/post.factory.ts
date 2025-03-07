@@ -1,11 +1,4 @@
-import {
-  EntityFactory,
-  ImagePost,
-  LinkPost,
-  QuotePost,
-  TextPost,
-  VideoPost,
-} from '@avylando-readme/core';
+import { EntityFactory, Post, WithOptionalId } from '@avylando-readme/core';
 import { LinkPostEntity } from './entities/link-post.entity';
 import { VideoPostEntity } from './entities/video-post.entity';
 import { TextPostEntity } from './entities/text-post.entity';
@@ -14,9 +7,7 @@ import { ImagePostEntity } from './entities/image-post.entity';
 import { PostEntity } from './entities/post.entity';
 
 class PostFactory implements EntityFactory<PostEntity> {
-  public create(
-    post: LinkPost | ImagePost | QuotePost | TextPost | VideoPost
-  ): PostEntity {
+  public create(post: WithOptionalId<Post>): PostEntity {
     switch (post.kind) {
       case 'link':
         return new LinkPostEntity(post);

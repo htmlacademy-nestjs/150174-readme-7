@@ -21,7 +21,6 @@ abstract class MemoryRepository<
   public async save(entity: T): Promise<T> {
     const id = randomUUID();
     entity.id = id;
-    console.log('newEntity', entity);
     this.entities.set(id, entity.toPlainObject());
     return entity;
   }

@@ -28,3 +28,6 @@ export { MemoryRepository } from './lib/classes/repository/memory-repository';
 
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';
+
+// Utility types
+export type { WithOptionalId } from './lib/types/with-optional-id.type';

@@ -1,4 +1,4 @@
-import { LinkPost } from '@avylando-readme/core';
+import { LinkPost, WithOptionalId } from '@avylando-readme/core';
 import { BasePostEntity } from './base-post.entity';
 
 class LinkPostEntity extends BasePostEntity<LinkPost> {
@@ -6,12 +6,12 @@ class LinkPostEntity extends BasePostEntity<LinkPost> {
   public link!: LinkPost['link'];
   public description: LinkPost['description'];
 
-  constructor(post: LinkPost) {
+  constructor(post: WithOptionalId<LinkPost>) {
     super(post);
     this.populate(post);
   }
 
-  private populate(post: LinkPost) {
+  private populate(post: WithOptionalId<LinkPost>) {
     this.kind = post.kind;
     this.link = post.link;
     this.description = post.description;
