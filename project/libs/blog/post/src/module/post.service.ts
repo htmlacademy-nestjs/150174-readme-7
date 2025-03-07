@@ -34,6 +34,7 @@ class PostService {
     const updatedPost = this.postFactory.create({
       ...existingPost,
       ...post,
+      id: existingPost.id,
     });
 
     await this.postRepository.update(updatedPost);
