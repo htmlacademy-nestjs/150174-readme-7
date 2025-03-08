@@ -16,27 +16,37 @@ class CommentController {
   constructor(protected readonly commentService: CommentService) {}
 
   @Get('/')
-  getCommentsByPostId(@Param(':postId') postId: string) {
-    return this.commentService.getCommentsByPostId(postId);
+  public async getCommentsByPostId(@Param('postId') postId: string) {
+    const comments = await this.commentService.getCommentsByPostId(postId);
+    return comments.map((comment) => comment.toPlainObject());
   }
 
   @Get('/:id')
-  getComment(@Param('id') id: string) {
-    return this.commentService.findComment(id);
+  public async getComment(@Param('id') id: string) {
+    const comment = await this.commentService.findComment(id);
+    return comment.toPlainObject();
   }
 
   @Post('/')
-  createComment(@Body() dto: CreateCommentDto) {
-    return this.commentService.createComment(dto);
+  public async createComment(
+    @Param('postId') postId: string,
+    @Body() dto: CreateCommentDto
+  ) {
+    const comment = await this.commentService.createComment(postId, dto);
+    return comment.toPlainObject();
   }
 
   @Put('/:id')
-  updateComment(@Param('id') id: string, @Body() dto: UpdateCommentDto) {
-    return this.commentService.updateComment(id, dto);
+  public async updateComment(
+    @Param('id') id: string,
+    @Body() dto: UpdateCommentDto
+  ) {
+    const comment = await this.commentService.updateComment(id, dto);
+    return comment.toPlainObject();
   }
 
   @Delete('/:id')
-  deleteComment(@Param('id') id: string) {
+  public async deleteComment(@Param('id') id: string) {
     return this.commentService.deleteComment(id);
   }
 }

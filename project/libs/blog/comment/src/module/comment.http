@@ -1,23 +1,22 @@
 
 # Create a new comment
-comment http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+POST http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
 Content-Type: application/json
 
 {
-  "kind": "text",
-  "name": "comment 1",
-  "content": "Content 1"
+  "authorId": "95c73009-1ad8-4b3a-955f-5df258c937a9",
+  "content": "Nice post!"
 }
 
 ###
 
 # Get comment by ID
-GET http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+GET http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments/73cfe29d-6639-4072-893c-c3b242d40335 HTTP/1.1
 
 ###
 
 # Update comment by ID
-comment http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+PUT http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments/73cfe29d-6639-4072-893c-c3b242d40335 HTTP/1.1
 Content-Type: application/json
 
 {
@@ -27,6 +26,6 @@ Content-Type: application/json
 ###
 
 # Delete comment by ID
-DELETE http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+DELETE http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments/73cfe29d-6639-4072-893c-c3b242d40335 HTTP/1.1
 
 ###

@@ -12,8 +12,11 @@ class CommentService {
     private readonly commentFactory: CommentFactory
   ) {}
 
-  async createComment(dto: CreateCommentDto): Promise<CommentEntity> {
-    const comment = this.commentFactory.create(dto);
+  async createComment(
+    postId: string,
+    dto: CreateCommentDto
+  ): Promise<CommentEntity> {
+    const comment = this.commentFactory.create({ ...dto, postId });
     return this.commentRepository.save(comment);
   }
 
