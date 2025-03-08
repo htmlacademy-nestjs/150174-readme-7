@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Blog Comment API
+  version: 1.0.0
+  description: Список ресурсов и маршрутов API комментариев в блоге проекта «Readme».
+  contact:
+    name: Anatoly Dolgov
+    email: avylando@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:3334
+    description: Development server
+paths:
+  /posts/{postId}/comments:
+    get:
+      summary: Get comments by post ID
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+    post:
+      summary: Create a new comment
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentDto'
+      responses:
+        '201':
+          description: The created comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+  /posts/{postId}/comments/{id}:
+    get:
+      summary: Get a comment by ID
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The requested comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+    put:
+      summary: Update a comment by ID
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCommentDto'
+      responses:
+        '200':
+          description: The updated comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+    delete:
+      summary: Delete a comment by ID
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: The comment was deleted successfully
+components:
+  schemas:
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        postId:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    CreateCommentDto:
+      type: object
+      properties:
+        content:
+          type: string
+          example: 'This is a comment'
+    UpdateCommentDto:
+      type: object
+      properties:
+        content:
+          type: string
+          example: 'This is an updated comment'
