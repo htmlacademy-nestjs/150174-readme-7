@@ -8,7 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { CreatePostDto } from '../dto/create-post/create-post.type';
+import { CreatePostDto } from '../dto/create-post/create-post.dto';
 
 @Controller('posts')
 class PostController {
