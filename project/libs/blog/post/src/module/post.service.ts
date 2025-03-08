@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PostRepository } from './post.repository';
-import { CreatePostDto } from '../dto/create-post.type';
+import { CreatePostDto } from '../dto/create-post/create-post.type';
 import { PostFactory } from './post.factory';
 
 @Injectable()
