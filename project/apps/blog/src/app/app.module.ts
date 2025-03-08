@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 
-import { BlogPostModule } from '@project/post';
+import { BlogCommentModule } from '@project/blog-comment';
+import { BlogPostModule } from '@project/blog-post';
 
 @Module({
-  imports: [BlogPostModule],
+  imports: [BlogPostModule, BlogCommentModule],
   controllers: [],
   providers: [],
 })
