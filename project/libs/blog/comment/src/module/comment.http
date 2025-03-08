@@ -1,0 +1,32 @@
+
+# Create a new comment
+comment http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+Content-Type: application/json
+
+{
+  "kind": "text",
+  "name": "comment 1",
+  "content": "Content 1"
+}
+
+###
+
+# Get comment by ID
+GET http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+
+###
+
+# Update comment by ID
+comment http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+Content-Type: application/json
+
+{
+  "content": "Content 1 updated"
+}
+
+###
+
+# Delete comment by ID
+DELETE http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9/comments HTTP/1.1
+
+###

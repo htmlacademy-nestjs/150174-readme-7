@@ -10,7 +10,7 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from '../dto/create-post/create-post.type';
 
-@Controller('post')
+@Controller('posts')
 class PostController {
   constructor(private readonly postService: PostService) {}
 
