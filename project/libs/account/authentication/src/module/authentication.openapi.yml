@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Authentication API
   version: 1.0.0
-  description: Список ресурсов и маршрутов API проекта «Readme».
+  description: Список ресурсов и маршрутов API аутентификации проекта «Readme».
   contact:
     name: Anatoly Dolgov
     email: avylando@gmail.com
