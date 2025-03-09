@@ -4,6 +4,6 @@ import { BlogUserFactory } from './blog-user.factory';
 
 @Module({
   providers: [BlogUserRepository, BlogUserFactory],
-  exports: [BlogUserRepository],
+  exports: [BlogUserRepository, BlogUserFactory],
 })
 export class BlogUserModule {}
