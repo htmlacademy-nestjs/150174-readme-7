@@ -4,7 +4,7 @@ import { BasePost } from './base-post.interface';
 type QuotePost = BasePost & {
   kind: 'quote';
   quoteAuthorId: User['id'];
-  content: string;
+  quote: string;
 };
 
 export type { QuotePost };

@@ -5,7 +5,7 @@ export class CreateQuotePostDto
   extends CreateBasePostDto
   implements Omit<QuotePost, 'id'>
 {
-  public content: QuotePost['content'];
+  public quote: QuotePost['quote'];
   public quoteAuthorId: QuotePost['quoteAuthorId'];
   public kind: QuotePost['kind'];
 }
