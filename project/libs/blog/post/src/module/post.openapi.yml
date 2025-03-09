@@ -1,0 +1,215 @@
+openapi: 3.0.0
+info:
+  title: Blog Post API
+  version: 1.0.0
+  description: Список ресурсов и маршрутов API публикация в блоге проекта «Readme».
+  contact:
+    name: Anatoly Dolgov
+    email: avylando@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: http://localhost:3334
+    description: Development server
+paths:
+  /posts:
+    post:
+      summary: Create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostDto'
+      responses:
+        '200':
+          description: Successfully created post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+  /posts/{id}:
+    get:
+      summary: Get a post by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    put:
+      summary: Update a post by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePostDto'
+      responses:
+        '200':
+          description: Successfully updated post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    delete:
+      summary: Delete a post by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted post
+components:
+  schemas:
+    CreatePostDto:
+      type: object
+      properties:
+        content:
+          oneOf:
+            - $ref: '#/components/schemas/CreateImagePostDto'
+            - $ref: '#/components/schemas/CreateLinkPostDto'
+            - $ref: '#/components/schemas/CreateTextPostDto'
+            - $ref: '#/components/schemas/CreateQuotePostDto'
+            - $ref: '#/components/schemas/CreateVideoPostDto'
+    CreateImagePostDto:
+      type: object
+      properties:
+        imageUrl:
+          type: string
+
+    CreateLinkPostDto:
+      type: object
+      properties:
+        link:
+          type: string
+
+    CreateTextPostDto:
+      type: object
+      properties:
+        name:
+          type: string
+        content:
+          type: string
+        preview:
+          type: string
+
+    CreateQuotePostDto:
+      type: object
+      properties:
+        quote:
+          type: string
+
+    CreateVideoPostDto:
+      type: object
+      properties:
+        videoUrl:
+          type: string
+
+    Post:
+      oneOf:
+        - $ref: '#/components/schemas/LinkPost'
+        - $ref: '#/components/schemas/ImagePost'
+        - $ref: '#/components/schemas/TextPost'
+        - $ref: '#/components/schemas/VideoPost'
+        - $ref: '#/components/schemas/QuotePost'
+    LinkPost:
+      type: object
+      properties:
+        id:
+          type: string
+        authorId:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ImagePost:
+      type: object
+      properties:
+        id:
+          type: string
+        authorId:
+          type: string
+        imageUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TextPost:
+      type: object
+      properties:
+        id:
+          type: string
+        authorId:
+          type: string
+        name:
+          type: string
+        content:
+          type: string
+        preview:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    VideoPost:
+      type: object
+      properties:
+        id:
+          type: string
+        authorId:
+          type: string
+        videoUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    QuotePost:
+      type: object
+      properties:
+        id:
+          type: string
+        authorId:
+          type: string
+        content:
+          type: string
+        quoteAuthorId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time

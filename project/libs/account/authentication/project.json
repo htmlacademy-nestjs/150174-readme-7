@@ -1,0 +1,9 @@
+{
+  "name": "authentication",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/account/authentication/src",
+  "projectType": "library",
+  "tags": ["lib", "nest-lib"],
+  "// targets": "to see all targets run: nx show project authentication --web",
+  "targets": {}
+}
