@@ -10,8 +10,13 @@ class PostService {
     private readonly postFactory: PostFactory
   ) {}
 
-  async createPost(post: CreatePostDto) {
-    const newPost = this.postFactory.create(post);
+  async createPost(dto: CreatePostDto) {
+    const newPost = this.postFactory.create({
+      authorId: dto.authorId,
+      status: dto.status,
+      tags: dto.tags,
+      ...dto.data,
+    });
 
     await this.postRepository.save(newPost);
 
@@ -28,12 +33,15 @@ class PostService {
     return post;
   }
 
-  public async updatePost(id: string, post: CreatePostDto) {
+  public async updatePost(id: string, dto: CreatePostDto) {
     const existingPost = await this.findPost(id);
 
     const updatedPost = this.postFactory.create({
       ...existingPost,
-      ...post,
+      authorId: dto.authorId,
+      status: dto.status,
+      tags: dto.tags,
+      ...dto.data,
       id: existingPost.id,
     });
 
