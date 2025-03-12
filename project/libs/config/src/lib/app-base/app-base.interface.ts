@@ -2,7 +2,7 @@ type Environment = 'development' | 'production' | 'test' | 'stage';
 
 interface AppBaseConfig {
   port: number;
-  basePath: string;
+  globalPrefix: string;
   environment: Environment;
 }
 

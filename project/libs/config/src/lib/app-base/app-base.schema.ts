@@ -2,7 +2,6 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
   validateOrReject,
 } from 'class-validator';
 import { AppBaseConfig, Environment } from './app-base.interface';
@@ -13,11 +12,8 @@ class AppBaseConfigSchema implements AppBaseConfig {
   @IsOptional()
   public port: number;
 
-  @IsUrl(
-    { require_protocol: false, require_host: false, require_port: false },
-    { message: AppBaseConfigErrorMessages.basePath }
-  )
-  public basePath: string;
+  @IsString({ message: AppBaseConfigErrorMessages.globalPrefix })
+  public globalPrefix: string;
 
   @IsString({
     groups: ENVIRONMENTS,

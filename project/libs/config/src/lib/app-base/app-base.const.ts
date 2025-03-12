@@ -13,7 +13,7 @@ const ENVIRONMENTS = Object.values(AppEnvironment);
 
 const AppBaseConfigErrorMessages: Record<keyof AppBaseConfig, string> = {
   port: 'Port must be a number',
-  basePath: 'Base path must be a valid URL',
+  globalPrefix: 'Base path must be a string',
   environment: `Environment must be one of: ${ENVIRONMENTS.join(', ')}`,
 };
 

@@ -11,7 +11,7 @@ async function getAppBaseConfig<Config extends AppBaseConfig>(
   const config: Config = {
     environment: process.env.NODE_ENV as Environment,
     port: parseInt(process.env.PORT, 10) || DEFAULT_PORT,
-    basePath: process.env.BASE_PATH,
+    globalPrefix: process.env.GLOBAL_PREFIX,
     ...extendedConfig,
   };
 
@@ -26,9 +26,8 @@ async function createAppBaseConfig<Config extends AppBaseConfig>(
   extendedConfig: Config = {} as Config,
   schema: ClassConstructor<AppBaseConfigSchema> = AppBaseConfigSchema
 ) {
-  const config = await getAppBaseConfig(extendedConfig, schema);
-
-  return (name: string) => registerAs(name, () => config);
+  return (name: string) =>
+    registerAs(name, async () => getAppBaseConfig(extendedConfig, schema));
 }
 
 export { createAppBaseConfig };
