@@ -13,11 +13,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('Account API for "Readme" project')
+    .setTitle('Account service')
+    .setDescription('The Account service API for "Readme" project')
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('spec', app, documentFactory);
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
