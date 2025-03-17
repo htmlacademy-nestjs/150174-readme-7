@@ -19,6 +19,9 @@
           "buildTarget": "account:build:production"
         }
       }
+    },
+    "db:compose": {
+      "command": "docker compose -f ./apps/account/docker-compose.dev.yml --env-file ./apps/account/account.env up -d"
     }
   }
 }
