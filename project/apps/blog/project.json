@@ -19,6 +19,9 @@
           "buildTarget": "blog:build:production"
         }
       }
+    },
+    "db:compose": {
+      "command": "docker compose -f ./apps/blog/docker-compose.dev.yml --env-file ./apps/blog/blog.env up -d"
     }
   }
 }
