@@ -1,19 +1,24 @@
 import { Injectable } from '@nestjs/common';
 
-import { MemoryRepository } from '@avylando-readme/core';
+import { MemoryRepository, MongoRepository } from '@avylando-readme/core';
 import { CommentEntity } from './comment.entity';
 import { CommentFactory } from './comment.factory';
+import { CommentModel } from './comment.model';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
-class CommentRepository extends MemoryRepository<CommentEntity> {
-  constructor(entityFactory: CommentFactory) {
-    super(entityFactory);
+class CommentRepository extends MongoRepository<CommentEntity, CommentModel> {
+  constructor(
+    entityFactory: CommentFactory,
+    @InjectModel(CommentModel.name) commentModel: Model<CommentModel>
+  ) {
+    super(entityFactory, commentModel);
   }
 
-  getCommentsByPostId(postId: string): CommentEntity[] {
-    return this.entitiesArray
-      .filter((comment) => comment.postId === postId)
-      .map(this.entityFactory.create);
+  async getCommentsByPostId(postId: string): Promise<CommentEntity[]> {
+    const comments = await this.model.find({ postId });
+    return comments.map((comment) => this.createEntityFromDocument(comment));
   }
 }
 

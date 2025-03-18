@@ -40,11 +40,8 @@ class CommentService {
   ): Promise<CommentEntity> {
     const existingComment = await this.findComment(id);
 
-    const comment = this.commentFactory.create({
-      ...existingComment,
-      ...dto,
-      id: existingComment.id,
-    });
+    const updatedData = Object.assign({ id }, existingComment, dto);
+    const comment = this.commentFactory.create(updatedData);
     return this.commentRepository.update(comment);
   }
 
