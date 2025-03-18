@@ -4,7 +4,7 @@ import { BasePostEntity } from './base-post.entity';
 class QuotePostEntity extends BasePostEntity<QuotePost> {
   public kind!: QuotePost['kind'];
   public quoteAuthorId!: QuotePost['quoteAuthorId'];
-  public content!: QuotePost['content'];
+  public quote!: QuotePost['quote'];
 
   constructor(post: WithOptionalId<QuotePost>) {
     super(post);
@@ -13,7 +13,7 @@ class QuotePostEntity extends BasePostEntity<QuotePost> {
 
   private populate(post: WithOptionalId<QuotePost>) {
     this.quoteAuthorId = post.quoteAuthorId;
-    this.content = post.content;
+    this.quote = post.quote;
     this.kind = post.kind;
   }
 
@@ -21,7 +21,7 @@ class QuotePostEntity extends BasePostEntity<QuotePost> {
     return {
       ...this.toBasePlainObject(),
       quoteAuthorId: this.quoteAuthorId,
-      content: this.content,
+      quote: this.quote,
       kind: this.kind,
     };
   }

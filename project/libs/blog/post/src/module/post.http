@@ -1,32 +1,40 @@
 
 # Create a new post
-POST http://localhost:3334/api/posts HTTP/1.1
+POST http://localhost:3334/blog/posts HTTP/1.1
 Content-Type: application/json
 
 {
-  "kind": "text",
-  "name": "Post 1",
-  "content": "Content 1"
+  "authorId": "67d9e507897b919848c35d95",
+  "status": "published",
+  "tags": ["tag1", "tag2"],
+  "data": {
+    "kind": "text",
+    "name": "Post 1",
+    "content": "Content 1"
+  }
 }
 
 ###
 
 # Get post by ID
-GET http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9 HTTP/1.1
+GET http://localhost:3334/blog/posts/67d9f3583f0b00a7e47af919 HTTP/1.1
 
 ###
 
 # Update post by ID
-POST http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9 HTTP/1.1
+PUT http://localhost:3334/blog/posts/67d9fe0a3c8d60de3e88fb9a HTTP/1.1
 Content-Type: application/json
 
 {
-  "content": "Content 1 updated"
+  "data": {
+    "name": "Post 1 updated",
+    "content": "Content 1 updated"
+  }
 }
 
 ###
 
 # Delete post by ID
-DELETE http://localhost:3334/api/posts/95c73009-1ad8-4b3a-955f-5df258c937a9 HTTP/1.1
+DELETE http://localhost:3334/blog/posts/67d9f3583f0b00a7e47af919 HTTP/1.1
 
 ###

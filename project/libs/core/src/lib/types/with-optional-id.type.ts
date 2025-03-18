@@ -4,4 +4,8 @@ type WithOptionalId<T> = T extends BaseEntity
   ? Pick<Partial<T>, 'id'> & Omit<T, 'id'>
   : never;
 
-export type { WithOptionalId };
+type WithOptionalIdDistributive<T> = [T] extends [BaseEntity]
+  ? Pick<Partial<T>, 'id'> & Omit<T, 'id'>
+  : never;
+
+export type { WithOptionalId, WithOptionalIdDistributive };

@@ -25,9 +25,13 @@ export { Post } from './lib/interfaces/post/post.type';
 // Repository
 export { Repository } from './lib/classes/repository/repository.interface';
 export { MemoryRepository } from './lib/classes/repository/memory-repository';
+export { MongoRepository } from './lib/classes/repository/mongo-repository';
 
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';
 
 // Utility types
-export type { WithOptionalId } from './lib/types/with-optional-id.type';
+export type {
+  WithOptionalId,
+  WithOptionalIdDistributive,
+} from './lib/types/with-optional-id.type';
