@@ -6,7 +6,6 @@ import {
   Min,
   validateOrReject,
 } from 'class-validator';
-import { MongoConfig } from '@avylando-readme/core';
 
 import {
   MIN_PORT,
@@ -14,6 +13,7 @@ import {
   DEFAULT_MONGO_PORT,
   MongoConfigErrorMessages,
 } from './mongo.const';
+import { MongoConfig } from './mongo-config.interface';
 
 export class MongoConfigurationSchema implements MongoConfig {
   @IsString({ message: MongoConfigErrorMessages.name })

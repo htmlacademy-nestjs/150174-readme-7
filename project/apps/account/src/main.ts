@@ -9,6 +9,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
+import { AccountConfigNamespace } from '@project/account-config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,8 +23,10 @@ async function bootstrap() {
   SwaggerModule.setup('spec', app, documentFactory);
 
   const configService = app.get(ConfigService);
-  const port = configService.get('account.port');
-  const globalPrefix = configService.get('account.globalPrefix');
+  const port = configService.get(`${AccountConfigNamespace.APP}.port`);
+  const globalPrefix = configService.get(
+    `${AccountConfigNamespace.APP}.globalPrefix`
+  );
 
   app.setGlobalPrefix(globalPrefix);
 
