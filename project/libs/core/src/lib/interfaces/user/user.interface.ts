@@ -7,7 +7,7 @@ type User = BaseEntity & {
   email: string;
   avatarSrc: string;
   role: UserRole;
-  passwordHash: string;
+  passwordHash?: string;
 };
 
 export type { User };

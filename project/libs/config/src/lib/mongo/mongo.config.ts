@@ -1,8 +1,8 @@
-import { ConfigType, registerAs } from '@nestjs/config';
+import { registerAs } from '@nestjs/config';
+import { MongoConfig } from '@avylando-readme/core';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { DEFAULT_MONGO_PORT } from './mongo.const';
 import { MongoConfigurationSchema } from './mongo.schema';
-import { MongoConfig } from './mongo.interface';
 
 async function getDbConfig<Config extends MongoConfig>(
   extendedConfig: Config = {} as Config,
@@ -20,7 +20,7 @@ async function getDbConfig<Config extends MongoConfig>(
     ...extendedConfig,
   }) as unknown as Config;
   const instance = plainToClass(schema, config);
-
+  console.log(instance);
   await instance.validate();
 
   return config;

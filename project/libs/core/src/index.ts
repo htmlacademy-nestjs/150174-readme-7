@@ -22,12 +22,17 @@ export { VideoPost } from './lib/interfaces/post/video-post.interface';
 export { TextPost } from './lib/interfaces/post/text-post.interface';
 export { Post } from './lib/interfaces/post/post.type';
 
+// Mongo
+export { MongoConfig } from './lib/interfaces/mongo/mongo-config.interface';
+
 // Repository
 export { Repository } from './lib/classes/repository/repository.interface';
 export { MemoryRepository } from './lib/classes/repository/memory-repository';
+export { MongoRepository } from './lib/classes/repository/mongo-repository';
 
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';
+export { getMongoConnectionString } from './lib/helpers/mongo.helpers';
 
 // Utility types
 export type { WithOptionalId } from './lib/types/with-optional-id.type';

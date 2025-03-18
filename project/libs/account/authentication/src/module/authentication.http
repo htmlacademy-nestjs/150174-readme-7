@@ -6,13 +6,14 @@ Content-Type: application/json
   "email": "user@notfound.local",
   "firstName": "Keks",
   "lastName": "Smith",
-  "password": "123456"
+  "password": "123456",
+  "avatarSrc": "/avatar.png"
 }
 
 ###
 
 # Get user by ID
-GET http://localhost:3333/account/auth/95c73009-1ad8-4b3a-955f-5df258c937a9 HTTP/1.1
+GET http://localhost:3333/account/auth/67d9e507897b919848c35d95 HTTP/1.1
 
 ###
 

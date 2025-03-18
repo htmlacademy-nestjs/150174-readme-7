@@ -1,4 +1,5 @@
 import { Default__v, Document, Model, ObjectId, Require_id } from 'mongoose';
+import { NotFoundException } from '@nestjs/common';
 
 import {
   StorableEntity,
@@ -6,7 +7,6 @@ import {
 } from '../../interfaces/base/storable-entity.interface';
 import { Repository } from './repository.interface';
 import { EntityFactory } from '../../interfaces/base/entity-factory.interface';
-import { NotFoundException } from '@nestjs/common';
 
 abstract class MongoRepository<
   T extends StorableEntity<StorablePlainObject<T>>,
@@ -24,7 +24,7 @@ abstract class MongoRepository<
 
   protected createEntityFromDocument(document: DocumentType): T {
     const object = document.toObject();
-
+    console.log(object);
     return this.entityFactory.create(object);
   }
 
