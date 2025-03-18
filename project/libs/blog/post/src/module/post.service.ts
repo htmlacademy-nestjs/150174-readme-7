@@ -35,15 +35,8 @@ class PostService {
 
   public async updatePost(id: string, dto: CreatePostDto) {
     const existingPost = await this.findPost(id);
-
-    const updatedPost = this.postFactory.create({
-      ...existingPost,
-      authorId: dto.authorId,
-      status: dto.status,
-      tags: dto.tags,
-      ...dto.data,
-      id: existingPost.id,
-    });
+    const updatedData = Object.assign({ id }, existingPost, dto.data);
+    const updatedPost = this.postFactory.create(updatedData);
 
     await this.postRepository.update(updatedPost);
 

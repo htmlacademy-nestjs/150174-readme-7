@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 
 import { BlogCommentModule } from '@project/blog-comment';
-import { BlogConfigModule } from '@project/blog-config';
+import { BlogConfigModule, getBlogMongooseOptions } from '@project/blog-config';
 import { BlogPostModule } from '@project/blog-post';
 
 @Module({
-  imports: [BlogPostModule, BlogCommentModule, BlogConfigModule],
+  imports: [
+    BlogPostModule,
+    BlogCommentModule,
+    BlogConfigModule,
+    MongooseModule.forRootAsync(getBlogMongooseOptions()),
+  ],
   controllers: [],
   providers: [],
 })

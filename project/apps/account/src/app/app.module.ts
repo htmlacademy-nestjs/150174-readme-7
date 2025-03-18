@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   AccountConfigModule,
-  getMongooseOptions,
+  getAccountMongooseOptions,
 } from '@project/account-config';
 
 import { AuthenticationModule } from '@project/authentication';
@@ -13,7 +13,7 @@ import { BlogUserModule } from '@project/blog-user';
     BlogUserModule,
     AuthenticationModule,
     AccountConfigModule,
-    MongooseModule.forRootAsync(getMongooseOptions()),
+    MongooseModule.forRootAsync(getAccountMongooseOptions()),
   ],
   controllers: [],
   providers: [],
