@@ -6,3 +6,6 @@ export {
   getMongoConnectionString,
   createGetMongooseOptions,
 } from './lib/mongo/mongo.helpers';
+
+export { createPostgresConfig } from './lib/postgres/postgres.config';
+export { getPostgresConnectionString } from './lib/postgres/postgres.helpers';

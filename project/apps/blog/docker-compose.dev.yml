@@ -1,35 +1,41 @@
 version: '3.9'
 services:
-  readme-blog-mongo:
-    image: mongo:4.4
+  readme-blog-postgres:
+    image: postgres:14-alpine
     restart: always
-    container_name: readme-blog-mongo
-
-    command: mongod --port ${MONGO_PORT}
+    container_name: readme-blog-postgres
 
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
 
     ports:
-      - ${MONGO_PORT}:${MONGO_PORT}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d {POSTGRES_PASSWORD}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
     volumes:
-      - readme-blog-mongo:/data/db
+      - readme-blog-postgres:/var/lib/postgresql/data
 
-  readme-blog-mongo-ui:
-    image: mongo-express:1.0.2-20
+  readme-blog-pgadmin:
+    image: dpage/pgadmin4
     restart: always
-    container_name: readme-blog-mongo-ui
+    container_name: readme-blog-pgadmin
     ports:
-      - ${MONGO_EXPRESS_PORT}:${MONGO_EXPRESS_PORT}
+      - ${PGADMIN_PORT}:${PGADMIN_PORT}
+
     environment:
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_USER}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_PASSWORD}
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_USER}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_PASSWORD}
-      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@readme-blog-mongo:${MONGO_PORT}/
-      PORT: ${MONGO_EXPRESS_PORT}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PORT: ${PGADMIN_PORT}
+
 volumes:
-  readme-blog-mongo:
+  readme-blog-postgres:
