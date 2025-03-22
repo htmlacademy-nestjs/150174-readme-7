@@ -1,1 +1,2 @@
-export { PrismaClientService } from './prisma-client.module';
+export { PrismaClientModule } from './module/prisma-client.module';
+export { PrismaClientService } from './module/prisma-client.service';

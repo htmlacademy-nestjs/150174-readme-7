@@ -1,3 +1,4 @@
+import { Comment, Post } from '@avylando-readme/core';
 import { PrismaClient } from '@prisma/client';
 
 const FIRST_COMMENT_UUID = '39614113-7ad5-45b6-8093-06455437e1e2';
@@ -9,7 +10,7 @@ const SECOND_POST_UUID = 'ab04593b-da99-4fe3-8b4b-e06d82e2efdd';
 const FIRST_USER_ID = '658170cbb954e9f5b905ccf4';
 const SECOND_USER_ID = '6581762309c030b503e30512';
 
-function getComments() {
+function getComments(): Comment[] {
   return [
     {
       id: FIRST_COMMENT_UUID,
@@ -26,33 +27,40 @@ function getComments() {
   ];
 }
 
-function getPosts() {
+function getPosts(): Post[] {
   return [
     {
       id: FIRST_POST_UUID,
-      title: 'Худеющий',
+      name: 'Худеющий',
       authorId: FIRST_USER_ID,
+      kind: 'text',
+      status: 'published',
       content: 'Недавно прочитал страшный роман «Худеющий».',
-      description:
+      preview:
         'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
-      comments: {
-        connect: [{ id: FIRST_COMMENT_UUID }],
-      },
     },
     {
       id: SECOND_POST_UUID,
-      title: 'Вы не знаете JavaScript',
-      userId: FIRST_USER_ID,
+      kind: 'text',
+      status: 'draft',
+      name: 'Вы не знаете JavaScript',
+      authorId: FIRST_USER_ID,
       content: 'Полезная книга по JavaScript',
-      description: 'Секреты и тайные знания по JavaScript.',
-      comments: {
-        connect: [{ id: FIRST_COMMENT_UUID }, { id: SECOND_COMMENT_UUID }],
-      },
+      preview: 'Секреты и тайные знания по JavaScript.',
     },
   ];
 }
 
 async function seedDb(prismaClient: PrismaClient) {
+  const mockPosts = getPosts();
+  for (const post of mockPosts) {
+    await prismaClient.post.upsert({
+      where: { id: post.id },
+      update: {},
+      create: post,
+    });
+  }
+
   const mockComments = getComments();
   for (const comment of mockComments) {
     await prismaClient.comment.upsert({
@@ -63,26 +71,6 @@ async function seedDb(prismaClient: PrismaClient) {
         content: comment.content,
         authorId: comment.authorId,
         postId: comment.postId,
-      },
-    });
-  }
-
-  const mockPosts = getPosts();
-  for (const post of mockPosts) {
-    await prismaClient.post.upsert({
-      where: { id: post.id },
-      update: {},
-      create: {
-        id: post.id,
-        title: post.title,
-        description: post.description,
-        content: post.description,
-        userId: post.userId,
-        comments: post.comments
-          ? {
-              create: post.comments,
-            }
-          : undefined,
       },
     });
   }

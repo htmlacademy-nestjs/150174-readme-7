@@ -3,15 +3,10 @@ import { CommentController } from './comment.controller';
 import { CommentFactory } from './comment.factory';
 import { CommentRepository } from './comment.repository';
 import { CommentService } from './comment.service';
-import { MongooseModule } from '@nestjs/mongoose';
-import { CommentModel, CommentSchema } from './comment.model';
+import { PrismaClientModule } from '@project/blog-models';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: CommentModel.name, schema: CommentSchema },
-    ]),
-  ],
+  imports: [PrismaClientModule],
   controllers: [CommentController],
   providers: [CommentFactory, CommentRepository, CommentService],
   exports: [],

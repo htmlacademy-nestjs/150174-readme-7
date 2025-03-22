@@ -26,6 +26,7 @@ export { Post } from './lib/interfaces/post/post.type';
 export { Repository } from './lib/classes/repository/repository.interface';
 export { MemoryRepository } from './lib/classes/repository/memory-repository';
 export { MongoRepository } from './lib/classes/repository/mongo-repository';
+export { PostgresRepository } from './lib/classes/repository/postgres-repository';
 
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';

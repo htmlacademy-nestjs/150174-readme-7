@@ -1,23 +1,22 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaClientService } from '@project/blog-models';
+import { PostgresRepository } from '@avylando-readme/core';
 
-import { MemoryRepository, MongoRepository } from '@avylando-readme/core';
 import { CommentEntity } from './comment.entity';
 import { CommentFactory } from './comment.factory';
-import { CommentModel } from './comment.model';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 
 @Injectable()
-class CommentRepository extends MongoRepository<CommentEntity, CommentModel> {
-  constructor(
-    entityFactory: CommentFactory,
-    @InjectModel(CommentModel.name) commentModel: Model<CommentModel>
-  ) {
-    super(entityFactory, commentModel);
+class CommentRepository extends PostgresRepository<CommentEntity> {
+  constructor(entityFactory: CommentFactory, client: PrismaClientService) {
+    super(entityFactory, client);
   }
 
   async getCommentsByPostId(postId: string): Promise<CommentEntity[]> {
-    const comments = await this.model.find({ postId });
+    const comments = await this.client.comment.findMany({
+      where: {
+        postId,
+      },
+    });
     return comments.map((comment) => this.createEntityFromDocument(comment));
   }
 }
