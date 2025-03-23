@@ -17,7 +17,7 @@ class PostService {
       tags: dto.tags,
       ...dto.data,
     });
-
+    console.log('newPost', newPost);
     await this.postRepository.save(newPost);
 
     return newPost;
