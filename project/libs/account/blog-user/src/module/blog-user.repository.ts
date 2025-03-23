@@ -20,7 +20,7 @@ class BlogUserRepository extends MongoRepository<
 
   public async findByEmail(email: string): Promise<BlogUserEntity | null> {
     const user = await this.model.findOne({ email }).exec();
-    console.log(user);
+
     if (!user) {
       return null;
     }

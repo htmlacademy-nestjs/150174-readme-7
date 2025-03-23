@@ -22,7 +22,7 @@ export class AuthenticationService {
   public async login(dto: LoginUserDto): Promise<BlogUserEntity> {
     const { email, password } = dto;
     const user = await this.blogUserRepository.findByEmail(email);
-    console.log(user);
+
     if (!user) {
       throw new NotFoundException(AuthError.NOT_FOUND);
     }
