@@ -16,10 +16,10 @@ class PostRepository extends PostgresRepository<PostEntity> {
   }
 
   public async save(entity: PostEntity): Promise<PostEntity> {
-    console.log('entity', entity.toPlainObject());
     const post = await this.client.post.create({
       data: entity.toPlainObject(),
     });
+    console.log(post);
     return this.createEntityFromDocument(post as Post);
   }
 

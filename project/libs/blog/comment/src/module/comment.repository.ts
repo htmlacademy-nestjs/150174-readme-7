@@ -33,22 +33,30 @@ class CommentRepository extends PostgresRepository<CommentEntity> {
   }
 
   public async update(entity: CommentEntity): Promise<CommentEntity> {
-    const updatedEntity = await this.client.comment.update({
-      where: {
-        id: entity.id,
-      },
-      data: entity.toPlainObject(),
-    });
+    try {
+      const updatedEntity = await this.client.comment.update({
+        where: {
+          id: entity.id,
+        },
+        data: entity.toPlainObject(),
+      });
 
-    return this.createEntityFromDocument(updatedEntity);
+      return this.createEntityFromDocument(updatedEntity);
+    } catch (error) {
+      throw new NotFoundException(`Comment with id ${entity.id} not found`);
+    }
   }
 
   public async deleteById(id: string): Promise<void> {
-    await this.client.comment.delete({
-      where: {
-        id,
-      },
-    });
+    try {
+      await this.client.comment.delete({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      throw new NotFoundException(`Comment with id ${id} not found`);
+    }
   }
 
   public async getCommentsByPostId(postId: string): Promise<CommentEntity[]> {
