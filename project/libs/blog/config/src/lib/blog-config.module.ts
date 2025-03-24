@@ -11,6 +11,7 @@ import blogMongoConfig from './blog-postgres.config';
       cache: true,
       load: [blogAppConfig, blogMongoConfig],
       envFilePath: 'apps/blog/blog.env',
+      expandVariables: true,
     }),
   ],
 })
