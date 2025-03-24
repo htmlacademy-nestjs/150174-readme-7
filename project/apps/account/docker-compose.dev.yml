@@ -14,6 +14,13 @@ services:
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
 
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:${MONGO_PORT}/?authSource=${MONGO_DB}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
     volumes:
       - readme-account-mongo:/data/db
 

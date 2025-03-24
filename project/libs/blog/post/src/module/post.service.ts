@@ -17,10 +17,7 @@ class PostService {
       tags: dto.tags,
       ...dto.data,
     });
-
-    await this.postRepository.save(newPost);
-
-    return newPost;
+    return this.postRepository.save(newPost);
   }
 
   public async findPost(id: string) {

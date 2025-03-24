@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id            String     @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+  authorId      String     @map("author_id") @db.VarChar(30)
+  status        PostStatus
+  tags          String[]   @db.VarChar(255)
+  kind          PostKind
+  content       String?    @db.Text()
+  name          String?    @db.VarChar(255)
+  preview       String?    @db.VarChar(255)
+  link          String?    @db.VarChar(255)
+  description   String?    @db.VarChar(255)
+  imageSrc      String?    @map("image_src")
+  quote         String?    @db.Text()
+  quoteAuthorId String?    @map("quote_author_id") @db.VarChar(30)
+  videoSrc      String?    @map("video_src") @db.VarChar(255)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  comments      Comment[]
+  favorite      Favorite[]
+
+  @@map("posts")
+}
+
+enum PostStatus {
+  published
+  draft
+}
+
+enum PostKind {
+  text
+  image
+  video
+  link
+  quote
+}
+
+model Comment {
+  id        String   @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId    String   @db.Uuid() @map("post_id")
+  authorId  String   @db.VarChar(30) @map("author_id")
+  content   String   @db.Text()
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([postId])
+  @@map("comments")
+}
+
+model Favorite {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  postId    String   @db.Uuid() @map("post_id")
+  userId    String   @db.VarChar(30) @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("favorites")
+}

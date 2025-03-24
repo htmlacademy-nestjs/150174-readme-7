@@ -1,6 +1,6 @@
 const BlogConfigNamespace = {
   APP: 'blog',
-  MONGO: 'blog-db',
+  DB: 'blog-db',
 } as const;
 
 export { BlogConfigNamespace };

@@ -24,7 +24,6 @@ abstract class MongoRepository<
 
   protected createEntityFromDocument(document: DocumentType): T {
     const object = document.toObject();
-    console.log(object);
     return this.entityFactory.create(object);
   }
 

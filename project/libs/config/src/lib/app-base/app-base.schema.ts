@@ -1,13 +1,9 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  validateOrReject,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { AppBaseConfig, Environment } from './app-base.interface';
 import { AppBaseConfigErrorMessages, ENVIRONMENTS } from './app-base.const';
+import { ConfigSchema } from '@avylando-readme/core';
 
-class AppBaseConfigSchema implements AppBaseConfig {
+class AppBaseConfigSchema extends ConfigSchema implements AppBaseConfig {
   @IsNumber({}, { message: AppBaseConfigErrorMessages.port })
   @IsOptional()
   public port: number;
@@ -22,8 +18,8 @@ class AppBaseConfigSchema implements AppBaseConfig {
   @IsOptional()
   public environment: Environment;
 
-  public async validate(): Promise<void> {
-    return validateOrReject(this);
+  constructor() {
+    super('AppBaseConfigSchema');
   }
 }
 

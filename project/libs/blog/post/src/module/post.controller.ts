@@ -42,7 +42,7 @@ class PostController {
     return updatedPost.toPlainObject();
   }
 
-  @ApiResponse({ status: HttpStatus.OK, description: 'Delete post' })
+  @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })
   @Delete('/:id')
   public async deletePost(@Param('id') id: string) {
     await this.postService.deletePost(id);
