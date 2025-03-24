@@ -19,7 +19,7 @@ async function getDbConfig<Config extends PostgresConfig>(
     ...extendedConfig,
   }) as unknown as Config;
   const instance = plainToClass(schema, config);
-  console.log(instance);
+
   await instance.validate();
 
   return config;

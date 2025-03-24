@@ -19,7 +19,6 @@ class PostRepository extends PostgresRepository<PostEntity> {
     const post = await this.client.post.create({
       data: entity.toPlainObject(),
     });
-    console.log(post);
     return this.createEntityFromDocument(post as Post);
   }
 
