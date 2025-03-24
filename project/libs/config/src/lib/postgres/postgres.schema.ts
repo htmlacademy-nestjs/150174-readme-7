@@ -1,11 +1,4 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-  validateOrReject,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 
 import {
   MIN_PORT,
@@ -14,8 +7,12 @@ import {
   PostgresConfigErrorMessages,
 } from './postgres.const';
 import { PostgresConfig } from './postgres-config.interface';
+import { ConfigSchema } from '@avylando-readme/core';
 
-export class PostgresConfigurationSchema implements PostgresConfig {
+export class PostgresConfigurationSchema
+  extends ConfigSchema
+  implements PostgresConfig
+{
   @IsString({ message: PostgresConfigErrorMessages.name })
   public name: string;
 
@@ -34,7 +31,7 @@ export class PostgresConfigurationSchema implements PostgresConfig {
   @IsString({ message: PostgresConfigErrorMessages.password })
   public password: string;
 
-  public async validate(): Promise<void> {
-    await validateOrReject(this);
+  constructor() {
+    super('PostgresConfigurationSchema');
   }
 }

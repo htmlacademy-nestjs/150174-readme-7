@@ -1,12 +1,5 @@
-import {
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-  validateOrReject,
-} from 'class-validator';
-
+import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
+import { ConfigSchema } from '@avylando-readme/core';
 import {
   MIN_PORT,
   MAX_PORT,
@@ -15,7 +8,10 @@ import {
 } from './mongo.const';
 import { MongoConfig } from './mongo-config.interface';
 
-export class MongoConfigurationSchema implements MongoConfig {
+export class MongoConfigurationSchema
+  extends ConfigSchema
+  implements MongoConfig
+{
   @IsString({ message: MongoConfigErrorMessages.name })
   public name: string;
 
@@ -37,7 +33,7 @@ export class MongoConfigurationSchema implements MongoConfig {
   @IsString({ message: MongoConfigErrorMessages.authBase })
   public authBase: string;
 
-  public async validate(): Promise<void> {
-    await validateOrReject(this);
+  constructor() {
+    super('MongoConfigurationSchema');
   }
 }
