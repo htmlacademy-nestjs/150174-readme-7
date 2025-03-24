@@ -31,10 +31,7 @@ async function seedDb(authenticationService: AuthenticationService) {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: console,
-    bufferLogs: true,
-  });
+  const app = await NestFactory.create(AppModule);
   const service = app.get(AuthenticationService);
   if (service) {
     await seedDb(service);
