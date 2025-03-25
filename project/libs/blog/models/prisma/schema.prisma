@@ -5,8 +5,9 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../../../../node_modules/.prisma/client"
+  provider        = "prisma-client-js"
+  output          = "../../../../node_modules/.prisma/client"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -14,25 +15,48 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model PostToKind {
+  id          String     @id @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  post        Post?      @relation(name: "PostToKindToPost")
+  postId      String?    @unique() @map("post_id") @db.Uuid()
+  text        TextPost?  @relation(fields: [textDataId], references: [id], onDelete: Cascade, onUpdate: Cascade, name: "TextPost")
+  textDataId  String?    @map("text_data_id") @db.Uuid()
+  video       VideoPost? @relation(fields: [videoDataId], references: [id], onDelete: Cascade, onUpdate: Cascade, name: "VideoPost")
+  videoDataId String?    @map("video_data_id") @db.Uuid()
+  image       ImagePost? @relation(fields: [imageDataId], references: [id], onDelete: Cascade, onUpdate: Cascade, name: "ImagePost")
+  imageDataId String?    @map("image_data_id") @db.Uuid()
+  quote       QuotePost? @relation(fields: [quoteDataId], references: [id], onDelete: Cascade, onUpdate: Cascade, name: "QuotePost")
+  quoteDataId String?    @map("quote_data_id") @db.Uuid()
+  link        LinkPost?  @relation(fields: [linkDataId], references: [id], onDelete: Cascade, onUpdate: Cascade, name: "LinkPost")
+  linkDataId  String?    @map("link_data_id") @db.Uuid()
+
+  @@map("posts_to_kinds")
+}
+
+model PostToRepost {
+  post           Post   @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade, name: "PostToRepostToPost")
+  postId         String @id() @unique() @map("post_id") @db.Uuid()
+  originalPost   Post   @relation(fields: [originalPostId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  originalPostId String @unique() @map("original_post_id") @db.Uuid()
+
+  @@map("posts_to_reposts")
+}
+
 model Post {
-  id            String     @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
-  authorId      String     @map("author_id") @db.VarChar(30)
-  status        PostStatus
-  tags          String[]   @db.VarChar(255)
-  kind          PostKind
-  content       String?    @db.Text()
-  name          String?    @db.VarChar(255)
-  preview       String?    @db.VarChar(255)
-  link          String?    @db.VarChar(255)
-  description   String?    @db.VarChar(255)
-  imageSrc      String?    @map("image_src")
-  quote         String?    @db.Text()
-  quoteAuthorId String?    @map("quote_author_id") @db.VarChar(30)
-  videoSrc      String?    @map("video_src") @db.VarChar(255)
-  createdAt     DateTime   @default(now()) @map("created_at")
-  updatedAt     DateTime   @updatedAt @map("updated_at")
-  comments      Comment[]
-  favorite      Favorite[]
+  id             String         @id @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  authorId       String         @map("author_id") @db.VarChar(30)
+  status         PostStatus
+  tags           String[]       @db.VarChar(255)
+  kind           PostKind
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  comments       Comment[]
+  favorite       Favorite[]
+  data           PostToKind     @relation(fields: [dataRelationId], references: [id], name: "PostToKindToPost")
+  dataRelationId String         @unique() @map("data_relation_id") @db.Uuid()
+  repostedPost   PostToRepost[] @relation(name: "PostToRepostToPost")
+  repost         Boolean        @default(false)
+  originalPost   PostToRepost[]
 
   @@map("posts")
 }
@@ -50,11 +74,56 @@ enum PostKind {
   quote
 }
 
+model TextPost {
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  title      String       @db.VarChar(50)
+  preview    String       @db.VarChar(255)
+  content    String       @db.Text()
+  PostToKind PostToKind[] @relation(name: "TextPost")
+
+  @@map("text_posts")
+}
+
+model ImagePost {
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  imageSrc   String       @map("image_src") @db.VarChar(255)
+  PostToKind PostToKind[] @relation(name: "ImagePost")
+
+  @@map("image_posts")
+}
+
+model VideoPost {
+  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  title      String       @db.VarChar(50)
+  videoSrc   String       @map("video_src") @db.VarChar(255)
+  PostToKind PostToKind[] @relation(name: "VideoPost")
+
+  @@map("video_posts")
+}
+
+model QuotePost {
+  id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  quote         String       @db.Text()
+  quoteAuthorId String       @map("quote_author_id") @db.VarChar(30)
+  PostToKind    PostToKind[] @relation(name: "QuotePost")
+
+  @@map("quote_posts")
+}
+
+model LinkPost {
+  id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
+  link        String       @db.VarChar(255)
+  description String       @db.VarChar(255)
+  PostToKind  PostToKind[] @relation(name: "LinkPost")
+
+  @@map("link_posts")
+}
+
 model Comment {
-  id        String   @id @db.Uuid() @default(dbgenerated("gen_random_uuid()"))
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  postId    String   @db.Uuid() @map("post_id")
-  authorId  String   @db.VarChar(30) @map("author_id")
+  postId    String   @map("post_id") @db.Uuid()
+  authorId  String   @map("author_id") @db.VarChar(30)
   content   String   @db.Text()
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -66,8 +135,8 @@ model Comment {
 model Favorite {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  postId    String   @db.Uuid() @map("post_id")
-  userId    String   @db.VarChar(30) @map("user_id")
+  postId    String   @map("post_id") @db.Uuid()
+  userId    String   @map("user_id") @db.VarChar(30)
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("favorites")

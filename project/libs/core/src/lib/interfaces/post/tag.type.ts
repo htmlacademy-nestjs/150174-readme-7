@@ -1,3 +1,3 @@
-type Tag = Lowercase<string>;
+type Tag = string;
 
 export type { Tag };

@@ -1,15 +1,16 @@
-import { BasePost, LinkPost } from '@avylando-readme/core';
+import { LinkPost } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class CreateLinkPostDto implements Omit<LinkPost, keyof BasePost> {
+type Data = LinkPost['data'];
+export class CreateLinkPostDto implements Data {
   @ApiProperty({
     description: 'Link URL',
     type: 'string',
     example: 'https://avylando.com',
   })
   @Expose()
-  public link: LinkPost['link'];
+  public link: Data['link'];
 
   @ApiProperty({
     description: 'Link description',
@@ -17,13 +18,5 @@ export class CreateLinkPostDto implements Omit<LinkPost, keyof BasePost> {
     example: 'Avylando website',
   })
   @Expose()
-  public description: LinkPost['description'];
-
-  @ApiProperty({
-    description: 'Post kind',
-    type: 'string',
-    example: 'link',
-  })
-  @Expose()
-  public kind: LinkPost['kind'];
+  public description: Data['description'];
 }

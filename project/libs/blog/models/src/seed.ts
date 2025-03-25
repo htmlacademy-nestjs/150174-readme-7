@@ -31,22 +31,29 @@ function getPosts(): Post[] {
   return [
     {
       id: FIRST_POST_UUID,
-      name: 'Худеющий',
       authorId: FIRST_USER_ID,
+      data: {
+        title: 'Худеющий',
+
+        content: 'Недавно прочитал страшный роман «Худеющий».',
+        preview:
+          'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
+      },
       kind: 'text',
       status: 'published',
-      content: 'Недавно прочитал страшный роман «Худеющий».',
-      preview:
-        'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
+      repost: false,
     },
     {
       id: SECOND_POST_UUID,
       kind: 'text',
       status: 'draft',
-      name: 'Вы не знаете JavaScript',
       authorId: FIRST_USER_ID,
-      content: 'Полезная книга по JavaScript',
-      preview: 'Секреты и тайные знания по JavaScript.',
+      repost: false,
+      data: {
+        title: 'Вы не знаете JavaScript',
+        content: 'Полезная книга по JavaScript',
+        preview: 'Секреты и тайные знания по JavaScript.',
+      },
     },
   ];
 }
@@ -54,10 +61,20 @@ function getPosts(): Post[] {
 async function seedDb(prismaClient: PrismaClient) {
   const mockPosts = getPosts();
   for (const post of mockPosts) {
+    const { data, ...commonPostData } = post;
     await prismaClient.post.upsert({
       where: { id: post.id },
       update: {},
-      create: post,
+      create: {
+        ...commonPostData,
+        data: {
+          create: {
+            [post.kind]: {
+              create: data,
+            },
+          },
+        },
+      },
     });
   }
 

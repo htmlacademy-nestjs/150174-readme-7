@@ -14,12 +14,13 @@ export { Comment } from './lib/interfaces/comment/comment.interface';
 // Post
 export { PostStatus } from './lib/interfaces/post/post-status.type';
 export { Tag } from './lib/interfaces/post/tag.type';
+export { PostKind } from './lib/interfaces/post/post-kind.type';
 export { BasePost } from './lib/interfaces/post/base-post.interface';
-export { QuotePost } from './lib/interfaces/post/quote-post.interface';
-export { LinkPost } from './lib/interfaces/post/link-post.interface';
-export { ImagePost } from './lib/interfaces/post/image-post.interface';
-export { VideoPost } from './lib/interfaces/post/video-post.interface';
-export { TextPost } from './lib/interfaces/post/text-post.interface';
+export { QuotePost } from './lib/interfaces/post/kinds/quote-post.interface';
+export { LinkPost } from './lib/interfaces/post/kinds/link-post.interface';
+export { ImagePost } from './lib/interfaces/post/kinds/image-post.interface';
+export { VideoPost } from './lib/interfaces/post/kinds/video-post.interface';
+export { TextPost } from './lib/interfaces/post/kinds/text-post.interface';
 export { Post } from './lib/interfaces/post/post.type';
 
 // Repository

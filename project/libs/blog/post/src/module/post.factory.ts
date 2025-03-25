@@ -1,24 +1,15 @@
 import { EntityFactory, Post, WithOptionalId } from '@avylando-readme/core';
-import { LinkPostEntity } from './entities/link-post.entity';
-import { VideoPostEntity } from './entities/video-post.entity';
-import { TextPostEntity } from './entities/text-post.entity';
-import { QuotePostEntity } from './entities/quote-post.entity';
-import { ImagePostEntity } from './entities/image-post.entity';
-import { PostEntity } from './entities/post.entity';
+import { BlogPostEntity } from './post.entity';
 
-class PostFactory implements EntityFactory<PostEntity> {
-  public create(post: WithOptionalId<Post>): PostEntity {
+class PostFactory implements EntityFactory<BlogPostEntity> {
+  public create(post: WithOptionalId<Post>): BlogPostEntity {
     switch (post.kind) {
       case 'link':
-        return new LinkPostEntity(post);
       case 'image':
-        return new ImagePostEntity(post);
       case 'quote':
-        return new QuotePostEntity(post);
       case 'text':
-        return new TextPostEntity(post);
       case 'video':
-        return new VideoPostEntity(post);
+        return new BlogPostEntity(post);
       default:
         throw new Error(`Unknown post kind`);
     }

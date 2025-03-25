@@ -2,7 +2,7 @@ import { BasePost } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-export class CreateBasePostDto implements Omit<BasePost, 'id'> {
+export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
   @ApiProperty({
     description: 'Post author ID',
     example: '60f5b2b3c4e9d2b9c8b2c8b2c',
@@ -28,4 +28,20 @@ export class CreateBasePostDto implements Omit<BasePost, 'id'> {
   })
   @Expose()
   public tags?: BasePost['tags'];
+
+  @ApiProperty({
+    description: 'Post kind',
+    type: 'string',
+    example: 'text',
+  })
+  @Expose()
+  public kind: BasePost['kind'];
+
+  @ApiProperty({
+    description: 'Repost flag',
+    type: 'boolean',
+    example: true,
+  })
+  @Expose()
+  public repost: boolean;
 }
