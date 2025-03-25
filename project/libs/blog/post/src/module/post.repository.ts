@@ -22,8 +22,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       data: {
         ...commonPostData,
         data: {
-          connect: {
-            id: entity.id,
+          create: {
             [entity.kind]: {
               create: data,
             },

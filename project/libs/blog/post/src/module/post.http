@@ -7,9 +7,9 @@ Content-Type: application/json
   "authorId": "67d9e507897b919848c35d95",
   "status": "published",
   "tags": ["tag1", "tag2"],
+  "kind": "text",
   "data": {
-    "kind": "text",
-    "name": "Post 1",
+    "title": "Post 1",
     "content": "Content 1",
     "preview": "Preview 1"
   }
@@ -28,7 +28,7 @@ Content-Type: application/json
 
 {
   "data": {
-    "name": "Post 1 updated",
+    "title": "Post 1 updated",
     "content": "Content 1 updated"
   }
 }
