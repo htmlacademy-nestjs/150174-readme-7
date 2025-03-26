@@ -1,6 +1,6 @@
 // Entity
 export { Entity } from './lib/classes/entity';
-
+export { BaseEntity } from './lib/interfaces/base/base-entity.interface';
 export { StorableEntity } from './lib/interfaces/base/storable-entity.interface';
 export { EntityFactory } from './lib/interfaces/base/entity-factory.interface';
 
@@ -21,7 +21,7 @@ export { LinkPost } from './lib/interfaces/post/kinds/link-post.interface';
 export { ImagePost } from './lib/interfaces/post/kinds/image-post.interface';
 export { VideoPost } from './lib/interfaces/post/kinds/video-post.interface';
 export { TextPost } from './lib/interfaces/post/kinds/text-post.interface';
-export { Post } from './lib/interfaces/post/post.type';
+export { Post, PostData } from './lib/interfaces/post/post.type';
 
 // Repository
 export { Repository } from './lib/classes/repository/repository.interface';

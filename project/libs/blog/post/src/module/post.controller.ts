@@ -11,6 +11,8 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { fillDto } from '@avylando-readme/core';
+import { PostRdo } from '../rdo/post.rdo';
 
 @ApiTags('posts', 'blog')
 @Controller('posts')
@@ -21,7 +23,7 @@ class PostController {
   @Post('/')
   public async createPost(@Body() post: CreatePostDto) {
     const newPost = await this.postService.createPost(post);
-    return newPost.toPlainObject();
+    return fillDto(PostRdo, newPost.toPlainObject());
   }
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Find post' })
@@ -29,7 +31,7 @@ class PostController {
   @Get('/:id')
   public async findPost(@Param('id') id: string) {
     const post = await this.postService.findPost(id);
-    return post.toPlainObject();
+    return fillDto(PostRdo, post.toPlainObject());
   }
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
@@ -39,7 +41,7 @@ class PostController {
     @Body() post: CreatePostDto
   ) {
     const updatedPost = await this.postService.updatePost(id, post);
-    return updatedPost.toPlainObject();
+    return fillDto(PostRdo, updatedPost.toPlainObject());
   }
 
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })

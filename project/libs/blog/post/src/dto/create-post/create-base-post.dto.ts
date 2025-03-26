@@ -6,6 +6,7 @@ import {
   IsBoolean,
   IsEnum,
   IsMongoId,
+  IsOptional,
   IsString,
 } from 'class-validator';
 import { CreatePostValidationMessage } from '../dto-validations.const';
@@ -42,6 +43,7 @@ export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
     message: CreatePostValidationMessage.tags,
   })
   @IsString({ each: true, message: CreatePostValidationMessage.tags })
+  @IsOptional()
   @Expose()
   public tags?: BasePost['tags'];
 
@@ -61,7 +63,8 @@ export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
     type: 'boolean',
     example: true,
   })
+  @IsOptional()
   @IsBoolean({ message: CreatePostValidationMessage.repost })
   @Expose()
-  public repost: boolean;
+  public repost?: boolean;
 }

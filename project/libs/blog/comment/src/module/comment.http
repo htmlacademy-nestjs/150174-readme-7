@@ -11,7 +11,7 @@ Content-Type: application/json
 ###
 
 # Get comment by ID
-GET http://localhost:3334/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/comments/2d0387dd-864e-4f10-8e6b-ca5f9bd10d1c HTTP/1.1
+GET http://localhost:3334/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/comments/c08fc578-4578-4958-98e3-b66f8ae64e57 HTTP/1.1
 
 ###
 

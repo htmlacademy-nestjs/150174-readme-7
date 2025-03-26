@@ -12,7 +12,7 @@ type BasePost<
 > = BaseEntity & {
   authorId: User['id'];
   status: PostStatus;
-  repost: boolean;
+  repost?: boolean;
   tags?: Tag[];
   kind: Kind;
   data: Data;

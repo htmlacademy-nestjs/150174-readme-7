@@ -12,6 +12,8 @@ import { CommentService } from './comment.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { UpdateCommentDto } from '../dto/update-comment.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { fillDto } from '@avylando-readme/core';
+import { CommentRdo } from '../rdo/comment.rdo';
 
 @ApiTags('comments', 'blog')
 @Controller('posts/:postId/comments')
@@ -25,14 +27,17 @@ class CommentController {
   @Get('/')
   public async getCommentsByPostId(@Param('postId') postId: string) {
     const comments = await this.commentService.getCommentsByPostId(postId);
-    return comments.map((comment) => comment.toPlainObject());
+    return fillDto(
+      CommentRdo,
+      comments.map((comment) => comment.toPlainObject())
+    );
   }
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Get comment by id' })
   @Get('/:id')
   public async getComment(@Param('id') id: string) {
     const comment = await this.commentService.findComment(id);
-    return comment.toPlainObject();
+    return fillDto(CommentRdo, comment.toPlainObject());
   }
 
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Comment created' })
@@ -42,7 +47,7 @@ class CommentController {
     @Body() dto: CreateCommentDto
   ) {
     const comment = await this.commentService.createComment(postId, dto);
-    return comment.toPlainObject();
+    return fillDto(CommentRdo, comment.toPlainObject());
   }
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Comment updated' })
@@ -52,7 +57,7 @@ class CommentController {
     @Body() dto: UpdateCommentDto
   ) {
     const comment = await this.commentService.updateComment(id, dto);
-    return comment.toPlainObject();
+    return fillDto(CommentRdo, comment.toPlainObject());
   }
 
   @ApiResponse({
