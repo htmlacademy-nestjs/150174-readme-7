@@ -1,13 +1,11 @@
-import {
-  Post,
-  PostgresRepository,
-  WithOptionalId,
-} from '@avylando-readme/core';
+import { Post, PostgresRepository } from '@avylando-readme/core';
 import { Injectable } from '@nestjs/common';
 import { PrismaClientService } from '@project/blog-models';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
+
+type RawData = Omit<Post, 'data'> & { data: Record<string, unknown> };
 
 @Injectable()
 class PostRepository extends PostgresRepository<BlogPostEntity> {
@@ -38,7 +36,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       },
     });
 
-    const post = this.extractPostData(raw);
+    const post = this.extractPostData(raw as RawData);
 
     return this.createEntityFromDocument(post);
   }
@@ -66,7 +64,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     if (!raw) {
       throw new Error(`Post with id ${id} not found`);
     }
-    const post = this.extractPostData(raw);
+    const post = this.extractPostData(raw as RawData);
     return this.createEntityFromDocument(post);
   }
 
@@ -96,8 +94,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       },
     });
 
-    const post = this.extractPostData(updatedEntity);
-
+    const post = this.extractPostData(updatedEntity as RawData);
     return this.createEntityFromDocument(post);
   }
 
@@ -109,9 +106,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     });
   }
 
-  private extractPostData(
-    rawData: Omit<Post, 'data'> & { data: Record<string, unknown> }
-  ): Post {
+  private extractPostData(rawData: RawData): Post {
     const { data: relatedData, ...rest } = rawData;
     const kindData = relatedData[rest.kind] as Post['data'];
     return { ...rest, data: kindData } as Post;

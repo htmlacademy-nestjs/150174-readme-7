@@ -1,7 +1,8 @@
 import { BasePost } from '../base-post.interface';
+import { PostKind } from '../post-kind.enum';
 
 type VideoPost = BasePost<
-  'video',
+  PostKind.Video,
   {
     title: string;
     videoSrc: string;

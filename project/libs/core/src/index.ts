@@ -14,7 +14,7 @@ export { Comment } from './lib/interfaces/comment/comment.interface';
 // Post
 export { PostStatus } from './lib/interfaces/post/post-status.type';
 export { Tag } from './lib/interfaces/post/tag.type';
-export { PostKind } from './lib/interfaces/post/post-kind.type';
+export { PostKind } from './lib/interfaces/post/post-kind.enum';
 export { BasePost } from './lib/interfaces/post/base-post.interface';
 export { QuotePost } from './lib/interfaces/post/kinds/quote-post.interface';
 export { LinkPost } from './lib/interfaces/post/kinds/link-post.interface';
