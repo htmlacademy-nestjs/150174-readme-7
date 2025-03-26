@@ -1,6 +1,8 @@
 import { VideoPost } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { IsString, IsUrl } from 'class-validator';
+import { CreatePostValidationMessage } from '../dto-validations.const';
 
 type Data = VideoPost['data'];
 export class CreateVideoPostDto implements Data {
@@ -9,6 +11,7 @@ export class CreateVideoPostDto implements Data {
     type: 'string',
     example: '/videos/video.mp4',
   })
+  @IsUrl({}, { message: CreatePostValidationMessage.videoSrc })
   @Expose()
   public videoSrc: Data['videoSrc'];
 
@@ -17,6 +20,7 @@ export class CreateVideoPostDto implements Data {
     type: 'string',
     example: 'Post title',
   })
+  @IsString({ message: CreatePostValidationMessage.title })
   @Expose()
   public title: Data['title'];
 }
