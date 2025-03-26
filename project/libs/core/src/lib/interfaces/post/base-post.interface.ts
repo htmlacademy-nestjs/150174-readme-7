@@ -4,6 +4,7 @@ import { User } from '../user/user.interface';
 import { PostStatus } from './post-status.type';
 import { PostKind } from './post-kind.enum';
 import { PlainObject } from '../../types/plain-object.type';
+import { Comment } from '../comment/comment.interface';
 
 type BasePost<
   Kind extends PostKind = PostKind,
@@ -15,6 +16,7 @@ type BasePost<
   tags?: Tag[];
   kind: Kind;
   data: Data;
+  comments?: Comment[];
 };
 
 export type { BasePost };

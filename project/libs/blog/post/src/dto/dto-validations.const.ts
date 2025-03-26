@@ -2,7 +2,7 @@ import { Post } from '@avylando-readme/core';
 import { PostData } from 'libs/core/src/lib/interfaces/post/post.type';
 
 const CreatePostValidationMessage: Record<
-  keyof (Omit<Post, 'data' | 'id'> & PostData),
+  keyof (Omit<Post, 'data' | 'id' | 'comments'> & PostData),
   string
 > = {
   status: 'Invalid public status',

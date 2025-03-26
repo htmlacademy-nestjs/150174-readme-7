@@ -14,6 +14,7 @@ class BlogPostEntity<T extends Post = Post>
   public kind!: Post['kind'];
   public data!: Post['data'];
   public tags?: Post['tags'];
+  public comments?: Post['comments'];
 
   constructor(post: WithOptionalId<Post>) {
     super(post.id);
@@ -26,6 +27,7 @@ class BlogPostEntity<T extends Post = Post>
     this.kind = post.kind;
     this.data = post.data;
     this.tags = post.tags;
+    this.comments = post.comments;
   }
 
   public toPlainObject(): T {
@@ -36,6 +38,7 @@ class BlogPostEntity<T extends Post = Post>
       status: this.status,
       authorId: this.authorId,
       tags: this.tags,
+      comments: this.comments,
     } as T;
   }
 }

@@ -1,11 +1,11 @@
-import { Post, PostgresRepository } from '@avylando-readme/core';
-import { Injectable } from '@nestjs/common';
+import { Post, PostgresRepository, PlainObject } from '@avylando-readme/core';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientService } from '@project/blog-models';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
 
-type RawData = Omit<Post, 'data'> & { data: Record<string, unknown> };
+type RawData = Omit<Post, 'data'> & { data: PlainObject };
 
 @Injectable()
 class PostRepository extends PostgresRepository<BlogPostEntity> {
@@ -14,7 +14,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   }
 
   public async save(entity: BlogPostEntity): Promise<BlogPostEntity> {
-    const { data, ...commonPostData } = entity.toPlainObject();
+    const { data, comments, ...commonPostData } = entity.toPlainObject();
     const raw = await this.client.post.create({
       relationLoadStrategy: 'join',
       data: {
@@ -48,6 +48,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       where: {
         id,
       },
+
       include: {
         data: {
           select: {
@@ -58,18 +59,20 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
             video: true,
           },
         },
+
+        comments: true,
       },
     });
 
     if (!raw) {
-      throw new Error(`Post with id ${id} not found`);
+      throw new NotFoundException(`Post with id ${id} not found`);
     }
     const post = this.extractPostData(raw as RawData);
     return this.createEntityFromDocument(post);
   }
 
   public async update(entity: BlogPostEntity): Promise<BlogPostEntity> {
-    const { data, ...commonPostData } = entity.toPlainObject();
+    const { data, comments, ...commonPostData } = entity.toPlainObject();
 
     const updatedEntity = await this.client.post.update({
       where: {

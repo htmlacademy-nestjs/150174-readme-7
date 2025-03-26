@@ -41,3 +41,5 @@ export type {
   WithOptionalId,
   WithOptionalIdDistributive,
 } from './lib/types/with-optional-id.type';
+export type { PlainObject } from './lib/types/plain-object.type';
+export type { UnionToIntersection } from './lib/types/union-to-intersection.type';

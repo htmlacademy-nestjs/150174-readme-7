@@ -18,17 +18,17 @@ Content-Type: application/json
 ###
 
 # Get post by ID
-GET http://localhost:3334/blog/posts/57f20299-a5fa-4521-b549-d4d4067c923b HTTP/1.1
+GET http://localhost:3334/blog/posts/9a84d520-8aca-4067-8611-1f1804f2ecd7 HTTP/1.1
 
 ###
 
 # Update post by ID
-PUT http://localhost:3334/blog/posts/57f20299-a5fa-4521-b549-d4d4067c923b HTTP/1.1
+PUT http://localhost:3334/blog/posts/9a84d520-8aca-4067-8611-1f1804f2ecd7 HTTP/1.1
 Content-Type: application/json
 
 {
   "data": {
-    "title": "Post 1 updated",
+    "title": "Post 1",
     "content": "Content 1 updated"
   }
 }
