@@ -1,6 +1,7 @@
+import { User, UserRole } from '@avylando-readme/core';
 import { Expose } from 'class-transformer';
 
-export class UserRdo {
+export class UserRdo implements User {
   @Expose()
   public id: string;
 
@@ -15,4 +16,7 @@ export class UserRdo {
 
   @Expose()
   public lastName: string;
+
+  @Expose()
+  public role: UserRole;
 }

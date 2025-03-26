@@ -1,6 +1,8 @@
 import { User } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
+import { CreateUserValidationMessage } from './dto-validations.const';
 
 export class CreateUserDto
   implements Omit<User, 'id' | 'role' | 'passwordHash'>
@@ -10,6 +12,7 @@ export class CreateUserDto
     type: 'string',
     example: 'example@mail.com',
   })
+  @IsEmail({}, { message: CreateUserValidationMessage.email })
   @Expose()
   public email: User['email'];
 
@@ -18,6 +21,7 @@ export class CreateUserDto
     type: 'string',
     example: 'John',
   })
+  @IsString({ message: CreateUserValidationMessage.firstName })
   @Expose()
   public firstName: User['firstName'];
 
@@ -26,6 +30,7 @@ export class CreateUserDto
     type: 'string',
     example: 'Doe',
   })
+  @IsString({ message: CreateUserValidationMessage.lastName })
   @Expose()
   public lastName: User['lastName'];
 
@@ -34,6 +39,7 @@ export class CreateUserDto
     type: 'string',
     example: '/avatars/avatar.png',
   })
+  @IsString({ message: CreateUserValidationMessage.avatarSrc })
   @Expose()
   public avatarSrc: User['avatarSrc'];
 
@@ -42,6 +48,7 @@ export class CreateUserDto
     type: 'string',
     example: 'password',
   })
+  @IsStrongPassword({}, { message: CreateUserValidationMessage.password })
   @Expose()
   public password: string;
 }
