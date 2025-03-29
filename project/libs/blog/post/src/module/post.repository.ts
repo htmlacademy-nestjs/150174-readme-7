@@ -1,9 +1,16 @@
-import { Post, PostgresRepository, PlainObject } from '@avylando-readme/core';
+import {
+  Post,
+  PostgresRepository,
+  PlainObject,
+  PaginationResult,
+} from '@avylando-readme/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientService } from '@project/blog-models';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
+import { Prisma } from '@prisma/client';
+import { PostQuery } from './post.query';
 
 type RawData = Omit<Post, 'data' | 'tags'> & {
   data: PlainObject;
@@ -145,10 +152,75 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     });
   }
 
+  public async findMany(
+    query: PostQuery
+  ): Promise<PaginationResult<BlogPostEntity>> {
+    const { limit, page, sortDirection, tags } = query;
+
+    const where: Prisma.PostWhereInput = {};
+
+    if (tags) {
+      where.tags = {
+        some: {
+          name: {
+            in: tags,
+          },
+        },
+      };
+    }
+
+    const [posts, totalItems] = await Promise.all([
+      this.client.post.findMany({
+        take: limit,
+        skip: (page - 1) * limit,
+        orderBy: {
+          createdAt: sortDirection,
+        },
+        where,
+        include: {
+          data: {
+            select: {
+              link: true,
+              image: true,
+              quote: true,
+              text: true,
+              video: true,
+            },
+          },
+          tags: {
+            select: {
+              name: true,
+            },
+          },
+          comments: true,
+        },
+      }),
+      this.getPostCount(where),
+    ]);
+
+    return {
+      entities: posts.map((post) =>
+        this.createEntityFromDocument(this.extractPostData(post as RawData))
+      ),
+      totalItems,
+      totalPages: this.calculatePostsPage(totalItems, limit),
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
   private extractPostData(rawData: RawData): Post {
     const { data: relatedData, tags, ...rest } = rawData;
     const kindData = relatedData[rest.kind] as Post['data'];
     return { ...rest, data: kindData, tags: tags.map((el) => el.name) } as Post;
+  }
+
+  private async getPostCount(where: Prisma.PostWhereInput): Promise<number> {
+    return this.client.post.count({ where });
+  }
+
+  private calculatePostsPage(totalCount: number, limit: number): number {
+    return Math.ceil(totalCount / limit);
   }
 }
 

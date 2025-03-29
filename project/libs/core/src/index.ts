@@ -29,6 +29,10 @@ export { MemoryRepository } from './lib/classes/repository/memory-repository';
 export { MongoRepository } from './lib/classes/repository/mongo-repository';
 export { PostgresRepository } from './lib/classes/repository/postgres-repository';
 
+// Query
+export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
+export { SortDirection } from './lib/interfaces/query/sort-direction.enum';
+
 // Schema
 export { ConfigSchema } from './lib/classes/config-schema';
 
