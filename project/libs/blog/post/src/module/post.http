@@ -34,7 +34,7 @@ Content-Type: application/json
 ###
 
 # Get post by ID
-GET http://localhost:3334/blog/posts/9a84d520-8aca-4067-8611-1f1804f2ecd7 HTTP/1.1
+GET http://localhost:3334/blog/posts/ab04593b-da99-4fe3-8b4b-e06d82e2efdd HTTP/1.1
 
 ###
 

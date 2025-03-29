@@ -5,7 +5,10 @@ import { PrismaClientService } from '@project/blog-models';
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
 
-type RawData = Omit<Post, 'data'> & { data: PlainObject };
+type RawData = Omit<Post, 'data' | 'tags'> & {
+  data: PlainObject;
+  tags: { name: string }[];
+};
 
 @Injectable()
 class PostRepository extends PostgresRepository<BlogPostEntity> {
@@ -14,7 +17,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   }
 
   public async save(entity: BlogPostEntity): Promise<BlogPostEntity> {
-    const { data, comments, ...commonPostData } = entity.toPlainObject();
+    const { data, comments, tags, ...commonPostData } = entity.toPlainObject();
     const raw = await this.client.post.create({
       relationLoadStrategy: 'join',
       data: {
@@ -26,11 +29,26 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
             },
           },
         },
+        tags: {
+          connectOrCreate: tags?.map((tag) => ({
+            where: {
+              name: tag,
+            },
+            create: {
+              name: tag,
+            },
+          })),
+        },
       },
       include: {
         data: {
           select: {
             [entity.kind]: true,
+          },
+        },
+        tags: {
+          select: {
+            name: true,
           },
         },
       },
@@ -44,7 +62,6 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   public async findById(id: string): Promise<BlogPostEntity> {
     const raw = await this.client.post.findUnique({
       relationLoadStrategy: 'join',
-
       where: {
         id,
       },
@@ -59,7 +76,11 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
             video: true,
           },
         },
-
+        tags: {
+          select: {
+            name: true,
+          },
+        },
         comments: true,
       },
     });
@@ -72,7 +93,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   }
 
   public async update(entity: BlogPostEntity): Promise<BlogPostEntity> {
-    const { data, comments, ...commonPostData } = entity.toPlainObject();
+    const { data, tags, comments, ...commonPostData } = entity.toPlainObject();
 
     const updatedEntity = await this.client.post.update({
       where: {
@@ -87,11 +108,26 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
             },
           },
         },
+        tags: {
+          connectOrCreate: tags?.map((tag) => ({
+            where: {
+              name: tag,
+            },
+            create: {
+              name: tag,
+            },
+          })),
+        },
       },
       include: {
         data: {
           select: {
             [entity.kind]: true,
+          },
+        },
+        tags: {
+          select: {
+            name: true,
           },
         },
       },
@@ -110,9 +146,9 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   }
 
   private extractPostData(rawData: RawData): Post {
-    const { data: relatedData, ...rest } = rawData;
+    const { data: relatedData, tags, ...rest } = rawData;
     const kindData = relatedData[rest.kind] as Post['data'];
-    return { ...rest, data: kindData } as Post;
+    return { ...rest, data: kindData, tags: tags.map((el) => el.name) } as Post;
   }
 }
 

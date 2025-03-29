@@ -1,4 +1,4 @@
-import { Comment, Post } from '@avylando-readme/core';
+import { Comment, Post, PostKind } from '@avylando-readme/core';
 import { PrismaClient } from '@prisma/client';
 
 const FIRST_COMMENT_UUID = '39614113-7ad5-45b6-8093-06455437e1e2';
@@ -39,13 +39,14 @@ function getPosts(): Post[] {
         preview:
           'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
       },
-      kind: 'text',
+      kind: PostKind.Text,
       status: 'published',
       repost: false,
+      tags: ['Книга', 'Кинг', 'Худой'],
     },
     {
       id: SECOND_POST_UUID,
-      kind: 'text',
+      kind: PostKind.Text,
       status: 'draft',
       authorId: FIRST_USER_ID,
       repost: false,
@@ -54,6 +55,7 @@ function getPosts(): Post[] {
         content: 'Полезная книга по JavaScript',
         preview: 'Секреты и тайные знания по JavaScript.',
       },
+      tags: ['JavaScript', 'Книга'],
     },
   ];
 }
@@ -61,7 +63,7 @@ function getPosts(): Post[] {
 async function seedDb(prismaClient: PrismaClient) {
   const mockPosts = getPosts();
   for (const post of mockPosts) {
-    const { data, ...commonPostData } = post;
+    const { data, tags, comments, ...commonPostData } = post;
     await prismaClient.post.upsert({
       where: { id: post.id },
       update: {},
@@ -73,6 +75,16 @@ async function seedDb(prismaClient: PrismaClient) {
               create: data,
             },
           },
+        },
+        tags: {
+          connectOrCreate: tags?.map((tag) => ({
+            where: {
+              name: tag,
+            },
+            create: {
+              name: tag,
+            },
+          })),
         },
       },
     });

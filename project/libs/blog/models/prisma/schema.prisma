@@ -46,7 +46,7 @@ model Post {
   id             String         @id @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
   authorId       String         @map("author_id") @db.VarChar(30)
   status         PostStatus
-  tags           String[]       @db.VarChar(255)
+  tags           Tag[]
   kind           PostKind
   createdAt      DateTime       @default(now()) @map("created_at")
   updatedAt      DateTime       @updatedAt @map("updated_at")
@@ -117,6 +117,16 @@ model LinkPost {
   PostToKind  PostToKind[] @relation(name: "LinkPost")
 
   @@map("link_posts")
+}
+
+model Tag {
+  name      String   @id @unique() @map("name") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Post Post[]
+
+  @@map("tags")
 }
 
 model Comment {
