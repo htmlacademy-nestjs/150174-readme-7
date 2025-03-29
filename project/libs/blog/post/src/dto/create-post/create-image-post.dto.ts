@@ -1,21 +1,17 @@
-import { BasePost, ImagePost } from '@avylando-readme/core';
+import { ImagePost } from '@avylando-readme/core';
 import { Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsUrl } from 'class-validator';
+import { CreatePostValidationMessage } from '../dto-validations.const';
 
-export class CreateImagePostDto implements Omit<ImagePost, keyof BasePost> {
+type Data = ImagePost['data'];
+export class CreateImagePostDto implements Data {
   @ApiProperty({
     description: 'Image source',
     type: 'string',
     example: '/images/image.jpg',
   })
+  @IsUrl({}, { message: CreatePostValidationMessage.imageSrc })
   @Expose()
-  public imageSrc: ImagePost['imageSrc'];
-
-  @ApiProperty({
-    description: 'Post kind',
-    type: 'string',
-    example: 'image',
-  })
-  @Expose()
-  public kind: ImagePost['kind'];
+  public imageSrc: Data['imageSrc'];
 }

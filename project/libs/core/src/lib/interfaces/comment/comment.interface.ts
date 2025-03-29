@@ -6,6 +6,7 @@ type Comment = BaseEntity & {
   authorId: User['id'];
   postId: Post['id'];
   content: string;
+  createdAt?: Date;
 };
 
 export type { Comment };

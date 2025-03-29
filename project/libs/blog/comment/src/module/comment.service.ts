@@ -27,10 +27,6 @@ class CommentService {
   async findComment(commentId: string): Promise<CommentEntity> {
     const comment = await this.commentRepository.findById(commentId);
 
-    if (!comment) {
-      throw new NotFoundException('Comment not found');
-    }
-
     return comment;
   }
 

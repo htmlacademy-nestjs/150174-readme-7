@@ -26,7 +26,7 @@
     "db:lint": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx prisma validate --schema ./schema.prisma",
+        "command": "npx prisma format --schema ./schema.prisma",
         "cwd": "libs/blog/models/prisma"
       }
     },
@@ -34,28 +34,32 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npx prisma migrate dev --schema ./schema.prisma --skip-generate --skip-seed",
-        "cwd": "libs/blog/models/prisma"
+        "cwd": "libs/blog/models/prisma",
+        "envFile": "apps/blog/blog.env"
       }
     },
     "db:reset": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx prisma migrate reset --schema ./schema.prisma --force --skip-generate --skip-seed",
-        "cwd": "libs/blog/models/prisma"
+        "cwd": "libs/blog/models/prisma",
+        "envFile": "apps/blog/blog.env"
       }
     },
     "db:generate": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx prisma generate --schema ./schema.prisma",
-        "cwd": "libs/blog/models/prisma"
+        "cwd": "libs/blog/models/prisma",
+        "envFile": "apps/blog/blog.env"
       }
     },
     "db:seed": {
       "executor": "nx:run-commands",
       "options": {
         "command": "npx ts-node -r tsconfig-paths/register seed.ts",
-        "cwd": "libs/blog/models/src"
+        "cwd": "libs/blog/models/src",
+        "envFile": "apps/blog/blog.env"
       }
     }
   }

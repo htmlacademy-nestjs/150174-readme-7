@@ -1,9 +1,16 @@
-import { LinkPost } from './link-post.interface';
-import { ImagePost } from './image-post.interface';
-import { QuotePost } from './quote-post.interface';
-import { TextPost } from './text-post.interface';
-import { VideoPost } from './video-post.interface';
+import { LinkPost } from './kinds/link-post.interface';
+import { ImagePost } from './kinds/image-post.interface';
+import { QuotePost } from './kinds/quote-post.interface';
+import { TextPost } from './kinds/text-post.interface';
+import { VideoPost } from './kinds/video-post.interface';
+import { BasePost } from './base-post.interface';
+import { UnionToIntersection } from '../../types/union-to-intersection.type';
 
-type Post = LinkPost | ImagePost | TextPost | VideoPost | QuotePost;
+type Post = Extract<
+  TextPost | VideoPost | ImagePost | LinkPost | QuotePost,
+  BasePost
+>;
 
-export type { Post };
+type PostData = UnionToIntersection<Pick<Post, 'data'>['data']>;
+
+export type { Post, PostData };

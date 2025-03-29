@@ -1,17 +1,17 @@
 
 # Create a new comment
-POST http://localhost:3334/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/comments HTTP/1.1
+POST http://localhost:3334/blog/posts/9a84d520-8aca-4067-8611-1f1804f2ecd7/comments HTTP/1.1
 Content-Type: application/json
 
 {
   "authorId": "67d9e507897b919848c35d95",
-  "content": "Nice post!"
+  "content": "Agree!"
 }
 
 ###
 
 # Get comment by ID
-GET http://localhost:3334/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/comments/2d0387dd-864e-4f10-8e6b-ca5f9bd10d1c HTTP/1.1
+GET http://localhost:3334/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/comments/c08fc578-4578-4958-98e3-b66f8ae64e57 HTTP/1.1
 
 ###
 

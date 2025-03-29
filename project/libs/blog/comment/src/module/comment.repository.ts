@@ -12,9 +12,22 @@ class CommentRepository extends PostgresRepository<CommentEntity> {
   }
 
   public async save(entity: CommentEntity): Promise<CommentEntity> {
-    const comment = await this.client.comment.create({
-      data: entity,
-    });
+    const { postId, ...data } = entity.toPlainObject();
+    const comment = await this.client.comment
+      .create({
+        data: {
+          ...data,
+          post: {
+            connect: {
+              id: postId,
+            },
+          },
+        },
+      })
+      .catch((error) => {
+        throw new NotFoundException(`Post with id ${postId} not found`);
+      });
+
     return this.createEntityFromDocument(comment);
   }
 
@@ -34,11 +47,19 @@ class CommentRepository extends PostgresRepository<CommentEntity> {
 
   public async update(entity: CommentEntity): Promise<CommentEntity> {
     try {
+      const { postId, ...data } = entity.toPlainObject();
       const updatedEntity = await this.client.comment.update({
         where: {
           id: entity.id,
         },
-        data: entity.toPlainObject(),
+        data: {
+          ...data,
+          post: {
+            connect: {
+              id: postId,
+            },
+          },
+        },
       });
 
       return this.createEntityFromDocument(updatedEntity);

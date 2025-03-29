@@ -9,3 +9,5 @@ export {
 
 export { createPostgresConfig } from './lib/postgres/postgres.config';
 export { getPostgresConnectionString } from './lib/postgres/postgres.helpers';
+
+export { createJwtConfig } from './lib/jwt/jwt.config';

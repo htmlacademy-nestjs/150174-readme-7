@@ -1,37 +1,35 @@
-import { BasePost, TextPost } from '@avylando-readme/core';
+import { TextPost } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
+import { IsString } from 'class-validator';
+import { CreatePostValidationMessage } from '../dto-validations.const';
 
-export class CreateTextPostDto implements Omit<TextPost, keyof BasePost> {
+type Data = TextPost['data'];
+export class CreateTextPostDto implements Data {
   @ApiProperty({
-    description: 'Post name',
+    description: 'Post title',
     type: 'string',
-    example: 'Post name',
+    example: 'Post title',
   })
+  @IsString({ message: CreatePostValidationMessage.title })
   @Expose()
-  public name: TextPost['name'];
+  public title: Data['title'];
 
   @ApiProperty({
     description: 'Post content',
     type: 'string',
     example: 'Post content',
   })
+  @IsString({ message: CreatePostValidationMessage.content })
   @Expose()
-  public content: TextPost['content'];
-
-  @ApiProperty({
-    description: 'Post kind',
-    type: 'string',
-    example: 'text',
-  })
-  @Expose()
-  public kind: TextPost['kind'];
+  public content: Data['content'];
 
   @ApiProperty({
     description: 'Post content preview',
     type: 'string',
     example: 'Post preview...',
   })
+  @IsString({ message: CreatePostValidationMessage.preview })
   @Expose()
-  public preview: TextPost['preview'];
+  public preview: Data['preview'];
 }

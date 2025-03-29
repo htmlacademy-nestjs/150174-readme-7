@@ -23,7 +23,10 @@ abstract class MongoRepository<
   ) {}
 
   protected createEntityFromDocument(document: DocumentType): T {
-    const object = document.toObject();
+    const object = document.toObject({
+      flattenObjectIds: true,
+      virtuals: true,
+    });
     return this.entityFactory.create(object);
   }
 

@@ -9,6 +9,7 @@ class CommentEntity extends Entity implements StorableEntity<Comment> {
   public postId!: Comment['postId'];
   public authorId!: Comment['authorId'];
   public content!: Comment['content'];
+  public createdAt!: Comment['createdAt'];
 
   constructor(comment: WithOptionalId<Comment>) {
     super(comment.id);
@@ -19,6 +20,7 @@ class CommentEntity extends Entity implements StorableEntity<Comment> {
     this.postId = comment.postId;
     this.authorId = comment.authorId;
     this.content = comment.content;
+    this.createdAt = comment.createdAt;
   }
 
   public toPlainObject(): Comment {
@@ -27,6 +29,7 @@ class CommentEntity extends Entity implements StorableEntity<Comment> {
       postId: this.postId,
       authorId: this.authorId,
       content: this.content,
+      createdAt: this.createdAt,
     };
   }
 }

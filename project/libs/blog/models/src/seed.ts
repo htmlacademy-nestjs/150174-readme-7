@@ -1,4 +1,4 @@
-import { Comment, Post } from '@avylando-readme/core';
+import { Comment, Post, PostKind } from '@avylando-readme/core';
 import { PrismaClient } from '@prisma/client';
 
 const FIRST_COMMENT_UUID = '39614113-7ad5-45b6-8093-06455437e1e2';
@@ -31,22 +31,31 @@ function getPosts(): Post[] {
   return [
     {
       id: FIRST_POST_UUID,
-      name: 'Худеющий',
       authorId: FIRST_USER_ID,
-      kind: 'text',
+      data: {
+        title: 'Худеющий',
+
+        content: 'Недавно прочитал страшный роман «Худеющий».',
+        preview:
+          'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
+      },
+      kind: PostKind.Text,
       status: 'published',
-      content: 'Недавно прочитал страшный роман «Худеющий».',
-      preview:
-        'На мой взгляд, это один из самых страшных романов Стивена Кинга.',
+      repost: false,
+      tags: ['Книга', 'Кинг', 'Худой'],
     },
     {
       id: SECOND_POST_UUID,
-      kind: 'text',
+      kind: PostKind.Text,
       status: 'draft',
-      name: 'Вы не знаете JavaScript',
       authorId: FIRST_USER_ID,
-      content: 'Полезная книга по JavaScript',
-      preview: 'Секреты и тайные знания по JavaScript.',
+      repost: false,
+      data: {
+        title: 'Вы не знаете JavaScript',
+        content: 'Полезная книга по JavaScript',
+        preview: 'Секреты и тайные знания по JavaScript.',
+      },
+      tags: ['JavaScript', 'Книга'],
     },
   ];
 }
@@ -54,10 +63,30 @@ function getPosts(): Post[] {
 async function seedDb(prismaClient: PrismaClient) {
   const mockPosts = getPosts();
   for (const post of mockPosts) {
+    const { data, tags, comments, ...commonPostData } = post;
     await prismaClient.post.upsert({
       where: { id: post.id },
       update: {},
-      create: post,
+      create: {
+        ...commonPostData,
+        data: {
+          create: {
+            [post.kind]: {
+              create: data,
+            },
+          },
+        },
+        tags: {
+          connectOrCreate: tags?.map((tag) => ({
+            where: {
+              name: tag,
+            },
+            create: {
+              name: tag,
+            },
+          })),
+        },
+      },
     });
   }
 
