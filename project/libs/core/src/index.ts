@@ -29,6 +29,10 @@ export { MemoryRepository } from './lib/classes/repository/memory-repository';
 export { MongoRepository } from './lib/classes/repository/mongo-repository';
 export { PostgresRepository } from './lib/classes/repository/postgres-repository';
 
+// Auth
+export { JwtTokenPayload } from './lib/interfaces/auth/jwt-payload.interface';
+export { JwtToken } from './lib/interfaces/auth/jwt-token.interface';
+
 // Query
 export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
 export { SortDirection } from './lib/interfaces/query/sort-direction.enum';

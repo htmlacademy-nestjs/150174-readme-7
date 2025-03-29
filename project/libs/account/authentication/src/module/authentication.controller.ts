@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 
 import { fillDto, User } from '@avylando-readme/core';
 
@@ -8,6 +16,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoggedUserRdo } from '../rdo/logged-user.rdo';
 import { UserRdo } from '../rdo/user.rdo';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @ApiTags('authentication')
 @Controller('auth')
@@ -26,9 +35,12 @@ export class AuthenticationController {
   @Post('login')
   public async login(@Body() dto: LoginUserDto) {
     const user = await this.authenticationService.login(dto);
+    const { accessToken } = await this.authenticationService.createUserToken(
+      user.toPlainObject()
+    );
     return fillDto(LoggedUserRdo, {
       ...user.toPlainObject(),
-      authToken: 'secret',
+      accessToken,
     });
   }
 
@@ -43,6 +55,7 @@ export class AuthenticationController {
     return fillDto(UserRdo, user.toPlainObject());
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: HttpStatus.OK, description: 'Find user' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
   @Get(':id')
