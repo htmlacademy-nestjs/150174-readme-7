@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 
 import { fillDto, User } from '@avylando-readme/core';
+import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { AuthenticationService } from './authentication.service';
 import { LoginUserDto } from '../dto/login-user.dto';
@@ -59,7 +60,9 @@ export class AuthenticationController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Find user' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
   @Get(':id')
-  public async findUser(@Param('id') id: string): Promise<User> {
+  public async findUser(
+    @Param('id', ValidateMongoIdPipe) id: string
+  ): Promise<User> {
     const user = await this.authenticationService.findUser(id);
     return fillDto(UserRdo, user.toPlainObject());
   }
