@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -46,7 +47,7 @@ class PostController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Find post' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
   @Get('/:id')
-  public async findPost(@Param('id') id: string) {
+  public async findPost(@Param('id', ParseUUIDPipe) id: string) {
     const post = await this.postService.findPost(id);
     return fillDto(PostRdo, post.toPlainObject());
   }
@@ -54,7 +55,7 @@ class PostController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
   @Put('/:id')
   public async updatePost(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() post: CreatePostDto
   ) {
     const updatedPost = await this.postService.updatePost(id, post);
@@ -63,7 +64,7 @@ class PostController {
 
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })
   @Delete('/:id')
-  public async deletePost(@Param('id') id: string) {
+  public async deletePost(@Param('id', ParseUUIDPipe) id: string) {
     await this.postService.deletePost(id);
   }
 }
