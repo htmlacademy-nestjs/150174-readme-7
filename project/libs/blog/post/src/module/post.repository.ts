@@ -16,6 +16,9 @@ import { PostQuery } from './post.query';
 type RawData = Omit<Post, 'data' | 'tags'> & {
   data: PlainObject;
   tags: { name: string }[];
+  _count?: {
+    favorite: number;
+  };
 };
 
 @Injectable()
@@ -90,6 +93,11 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           },
         },
         comments: true,
+        _count: {
+          select: {
+            favorite: true,
+          },
+        },
       },
     });
 
@@ -179,6 +187,11 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
             },
           },
           comments: true,
+          _count: {
+            select: {
+              favorite: true,
+            },
+          },
         },
       }),
       this.getPostCount(options.where as Prisma.PostWhereInput),
@@ -196,9 +209,14 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   }
 
   private extractPostData(rawData: RawData): Post {
-    const { data: relatedData, tags, ...rest } = rawData;
+    const { data: relatedData, tags, _count, ...rest } = rawData;
     const kindData = relatedData[rest.kind] as Post['data'];
-    return { ...rest, data: kindData, tags: tags.map((el) => el.name) } as Post;
+    return {
+      ...rest,
+      data: kindData,
+      tags: tags.map((el) => el.name),
+      likesCount: _count?.favorite,
+    } as Post;
   }
 
   private async getPostCount(where: Prisma.PostWhereInput): Promise<number> {

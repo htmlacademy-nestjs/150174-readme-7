@@ -15,6 +15,7 @@ class BlogPostEntity<T extends Post = Post>
   public data!: Post['data'];
   public tags?: Post['tags'];
   public comments?: Post['comments'];
+  public likesCount?: Post['likesCount'];
   public createdAt?: Post['createdAt'];
 
   constructor(post: WithOptionalId<Post>) {
@@ -29,6 +30,7 @@ class BlogPostEntity<T extends Post = Post>
     this.data = post.data;
     this.tags = post.tags;
     this.comments = post.comments;
+    this.likesCount = post.likesCount;
     this.createdAt = post.createdAt;
   }
 
@@ -41,6 +43,7 @@ class BlogPostEntity<T extends Post = Post>
       authorId: this.authorId,
       tags: this.tags,
       comments: this.comments,
+      likesCount: this.likesCount,
       createdAt: this.createdAt,
     } as T;
   }
