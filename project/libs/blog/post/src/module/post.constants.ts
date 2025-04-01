@@ -1,6 +1,6 @@
 import { SortDirection } from '@avylando-readme/core';
 
-const DEFAULT_POSTS_LIMIT = 10;
+const DEFAULT_POSTS_LIMIT = 25;
 const DEFAULT_POSTS_PAGE = 1;
 const DEFAULT_POSTS_SORT = SortDirection.DESC;
 
