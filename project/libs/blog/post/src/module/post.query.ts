@@ -2,6 +2,7 @@ import { SortDirection, Tag } from '@avylando-readme/core';
 import {
   IsArray,
   IsEnum,
+  IsMongoId,
   IsNumber,
   IsOptional,
   IsString,
@@ -32,6 +33,10 @@ class PostQuery {
   @IsArray()
   @IsOptional()
   public tags?: Tag[];
+
+  @IsMongoId()
+  @IsOptional()
+  public authorId?: string;
 }
 
 export { PostQuery };

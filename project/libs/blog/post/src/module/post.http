@@ -34,7 +34,7 @@ Content-Type: application/json
 ###
 
 # Get posts query
-GET http://localhost:3334/blog/posts?limit=1&page=1&tags[]=Кинг&tags[]=tag1 HTTP/1.1
+GET http://localhost:3334/blog/posts?page=1&authorId=658170cbb954e9f5b905ccf4 HTTP/1.1
 Content-Type: application/json
 
 ###

@@ -155,7 +155,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   public async findMany(
     query: PostQuery
   ): Promise<PaginationResult<BlogPostEntity>> {
-    const { limit, page, sortDirection, tags } = query;
+    const { limit, page, sortDirection, tags, authorId } = query;
 
     const where: Prisma.PostWhereInput = {};
 
@@ -167,6 +167,10 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           },
         },
       };
+    }
+
+    if (authorId) {
+      where.authorId = authorId;
     }
 
     const [posts, totalItems] = await Promise.all([
