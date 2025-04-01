@@ -17,6 +17,7 @@ type BasePost<
   kind: Kind;
   data: Data;
   comments?: Comment[];
+  likesCount?: number;
 };
 
 export type { BasePost };

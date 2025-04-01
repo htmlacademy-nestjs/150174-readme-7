@@ -3,6 +3,7 @@ import {
   PostgresRepository,
   PlainObject,
   PaginationResult,
+  PostSortBy,
 } from '@avylando-readme/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientService } from '@project/blog-models';
@@ -155,32 +156,13 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   public async findMany(
     query: PostQuery
   ): Promise<PaginationResult<BlogPostEntity>> {
-    const { limit, page, sortDirection, tags, authorId } = query;
+    const { limit, page } = query;
 
-    const where: Prisma.PostWhereInput = {};
-
-    if (tags) {
-      where.tags = {
-        some: {
-          name: {
-            in: tags,
-          },
-        },
-      };
-    }
-
-    if (authorId) {
-      where.authorId = authorId;
-    }
+    const options = this.getQueryOptions(query);
 
     const [posts, totalItems] = await Promise.all([
       this.client.post.findMany({
-        take: limit,
-        skip: (page - 1) * limit,
-        orderBy: {
-          createdAt: sortDirection,
-        },
-        where,
+        ...options,
         include: {
           data: {
             select: {
@@ -199,7 +181,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           comments: true,
         },
       }),
-      this.getPostCount(where),
+      this.getPostCount(options.where as Prisma.PostWhereInput),
     ]);
 
     return {
@@ -225,6 +207,49 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
 
   private calculatePostsPage(totalCount: number, limit: number): number {
     return Math.ceil(totalCount / limit);
+  }
+
+  private getQueryOptions(query: PostQuery): Prisma.PostFindManyArgs {
+    const { limit, page, sortDirection, sortBy, tags, authorId } = query;
+
+    const where: Prisma.PostWhereInput = {
+      status: 'published',
+    };
+
+    const orderBy: Prisma.PostOrderByWithRelationInput = {};
+
+    if (sortBy === PostSortBy.CreatedAt) {
+      orderBy.createdAt = sortDirection;
+    } else if (sortBy === PostSortBy.CommentsCount) {
+      orderBy.comments = {
+        _count: sortDirection,
+      };
+    } else if (sortBy === PostSortBy.LikesCount) {
+      orderBy.favorite = {
+        _count: sortDirection,
+      };
+    }
+
+    if (tags) {
+      where.tags = {
+        some: {
+          name: {
+            in: tags,
+          },
+        },
+      };
+    }
+
+    if (authorId) {
+      where.authorId = authorId;
+    }
+
+    return {
+      take: limit,
+      skip: (page - 1) * limit,
+      where,
+      orderBy,
+    };
   }
 }
 

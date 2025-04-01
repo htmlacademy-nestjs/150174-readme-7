@@ -36,6 +36,7 @@ export { JwtToken } from './lib/interfaces/auth/jwt-token.interface';
 // Query
 export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
 export { SortDirection } from './lib/interfaces/query/sort-direction.enum';
+export { PostSortBy } from './lib/interfaces/query/sort-by.enum';
 
 // Schema
 export { ConfigSchema } from './lib/classes/config-schema';

@@ -24,6 +24,9 @@ class PostRdo implements BasePost {
   public comments?: BasePost['comments'];
 
   @Expose()
+  public likesCount?: BasePost['likesCount'];
+
+  @Expose()
   public createdAt?: BasePost['createdAt'];
 }
 
