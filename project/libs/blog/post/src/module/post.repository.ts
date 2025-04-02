@@ -189,28 +189,44 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     postId: string,
     userId: string
   ): Promise<BlogPostEntity> {
-    console.log(postId, userId);
-    try {
-      const result = await this.client.post.update({
-        where: {
-          id: postId,
-        },
-        data: {
-          likes: {
-            create: {
-              userId: userId,
-            },
+    const result = await this.client.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        likes: {
+          create: {
+            userId: userId,
           },
         },
-        include: this.prepareInclude({ likes: true }),
-      });
+      },
+      include: this.prepareInclude({ likes: true }),
+    });
 
-      const post = this.adaptRawDataToPost(result);
-      return this.createEntityFromDocument(post);
-    } catch (error) {
-      console.log(error);
-      throw new Error('Error adding post to favorites');
-    }
+    const post = this.adaptRawDataToPost(result);
+    return this.createEntityFromDocument(post);
+  }
+
+  public async removePostFromFavorites(
+    postId: string,
+    userId: string
+  ): Promise<BlogPostEntity> {
+    const result = await this.client.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        likes: {
+          deleteMany: {
+            userId,
+          },
+        },
+      },
+      include: this.prepareInclude({ likes: true }),
+    });
+
+    const post = this.adaptRawDataToPost(result);
+    return this.createEntityFromDocument(post);
   }
 
   // This method is used to prepare the include object for Prisma queries

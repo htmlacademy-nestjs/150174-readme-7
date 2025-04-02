@@ -70,7 +70,10 @@ class PostController {
     await this.postService.deletePost(id);
   }
 
-  @ApiResponse({ status: HttpStatus.OK, description: 'Add post to favorites' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Post added to favorites',
+  })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Post not found',
@@ -81,6 +84,23 @@ class PostController {
     @Body() dto: LikePostDto
   ) {
     const post = await this.postService.addPostToFavorites(id, dto.userId);
+    return fillDto(PostRdo, post.toPlainObject());
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Post removed from favorites',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Post not found',
+  })
+  @Delete('/:id/favorites')
+  public async removePostFromFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: LikePostDto
+  ) {
+    const post = await this.postService.removePostFromFavorites(id, dto.userId);
     return fillDto(PostRdo, post.toPlainObject());
   }
 }
