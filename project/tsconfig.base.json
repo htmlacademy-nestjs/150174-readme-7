@@ -24,6 +24,7 @@
       "@project/blog-models": ["libs/blog/models/src/index.ts"],
       "@project/blog-post": ["libs/blog/post/src/index.ts"],
       "@project/blog-user": ["libs/account/blog-user/src/index.ts"],
+      "@project/exception-filters": ["libs/exception-filters/src/index.ts"],
       "@project/pipes": ["libs/pipes/src/index.ts"]
     }
   },
