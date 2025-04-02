@@ -21,4 +21,8 @@ const CreatePostValidationMessage: Record<
   preview: 'Invalid preview',
 };
 
-export { CreatePostValidationMessage };
+const LikePostValidationMessage = {
+  userId: 'Invalid user id',
+} as const;
+
+export { CreatePostValidationMessage, LikePostValidationMessage };

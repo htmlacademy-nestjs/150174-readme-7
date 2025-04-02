@@ -16,6 +16,8 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto, PaginationResult } from '@avylando-readme/core';
 import { PostRdo } from '../rdo/post.rdo';
 import { PostQuery } from './post.query';
+import { ValidateMongoIdPipe } from '@project/pipes';
+import { LikePostDto } from '../dto/like-post-dto/like-post.dto';
 
 @ApiTags('posts', 'blog')
 @Controller('posts')
@@ -66,6 +68,20 @@ class PostController {
   @Delete('/:id')
   public async deletePost(@Param('id', ParseUUIDPipe) id: string) {
     await this.postService.deletePost(id);
+  }
+
+  @ApiResponse({ status: HttpStatus.OK, description: 'Add post to favorites' })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Post not found',
+  })
+  @Post('/:id/favorites')
+  public async addPostToFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: LikePostDto
+  ) {
+    const post = await this.postService.addPostToFavorites(id, dto.userId);
+    return fillDto(PostRdo, post.toPlainObject());
   }
 }
 

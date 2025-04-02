@@ -7,17 +7,23 @@ import {
 } from '@avylando-readme/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientService } from '@project/blog-models';
+import { $Enums, Prisma } from '@prisma/client';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
-import { Prisma } from '@prisma/client';
 import { PostQuery } from './post.query';
 
-type RawData = Omit<Post, 'data' | 'tags'> & {
+type PostOptionalIncludes = Extract<
+  keyof Prisma.PostInclude,
+  'comments' | 'likes'
+>;
+
+type PrismaPostRawData = Omit<Post, 'data' | 'tags' | 'kind'> & {
   data: PlainObject;
+  kind: $Enums.PostKind;
   tags: { name: string }[];
   _count?: {
-    favorite: number;
+    likes: number;
   };
 };
 
@@ -51,21 +57,10 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           })),
         },
       },
-      include: {
-        data: {
-          select: {
-            [entity.kind]: true,
-          },
-        },
-        tags: {
-          select: {
-            name: true,
-          },
-        },
-      },
+      include: this.prepareInclude(),
     });
 
-    const post = this.extractPostData(raw as RawData);
+    const post = this.adaptRawDataToPost(raw);
 
     return this.createEntityFromDocument(post);
   }
@@ -95,7 +90,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
         comments: true,
         _count: {
           select: {
-            favorite: true,
+            likes: true,
           },
         },
       },
@@ -104,7 +99,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     if (!raw) {
       throw new NotFoundException(`Post with id ${id} not found`);
     }
-    const post = this.extractPostData(raw as RawData);
+    const post = this.adaptRawDataToPost(raw);
     return this.createEntityFromDocument(post);
   }
 
@@ -139,7 +134,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
         data: {
           select: {
             [entity.kind]: true,
-          },
+          } as Prisma.PostToKindSelect,
         },
         tags: {
           select: {
@@ -149,7 +144,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       },
     });
 
-    const post = this.extractPostData(updatedEntity as RawData);
+    const post = this.adaptRawDataToPost(updatedEntity);
     return this.createEntityFromDocument(post);
   }
 
@@ -171,35 +166,17 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     const [posts, totalItems] = await Promise.all([
       this.client.post.findMany({
         ...options,
-        include: {
-          data: {
-            select: {
-              link: true,
-              image: true,
-              quote: true,
-              text: true,
-              video: true,
-            },
-          },
-          tags: {
-            select: {
-              name: true,
-            },
-          },
+        include: this.prepareInclude({
           comments: true,
-          _count: {
-            select: {
-              favorite: true,
-            },
-          },
-        },
+          likes: true,
+        }),
       }),
       this.getPostCount(options.where as Prisma.PostWhereInput),
     ]);
 
     return {
       entities: posts.map((post) =>
-        this.createEntityFromDocument(this.extractPostData(post as RawData))
+        this.createEntityFromDocument(this.adaptRawDataToPost(post))
       ),
       totalItems,
       totalPages: this.calculatePostsPage(totalItems, limit),
@@ -208,14 +185,78 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     };
   }
 
-  private extractPostData(rawData: RawData): Post {
-    const { data: relatedData, tags, _count, ...rest } = rawData;
-    const kindData = relatedData[rest.kind] as Post['data'];
+  public async addPostToFavorites(
+    postId: string,
+    userId: string
+  ): Promise<BlogPostEntity> {
+    console.log(postId, userId);
+    try {
+      const result = await this.client.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          likes: {
+            create: {
+              userId: userId,
+            },
+          },
+        },
+        include: this.prepareInclude({ likes: true }),
+      });
+
+      const post = this.adaptRawDataToPost(result);
+      return this.createEntityFromDocument(post);
+    } catch (error) {
+      console.log(error);
+      throw new Error('Error adding post to favorites');
+    }
+  }
+
+  // This method is used to prepare the include object for Prisma queries
+  private prepareInclude(
+    includes: Partial<Record<PostOptionalIncludes, true>> = {}
+  ): Prisma.PostInclude {
+    const include: Prisma.PostInclude = {
+      data: {
+        select: {
+          link: true,
+          image: true,
+          quote: true,
+          text: true,
+          video: true,
+        } as Prisma.PostToKindSelect,
+      },
+      tags: {
+        select: {
+          name: true,
+        },
+      },
+    };
+
+    if (includes) {
+      include.comments = true;
+    }
+
+    if (includes.likes) {
+      include._count = {
+        select: {
+          likes: true,
+        },
+      };
+    }
+    return include;
+  }
+
+  private adaptRawDataToPost(rawData: PrismaPostRawData): Post {
+    const { data: relatedData, tags, kind, _count, ...rest } = rawData;
+    const kindData = relatedData[kind];
     return {
       ...rest,
+      kind,
       data: kindData,
       tags: tags.map((el) => el.name),
-      likesCount: _count?.favorite,
+      likesCount: _count?.likes,
     } as Post;
   }
 
@@ -243,7 +284,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
         _count: sortDirection,
       };
     } else if (sortBy === PostSortBy.LikesCount) {
-      orderBy.favorite = {
+      orderBy.likes = {
         _count: sortDirection,
       };
     }
