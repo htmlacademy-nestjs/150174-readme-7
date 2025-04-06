@@ -1,9 +1,9 @@
-import { EntityFactory, User, WithOptionalId } from '@avylando-readme/core';
+import { BaseFactory, User } from '@avylando-readme/core';
 import { BlogUserEntity } from './blog-user.entity';
 
-class BlogUserFactory implements EntityFactory<BlogUserEntity> {
-  public create(entityPlainData: WithOptionalId<User>): BlogUserEntity {
-    return new BlogUserEntity(entityPlainData);
+class BlogUserFactory extends BaseFactory<User, BlogUserEntity> {
+  constructor() {
+    super(BlogUserEntity);
   }
 }
 

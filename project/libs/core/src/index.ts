@@ -23,6 +23,12 @@ export { VideoPost } from './lib/interfaces/post/kinds/video-post.interface';
 export { TextPost } from './lib/interfaces/post/kinds/text-post.interface';
 export { Post, PostData } from './lib/interfaces/post/post.type';
 
+// File
+export { File } from './lib/interfaces/file/file.interface';
+
+// Factory
+export { BaseFactory } from './lib/classes/base-factory';
+
 // Repository
 export { Repository } from './lib/classes/repository/repository.interface';
 export { MemoryRepository } from './lib/classes/repository/memory-repository';
