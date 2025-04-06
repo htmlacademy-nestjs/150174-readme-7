@@ -1,8 +1,14 @@
 import 'multer';
 import { FileRepository } from './file.repository';
+import { Inject } from '@nestjs/common';
+import { FileStorageConfigModule } from '@project/file-storage-config';
 
 class FileService {
-  constructor(private readonly fileRepository: FileRepository) {
+  constructor(
+    @Inject(FileStorageConfigModule)
+    private readonly fileStorageConfig: FileStorageConfigModule,
+    private readonly fileRepository: FileRepository
+  ) {
     // Initialization logic if needed
   }
 

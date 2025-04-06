@@ -25,6 +25,7 @@
       "@project/blog-post": ["libs/blog/post/src/index.ts"],
       "@project/blog-user": ["libs/account/blog-user/src/index.ts"],
       "@project/exception-filters": ["libs/exception-filters/src/index.ts"],
+      "@project/file-storage-config": ["libs/file-storage/config/src/index.ts"],
       "@project/file-uploader": ["libs/file-storage/uploader/src/index.ts"],
       "@project/pipes": ["libs/pipes/src/index.ts"]
     }

@@ -1,1 +1,1 @@
-export * from './module/file.entity';
+export { FileUploaderModule } from './module/file.module';
