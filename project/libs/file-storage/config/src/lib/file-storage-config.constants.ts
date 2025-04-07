@@ -3,4 +3,8 @@ const FileStorageConfigNamespace = {
   MONGO: 'file-storage-mongo-db',
 } as const;
 
-export { FileStorageConfigNamespace };
+const FileStorageConfigErrorMessages = {
+  uploadDirectory: 'uploadDirectory is required',
+} as const;
+
+export { FileStorageConfigNamespace, FileStorageConfigErrorMessages };

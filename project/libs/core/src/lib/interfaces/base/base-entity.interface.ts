@@ -1,5 +1,3 @@
-export type BaseEntity = {
-  id: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
+import { DbAttributes } from './db-attributes.interface';
+
+export type BaseEntity = DbAttributes<{}>;

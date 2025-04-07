@@ -2,7 +2,7 @@ import {
   Post,
   Entity,
   StorableEntity,
-  WithOptionalId,
+  WithOptionalDbAttributes,
 } from '@avylando-readme/core';
 
 class BlogPostEntity<T extends Post = Post>
@@ -16,14 +16,13 @@ class BlogPostEntity<T extends Post = Post>
   public tags?: Post['tags'];
   public comments?: Post['comments'];
   public likesCount?: Post['likesCount'];
-  public createdAt?: Post['createdAt'];
 
-  constructor(post: WithOptionalId<Post>) {
-    super(post.id);
+  constructor(post: WithOptionalDbAttributes<Post>) {
+    super(post);
     this.populate(post);
   }
 
-  private populate(post: WithOptionalId<Post>): void {
+  private populate(post: WithOptionalDbAttributes<Post>): void {
     this.status = post.status;
     this.authorId = post.authorId;
     this.kind = post.kind;
@@ -31,7 +30,6 @@ class BlogPostEntity<T extends Post = Post>
     this.tags = post.tags;
     this.comments = post.comments;
     this.likesCount = post.likesCount;
-    this.createdAt = post.createdAt;
   }
 
   public toPlainObject(): T {
@@ -45,6 +43,7 @@ class BlogPostEntity<T extends Post = Post>
       comments: this.comments,
       likesCount: this.likesCount,
       createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     } as T;
   }
 }

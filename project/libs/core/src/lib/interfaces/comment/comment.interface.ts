@@ -1,12 +1,11 @@
-import { BaseEntity } from '../base/base-entity.interface';
+import { WithOptionalDbAttributes } from '../../types/with-optional-db-attributes.type';
 import { Post } from '../post/post.type';
 import { User } from '../user/user.interface';
 
-type Comment = BaseEntity & {
+type Comment = WithOptionalDbAttributes<{
   authorId: User['id'];
   postId: Post['id'];
   content: string;
-  createdAt?: Date;
-};
+}>;
 
 export type { Comment };

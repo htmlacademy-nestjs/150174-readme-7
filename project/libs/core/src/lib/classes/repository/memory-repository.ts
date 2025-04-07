@@ -5,6 +5,7 @@ import {
 } from '../../interfaces/base/storable-entity.interface';
 import { Repository } from './repository.interface';
 import { EntityFactory } from '../../interfaces/base/entity-factory.interface';
+import { WithOptionalDbAttributes } from '../../types/with-optional-db-attributes.type';
 
 abstract class MemoryRepository<
   T extends StorableEntity<StorablePlainObject<T>>
@@ -18,11 +19,11 @@ abstract class MemoryRepository<
     return Array.from(this.entities.values());
   }
 
-  public async save(entity: T): Promise<T> {
+  public async save(entity: WithOptionalDbAttributes<T>): Promise<T> {
     const id = randomUUID();
     entity.id = id;
     this.entities.set(id, entity.toPlainObject());
-    return entity;
+    return entity as T;
   }
 
   public async update(entity: T): Promise<T> {

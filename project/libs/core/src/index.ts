@@ -25,6 +25,7 @@ export { Post, PostData } from './lib/interfaces/post/post.type';
 
 // File
 export { File } from './lib/interfaces/file/file.interface';
+export { StoredFile } from './lib/interfaces/file/stored-file.interface';
 
 // Factory
 export { BaseFactory } from './lib/classes/base-factory';
@@ -58,3 +59,4 @@ export type {
 } from './lib/types/with-optional-id.type';
 export type { PlainObject } from './lib/types/plain-object.type';
 export type { UnionToIntersection } from './lib/types/union-to-intersection.type';
+export type { WithOptionalDbAttributes } from './lib/types/with-optional-db-attributes.type';

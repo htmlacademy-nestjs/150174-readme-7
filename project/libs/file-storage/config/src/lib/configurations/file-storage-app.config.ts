@@ -1,19 +1,28 @@
+import { AppBaseConfigSchema, createAppBaseConfig } from '@avylando/config';
 import {
-  AppBaseConfig,
-  AppBaseConfigSchema,
-  createAppBaseConfig,
-} from '@avylando/config';
-import { FileStorageConfigNamespace } from '../file-storage-config.constants';
+  FileStorageConfigErrorMessages,
+  FileStorageConfigNamespace,
+} from '../file-storage-config.constants';
+import { IsString } from 'class-validator';
 
-interface FileStorageAppConfig extends AppBaseConfig {
+type FileStorageAppConfig = {
   uploadDirectory: string;
-}
+};
 
 class FileStorageAppConfigSchema extends AppBaseConfigSchema {
+  @IsString({
+    message: FileStorageConfigErrorMessages.uploadDirectory,
+  })
   uploadDirectory: string;
 }
+
 async function bootstrap() {
-  const registerConfig = await createAppBaseConfig<FileStorageAppConfig>();
+  const registerConfig = await createAppBaseConfig<FileStorageAppConfig>(
+    {
+      uploadDirectory: process.env.UPLOAD_DIRECTORY,
+    },
+    FileStorageAppConfigSchema
+  );
 
   return registerConfig(FileStorageConfigNamespace.APP);
 }

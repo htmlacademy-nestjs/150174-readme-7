@@ -4,7 +4,7 @@ import {
   StorableEntity,
   User,
   UserRole,
-  WithOptionalId,
+  WithOptionalDbAttributes,
 } from '@avylando-readme/core';
 import { SALT_ROUNDS } from './blog-user.constants';
 
@@ -16,12 +16,12 @@ class BlogUserEntity extends Entity implements StorableEntity<User> {
   public role!: UserRole;
   public passwordHash?: string;
 
-  constructor(user: WithOptionalId<User>) {
-    super(user.id);
+  constructor(user: WithOptionalDbAttributes<User>) {
+    super(user);
     this.populate(user);
   }
 
-  private populate(user: WithOptionalId<User>) {
+  private populate(user: WithOptionalDbAttributes<User>) {
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.email = user.email;
@@ -39,6 +39,8 @@ class BlogUserEntity extends Entity implements StorableEntity<User> {
       avatarSrc: this.avatarSrc,
       role: this.role,
       passwordHash: this.passwordHash,
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
     };
   }
 

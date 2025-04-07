@@ -8,11 +8,9 @@ class FileEntity extends Entity implements StorableEntity<File> {
   public path!: string;
   public mimetype!: string;
   public size!: number;
-  public updatedAt!: Date;
-  public createdAt!: Date;
 
   constructor(file: File) {
-    super(file.id);
+    super(file);
     this.populate(file);
   }
 

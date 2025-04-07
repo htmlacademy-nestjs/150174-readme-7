@@ -4,7 +4,7 @@ import { DEFAULT_MONGO_PORT } from './mongo.const';
 import { MongoConfigurationSchema } from './mongo.schema';
 import { MongoConfig } from './mongo-config.interface';
 
-async function getDbConfig<Config extends MongoConfig>(
+async function getMongoConfig<Config extends MongoConfig>(
   extendedConfig: Config = {} as Config,
   schema: typeof MongoConfigurationSchema = MongoConfigurationSchema
 ): Promise<Config> {
@@ -31,7 +31,7 @@ async function createMongoConfig<Config extends MongoConfig>(
   schema: ClassConstructor<MongoConfigurationSchema> = MongoConfigurationSchema
 ) {
   return (name: string) =>
-    registerAs(name, async () => getDbConfig(extendedConfig, schema));
+    registerAs(name, async () => getMongoConfig(extendedConfig, schema));
 }
 
 export { createMongoConfig };

@@ -3,12 +3,13 @@ import { AppBaseConfig, Environment } from './app-base.interface';
 import { AppBaseConfigSchema } from './app-base.schema';
 import { DEFAULT_PORT } from './app-base.const';
 import { registerAs } from '@nestjs/config';
+import { PlainObject } from '@avylando-readme/core';
 
-async function getAppBaseConfig<Config extends AppBaseConfig>(
-  extendedConfig: Config = {} as Config,
+async function getAppBaseConfig<Extend extends PlainObject>(
+  extendedConfig: Extend = {} as Extend,
   schema: typeof AppBaseConfigSchema = AppBaseConfigSchema
-): Promise<Config> {
-  const config: Config = {
+): Promise<AppBaseConfig & Extend> {
+  const config: AppBaseConfig & Extend = {
     environment: process.env.NODE_ENV as Environment,
     port: parseInt(process.env.PORT, 10) || DEFAULT_PORT,
     globalPrefix: process.env.GLOBAL_PREFIX,
@@ -22,8 +23,8 @@ async function getAppBaseConfig<Config extends AppBaseConfig>(
   return config;
 }
 
-async function createAppBaseConfig<Config extends AppBaseConfig>(
-  extendedConfig: Config = {} as Config,
+async function createAppBaseConfig<Extend extends PlainObject>(
+  extendedConfig: Extend = {} as Extend,
   schema: ClassConstructor<AppBaseConfigSchema> = AppBaseConfigSchema
 ) {
   return (name: string) =>

@@ -7,6 +7,7 @@ import {
 } from '../../interfaces/base/storable-entity.interface';
 import { Repository } from './repository.interface';
 import { EntityFactory } from '../../interfaces/base/entity-factory.interface';
+import { WithOptionalDbAttributes } from '../../types/with-optional-db-attributes.type';
 
 abstract class MongoRepository<
   T extends StorableEntity<StorablePlainObject<T>>,
@@ -30,11 +31,11 @@ abstract class MongoRepository<
     return this.entityFactory.create(object);
   }
 
-  public async save(entity: T): Promise<T> {
+  public async save(entity: WithOptionalDbAttributes<T>): Promise<T> {
     const newEntity = new this.model(entity.toPlainObject());
     await newEntity.save();
     entity.id = newEntity._id.toString();
-    return entity;
+    return entity as T;
   }
 
   public async update(entity: T): Promise<T> {

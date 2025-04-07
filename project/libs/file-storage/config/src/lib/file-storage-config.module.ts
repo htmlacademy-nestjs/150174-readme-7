@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import fileStorageMongoConfig from './configurations/file-storage-mongo.config';
 import fileStorageAppConfig from './configurations/file-storage-app.config';
 
+type FileStorageConfig = ReturnType<Awaited<typeof fileStorageMongoConfig>>;
 @Module({
   imports: [
     ConfigModule.forRoot({
