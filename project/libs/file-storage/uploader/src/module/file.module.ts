@@ -5,7 +5,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FileModel, FileSchema } from './file.model';
 import { ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { FileStorageConfigNamespace } from '@project/file-storage-config';
+import {
+  FileStorageConfigModule,
+  FileStorageConfigNamespace,
+} from '@project/file-storage-config';
 import { FileUploaderController } from './file.controller';
 import { FileUploaderService } from './file.service';
 
@@ -32,6 +35,7 @@ const SERVE_ROOT = '/static';
       },
     }),
     MongooseModule.forFeature([{ name: FileModel.name, schema: FileSchema }]),
+    FileStorageConfigModule,
   ],
   controllers: [FileUploaderController],
   providers: [FileRepository, FileFactory, FileUploaderService],

@@ -11,9 +11,6 @@ class FileModel
   implements WithOptionalDbAttributes<File>
 {
   @Prop({ required: true })
-  public name!: string;
-
-  @Prop({ required: true })
   public size!: number;
 
   @Prop({ required: true })
@@ -34,10 +31,10 @@ class FileModel
   @Prop({ required: true })
   public originalName!: string;
 
-  @Prop({ required: true })
+  @Prop()
   public updatedAt!: Date;
 
-  @Prop({ required: true })
+  @Prop()
   public createdAt!: Date;
 }
 

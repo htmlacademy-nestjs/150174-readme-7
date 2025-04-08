@@ -1,10 +1,6 @@
 import { createJwtConfig } from '@avylando/config';
 import { AccountConfigNamespace } from '../account-config.constants';
 
-async function bootstrap() {
-  const registerConfig = await createJwtConfig();
+const registerConfig = createJwtConfig();
 
-  return registerConfig(AccountConfigNamespace.JWT);
-}
-
-export default bootstrap();
+export default registerConfig(AccountConfigNamespace.JWT);

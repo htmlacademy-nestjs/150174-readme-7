@@ -14,12 +14,25 @@ import { ValidateMongoIdPipe } from '@project/pipes';
 import { UploadedFileRdo } from '../rdo/uploaded-file.rdo';
 import { FileUploaderService } from './file.service';
 import { fillDto } from '@avylando-readme/core';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('files')
 export class FileUploaderController {
   constructor(private readonly fileUploaderService: FileUploaderService) {}
 
   @Post('/upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(FileInterceptor('file'))
   public async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const fileEntity = await this.fileUploaderService.uploadFile(file);

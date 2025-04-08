@@ -1,11 +1,11 @@
-import { User } from '@avylando-readme/core';
+import { User, WithOptionalDbAttributes } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { CreateUserValidationMessage } from './dto-validations.const';
 
 export class CreateUserDto
-  implements Omit<User, 'id' | 'role' | 'passwordHash'>
+  implements Omit<WithOptionalDbAttributes<User>, 'role' | 'passwordHash'>
 {
   @ApiProperty({
     description: 'User email',

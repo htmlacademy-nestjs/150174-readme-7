@@ -19,4 +19,8 @@ export class UserRdo implements User {
 
   @Expose()
   public role: UserRole;
+
+  public createdAt: Date;
+
+  public updatedAt: Date;
 }

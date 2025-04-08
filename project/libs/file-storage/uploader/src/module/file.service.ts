@@ -5,7 +5,6 @@ import { Inject, Logger, NotFoundException } from '@nestjs/common';
 import {
   FileStorageAppConfig,
   FileStorageConfig,
-  FileStorageConfigNamespace,
 } from '@project/file-storage-config';
 import { join } from 'node:path';
 import { writeFile } from 'node:fs/promises';

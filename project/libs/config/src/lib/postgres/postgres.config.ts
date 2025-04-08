@@ -4,10 +4,10 @@ import { DEFAULT_POSTGRES_PORT } from './postgres.const';
 import { PostgresConfigurationSchema } from './postgres.schema';
 import { PostgresConfig } from './postgres-config.interface';
 
-async function getDbConfig<Config extends PostgresConfig>(
+function getDbConfig<Config extends PostgresConfig>(
   extendedConfig: Config = {} as Config,
   schema: typeof PostgresConfigurationSchema = PostgresConfigurationSchema
-): Promise<Config> {
+): Config {
   const config = plainToClass(schema, {
     host: process.env.POSTGRES_HOST,
     name: process.env.POSTGRES_DB,
@@ -20,17 +20,17 @@ async function getDbConfig<Config extends PostgresConfig>(
   }) as unknown as Config;
   const instance = plainToClass(schema, config);
 
-  await instance.validate();
+  instance.validate();
 
   return config;
 }
 
-async function createPostgresConfig<Config extends PostgresConfig>(
+function createPostgresConfig<Config extends PostgresConfig>(
   extendedConfig: Config = {} as Config,
   schema: ClassConstructor<PostgresConfigurationSchema> = PostgresConfigurationSchema
 ) {
   return (name: string) =>
-    registerAs(name, async () => getDbConfig(extendedConfig, schema));
+    registerAs(name, () => getDbConfig(extendedConfig, schema));
 }
 
 export { createPostgresConfig };

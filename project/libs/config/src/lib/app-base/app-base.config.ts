@@ -16,10 +16,10 @@ const extractProcessEnv = (env: PlainObject): Record<string, string> => {
   return result;
 };
 
-async function getAppBaseConfig<Extend extends PlainObject>(
+function getAppBaseConfig<Extend extends PlainObject>(
   extendedConfig: Extend = {} as Extend,
   schema: typeof AppBaseConfigSchema = AppBaseConfigSchema
-): Promise<AppBaseConfig & Extend> {
+): AppBaseConfig & Extend {
   const config: AppBaseConfig & Extend = {
     environment: process.env.NODE_ENV as Environment,
     port: parseInt(process.env.PORT, 10) || DEFAULT_PORT,
@@ -29,17 +29,17 @@ async function getAppBaseConfig<Extend extends PlainObject>(
 
   const instance = plainToClass(schema, config);
 
-  await instance.validate();
+  instance.validate();
 
   return config;
 }
 
-async function createAppBaseConfig<Extend extends PlainObject>(
+function createAppBaseConfig<Extend extends PlainObject>(
   extendedConfig: Extend = {} as Extend,
   schema: ClassConstructor<AppBaseConfigSchema> = AppBaseConfigSchema
 ) {
   return (name: string) =>
-    registerAs(name, async () => getAppBaseConfig(extendedConfig, schema));
+    registerAs(name, () => getAppBaseConfig(extendedConfig, schema));
 }
 
 export { createAppBaseConfig };

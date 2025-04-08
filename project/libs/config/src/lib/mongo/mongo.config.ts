@@ -4,10 +4,10 @@ import { DEFAULT_MONGO_PORT } from './mongo.const';
 import { MongoConfigurationSchema } from './mongo.schema';
 import { MongoConfig } from './mongo-config.interface';
 
-async function getMongoConfig<Config extends MongoConfig>(
+function getMongoConfig<Config extends MongoConfig>(
   extendedConfig: Config = {} as Config,
   schema: typeof MongoConfigurationSchema = MongoConfigurationSchema
-): Promise<Config> {
+): Config {
   const config = plainToClass(schema, {
     host: process.env.MONGO_HOST,
     name: process.env.MONGO_DB,
@@ -21,17 +21,17 @@ async function getMongoConfig<Config extends MongoConfig>(
   }) as unknown as Config;
   const instance = plainToClass(schema, config);
 
-  await instance.validate();
+  instance.validate();
 
   return config;
 }
 
-async function createMongoConfig<Config extends MongoConfig>(
+function createMongoConfig<Config extends MongoConfig>(
   extendedConfig: Config = {} as Config,
   schema: ClassConstructor<MongoConfigurationSchema> = MongoConfigurationSchema
 ) {
   return (name: string) =>
-    registerAs(name, async () => getMongoConfig(extendedConfig, schema));
+    registerAs(name, () => getMongoConfig(extendedConfig, schema));
 }
 
 export { createMongoConfig };

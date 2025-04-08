@@ -1,4 +1,4 @@
-import { validateOrReject, ValidationError } from 'class-validator';
+import { validateSync } from 'class-validator';
 import { formatSchemaValidationErrors } from '../helpers/schema.helpers';
 
 class ConfigSchema {
@@ -16,18 +16,13 @@ class ConfigSchema {
     this._schemaName = value;
   }
 
-  public async validate(): Promise<void> {
-    try {
-      await validateOrReject(this);
-    } catch (error: unknown) {
-      console.error(
-        `${
-          this.schemaName
-        } validation failed!\n\n${formatSchemaValidationErrors(
-          error as ValidationError[]
-        )}`
-      );
-      throw error;
+  public validate(): void {
+    const errors = validateSync(this);
+    if (errors.length > 0) {
+      const message = `${
+        this.schemaName
+      } validation failed!\n\n${formatSchemaValidationErrors(errors)}`;
+      throw new Error(message);
     }
   }
 }

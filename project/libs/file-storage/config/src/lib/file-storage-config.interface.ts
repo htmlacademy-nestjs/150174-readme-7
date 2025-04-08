@@ -1,7 +1,9 @@
 import { AppBaseConfig, MongoConfig } from '@avylando/config';
 
-interface FileStorageConfig extends AppBaseConfig, MongoConfig {
+interface FileStorageAppConfig extends AppBaseConfig {
   uploadDirectory: string;
 }
 
-export type { FileStorageConfig };
+interface FileStorageConfig extends FileStorageAppConfig, MongoConfig {}
+
+export type { FileStorageConfig, FileStorageAppConfig };
