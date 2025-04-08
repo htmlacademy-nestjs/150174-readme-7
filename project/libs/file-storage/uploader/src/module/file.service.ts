@@ -1,8 +1,9 @@
 import 'multer';
 import dayjs from 'dayjs';
 import { FileRepository } from './file.repository';
-import { Inject, Logger } from '@nestjs/common';
+import { Inject, Logger, NotFoundException } from '@nestjs/common';
 import {
+  FileStorageAppConfig,
   FileStorageConfig,
   FileStorageConfigNamespace,
 } from '@project/file-storage-config';
@@ -11,22 +12,36 @@ import { writeFile } from 'node:fs/promises';
 import { ensureDir } from 'fs-extra';
 import { randomUUID } from 'node:crypto';
 import { extension } from 'mime-types';
-import { File, StoredFile } from '@avylando-readme/core';
+import { StoredFile } from '@avylando-readme/core';
+import { FileFactory } from './file.factory';
+import { FileEntity } from './file.entity';
 
 class FileUploaderService {
   private readonly logger = new Logger(FileUploaderService.name);
   private readonly DATE_FORMAT = 'YYYY MM';
 
   constructor(
-    @Inject(FileStorageConfigNamespace.APP)
+    @Inject(FileStorageAppConfig.KEY)
     private readonly fileStorageConfig: FileStorageConfig,
-    private readonly fileRepository: FileRepository
+    private readonly fileRepository: FileRepository,
+    private readonly fileFactory: FileFactory
   ) {}
 
-  public async uploadFile(file: Express.Multer.File): Promise<File> {
+  public async uploadFile(file: Express.Multer.File): Promise<FileEntity> {
     const storedFile = await this.writeFile(file);
-    const fileEntity = await this.fileRepository.save(storedFile);
-    return fileEntity.toPlainObject();
+    const fileEntity = await this.fileRepository.save(
+      this.fileFactory.create(storedFile)
+    );
+    return fileEntity;
+  }
+
+  public async getFile(id: string): Promise<FileEntity> {
+    const file = await this.fileRepository.findById(id);
+    if (!file) {
+      this.logger.error(`File with id ${id} not found`);
+      throw new NotFoundException(`File with id ${id} not found`);
+    }
+    return file;
   }
 
   public async writeFile(file: Express.Multer.File): Promise<StoredFile> {
@@ -54,15 +69,6 @@ class FileUploaderService {
       this.logger.error(`Error while saving file: ${error.message}`);
       throw new Error(`Can't save file`);
     }
-  }
-
-  public async getFile(fileUrl: string): Promise<Buffer> {
-    // Logic to get file
-    return Buffer.from('file-data');
-  }
-
-  public async deleteFile(fileUrl: string): Promise<void> {
-    // Logic to delete file
   }
 
   private getDestinationFilePath(filename: string): string {

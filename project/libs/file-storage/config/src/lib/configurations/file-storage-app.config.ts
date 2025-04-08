@@ -19,7 +19,7 @@ class FileStorageAppConfigSchema extends AppBaseConfigSchema {
 async function bootstrap() {
   const registerConfig = await createAppBaseConfig<FileStorageAppConfig>(
     {
-      uploadDirectory: process.env.UPLOAD_DIRECTORY,
+      uploadDirectory: 'UPLOAD_DIRECTORY',
     },
     FileStorageAppConfigSchema
   );

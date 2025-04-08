@@ -16,7 +16,6 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto, PaginationResult } from '@avylando-readme/core';
 import { PostRdo } from '../rdo/post.rdo';
 import { PostQuery } from './post.query';
-import { ValidateMongoIdPipe } from '@project/pipes';
 import { LikePostDto } from '../dto/like-post-dto/like-post.dto';
 
 @ApiTags('posts', 'blog')

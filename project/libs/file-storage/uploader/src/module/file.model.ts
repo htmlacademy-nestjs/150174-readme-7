@@ -1,6 +1,6 @@
 import { Document, ObjectId } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { File, WithOptionalId } from '@avylando-readme/core';
+import { File, WithOptionalDbAttributes } from '@avylando-readme/core';
 
 @Schema({
   collection: 'files',
@@ -8,7 +8,7 @@ import { File, WithOptionalId } from '@avylando-readme/core';
 })
 class FileModel
   extends Document<ObjectId, any, File>
-  implements WithOptionalId<File>
+  implements WithOptionalDbAttributes<File>
 {
   @Prop({ required: true })
   public name!: string;
