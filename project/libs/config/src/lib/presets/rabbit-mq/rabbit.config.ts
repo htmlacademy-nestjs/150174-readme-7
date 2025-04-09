@@ -21,6 +21,7 @@ function getRabbitMqConfig<Extensions extends ConfigExtensions>(
       : DEFAULT_RABBIT_PORT,
     user: process.env.RABBIT_USER,
     password: process.env.RABBIT_PASSWORD,
+    exchange: process.env.RABBIT_EXCHANGE,
   });
 
   return getConfigWithExtensions(config, schema, extensions);

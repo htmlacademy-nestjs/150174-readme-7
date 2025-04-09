@@ -4,4 +4,5 @@ export interface RabbitMqConfig {
   user: string;
   password: string;
   queue: string;
+  exchange: string;
 }

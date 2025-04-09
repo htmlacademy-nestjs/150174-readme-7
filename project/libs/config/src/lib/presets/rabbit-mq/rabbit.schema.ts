@@ -31,6 +31,9 @@ export class RabbitMqConfigurationSchema
   @IsString({ message: RabbitConfigErrorMessages.password })
   public password: string;
 
+  @IsString({ message: RabbitConfigErrorMessages.exchange })
+  public exchange: string;
+
   constructor() {
     super('RabbitMqConfigurationSchema');
   }

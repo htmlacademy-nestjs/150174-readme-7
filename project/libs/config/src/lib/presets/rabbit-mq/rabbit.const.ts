@@ -10,6 +10,7 @@ const RabbitConfigErrorMessages: Record<keyof RabbitMqConfig, string> = {
   queue: 'RabbitMQ queue name is required',
   user: 'RabbitMQ user is required',
   password: 'RabbitMQ password is required',
+  exchange: 'RabbitMQ exchange is required',
 };
 
 export { RabbitConfigErrorMessages };

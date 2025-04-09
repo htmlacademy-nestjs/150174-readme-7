@@ -25,7 +25,7 @@ export type { JwtConfig } from './jwt/jwt.interface';
 export { JwtConfigSchema } from './jwt/jwt.schema';
 
 export { createRabbitMqConfig } from './rabbit-mq/rabbit.config';
-export { getRabbitMQConnectionString } from './rabbit-mq/rabbit.helpers';
+export { getRabbitMQOptions } from './rabbit-mq/rabbit.helpers';
 
 export type { RabbitMqConfig } from './rabbit-mq/rabbit-config.interface';
 export { RabbitMqConfigurationSchema } from './rabbit-mq/rabbit.schema';
