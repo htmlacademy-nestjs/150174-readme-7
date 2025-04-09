@@ -9,7 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ValidateMongoIdPipe } from '@project/pipes';
+import { ValidateImagePipe, ValidateMongoIdPipe } from '@project/pipes';
 
 import { UploadedFileRdo } from '../rdo/uploaded-file.rdo';
 import { FileUploaderService } from './file-uploader.service';
@@ -53,7 +53,9 @@ export class FileUploaderController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  public async uploadAvatar(@UploadedFile() file: Express.Multer.File) {
+  public async uploadAvatar(
+    @UploadedFile(ValidateImagePipe) file: Express.Multer.File
+  ) {
     const fileEntity = await this.fileUploaderService.uploadUserAvatar(file);
     return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
