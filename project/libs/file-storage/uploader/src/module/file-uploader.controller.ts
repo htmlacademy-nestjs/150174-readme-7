@@ -39,6 +39,25 @@ export class FileUploaderController {
     return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 
+  @Post('/avatar')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  public async uploadAvatar(@UploadedFile() file: Express.Multer.File) {
+    const fileEntity = await this.fileUploaderService.uploadUserAvatar(file);
+    return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
+  }
+
   @Get(':fileId')
   public async show(@Param('fileId', ValidateMongoIdPipe) fileId: string) {
     const existFile = await this.fileUploaderService.getFile(fileId);

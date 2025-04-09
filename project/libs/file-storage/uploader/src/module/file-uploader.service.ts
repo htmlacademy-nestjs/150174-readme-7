@@ -34,15 +34,22 @@ class FileUploaderService {
   public async uploadUserAvatar(
     file: Express.Multer.File
   ): Promise<FileEntity> {
-    const storedFile = await this.writeFile(file);
-    const fileEntity = await this.fileRepository.save(
-      this.fileFactory.create(storedFile)
-    );
-    return fileEntity;
+    return this.uploadFile(file, this.getAvatarUploadDirectoryPath());
   }
 
-  public async uploadFile(file: Express.Multer.File): Promise<FileEntity> {
-    const storedFile = await this.writeFile(file);
+  public async uploadPostImage(file: Express.Multer.File): Promise<FileEntity> {
+    return this.uploadFile(file, this.getPostsImageDirectoryPath());
+  }
+
+  public async uploadPostVideo(file: Express.Multer.File): Promise<FileEntity> {
+    return this.uploadFile(file, this.getPostsVideoDirectoryPath());
+  }
+
+  public async uploadFile(
+    file: Express.Multer.File,
+    uploadDirectoryPath: string = this.getUploadDirectoryPath()
+  ): Promise<FileEntity> {
+    const storedFile = await this.writeFile(file, uploadDirectoryPath);
     const fileEntity = await this.fileRepository.save(
       this.fileFactory.create(storedFile)
     );
@@ -59,19 +66,21 @@ class FileUploaderService {
     return file;
   }
 
-  public async writeFile(file: Express.Multer.File): Promise<StoredFile> {
+  public async writeFile(
+    file: Express.Multer.File,
+    uploadDirectoryPath: string
+  ): Promise<StoredFile> {
     if (!file) {
       throw new BadRequestException(`File is required`);
     }
 
     try {
-      const uploadDirectoryPath = this.getUploadDirectoryPath();
       const subDirectory = this.getSubUploadDirectoryPath();
       const fileExtension = extension(file.mimetype);
       const hashName = randomUUID();
       const filename = `${hashName}.${fileExtension}`;
 
-      const path = this.getDestinationFilePath(filename);
+      const path = join(uploadDirectoryPath, subDirectory, filename);
 
       await ensureDir(join(uploadDirectoryPath, subDirectory));
       await writeFile(path, file.buffer);
@@ -91,16 +100,31 @@ class FileUploaderService {
     }
   }
 
-  private getDestinationFilePath(filename: string): string {
+  private getUploadDirectoryPath(): string {
+    return this.fileStorageConfig.uploadDir;
+  }
+
+  private getAvatarUploadDirectoryPath(): string {
     return join(
       this.getUploadDirectoryPath(),
-      this.getSubUploadDirectoryPath(),
-      filename
+      this.fileStorageConfig.avatarsDir
     );
   }
 
-  private getUploadDirectoryPath(): string {
-    return this.fileStorageConfig.uploadDir;
+  private getPostsImageDirectoryPath(): string {
+    return join(
+      this.getUploadDirectoryPath(),
+      this.fileStorageConfig.postsAssetsRoot,
+      this.fileStorageConfig.postsImagesDir
+    );
+  }
+
+  private getPostsVideoDirectoryPath(): string {
+    return join(
+      this.getUploadDirectoryPath(),
+      this.fileStorageConfig.postsAssetsRoot,
+      this.fileStorageConfig.postsVideosDir
+    );
   }
 
   private getSubUploadDirectoryPath(): string {
