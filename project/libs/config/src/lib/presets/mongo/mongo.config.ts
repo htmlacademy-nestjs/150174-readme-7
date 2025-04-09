@@ -3,7 +3,7 @@ import { ClassConstructor, plainToClass } from 'class-transformer';
 import { DEFAULT_MONGO_PORT } from './mongo.const';
 import { MongoConfigurationSchema } from './mongo.schema';
 import { MongoConfig } from './mongo-config.interface';
-import { getConfigWithExtensions } from '../../utils/get-config-with-extentions';
+import { getConfigWithExtensions } from '../../utils/get-config-with-extensions';
 import {
   ConfigExtensions,
   GetConfigFromExtensions,

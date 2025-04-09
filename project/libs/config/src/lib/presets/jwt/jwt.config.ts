@@ -6,7 +6,7 @@ import {
   ConfigExtensions,
   GetConfigFromExtensions,
 } from '../../config-extensions.type';
-import { getConfigWithExtensions } from '../../utils/get-config-with-extentions';
+import { getConfigWithExtensions } from '../../utils/get-config-with-extensions';
 
 function getJwtConfig<Extensions extends ConfigExtensions>(
   schema: typeof JwtConfigSchema = JwtConfigSchema,
