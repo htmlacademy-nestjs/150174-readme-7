@@ -1,7 +1,12 @@
 import 'multer';
 import dayjs from 'dayjs';
-import { FileRepository } from './file.repository';
-import { Inject, Logger, NotFoundException } from '@nestjs/common';
+import { FileRepository } from './file-uploader.repository';
+import {
+  BadRequestException,
+  Inject,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   FileStorageAppConfig,
   FileStorageConfig,
@@ -12,8 +17,8 @@ import { ensureDir } from 'fs-extra';
 import { randomUUID } from 'node:crypto';
 import { extension } from 'mime-types';
 import { StoredFile } from '@avylando-readme/core';
-import { FileFactory } from './file.factory';
-import { FileEntity } from './file.entity';
+import { FileFactory } from './file-uploader.factory';
+import { FileEntity } from './file-uploader.entity';
 
 class FileUploaderService {
   private readonly logger = new Logger(FileUploaderService.name);
@@ -44,11 +49,16 @@ class FileUploaderService {
   }
 
   public async writeFile(file: Express.Multer.File): Promise<StoredFile> {
+    if (!file) {
+      throw new BadRequestException(`File is required`);
+    }
+
     try {
       const uploadDirectoryPath = this.getUploadDirectoryPath();
       const subDirectory = this.getSubUploadDirectoryPath();
       const fileExtension = extension(file.mimetype);
-      const filename = `${randomUUID()}.${fileExtension}`;
+      const hashName = randomUUID();
+      const filename = `${hashName}.${fileExtension}`;
 
       const path = this.getDestinationFilePath(filename);
 
@@ -57,7 +67,7 @@ class FileUploaderService {
 
       return {
         extension: fileExtension as string,
-        hashName: filename,
+        hashName,
         mimetype: file.mimetype,
         originalName: file.originalname,
         size: file.size,

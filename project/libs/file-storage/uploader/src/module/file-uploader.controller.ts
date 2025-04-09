@@ -12,15 +12,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { UploadedFileRdo } from '../rdo/uploaded-file.rdo';
-import { FileUploaderService } from './file.service';
+import { FileUploaderService } from './file-uploader.service';
 import { fillDto } from '@avylando-readme/core';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
-@Controller('files')
+@Controller('/')
 export class FileUploaderController {
   constructor(private readonly fileUploaderService: FileUploaderService) {}
 
-  @Post('/upload')
+  @Post('/')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
