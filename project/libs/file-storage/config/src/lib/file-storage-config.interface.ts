@@ -1,7 +1,11 @@
 import { AppBaseConfig, MongoConfig } from '@avylando/config';
 
 interface FileStorageAppConfig extends AppBaseConfig {
-  uploadDirectory: string;
+  uploadDir: string;
+  avatarsDir: string;
+  postsAssetsRoot: string;
+  postsVideosDir: string;
+  postsImagesDir: string;
 }
 
 interface FileStorageConfig extends FileStorageAppConfig, MongoConfig {}

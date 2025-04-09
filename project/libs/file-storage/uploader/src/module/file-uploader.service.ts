@@ -22,7 +22,7 @@ import { FileEntity } from './file-uploader.entity';
 
 class FileUploaderService {
   private readonly logger = new Logger(FileUploaderService.name);
-  private readonly DATE_FORMAT = 'YYYY MM';
+  private readonly DATE_FORMAT = 'YYYY MMMM';
 
   constructor(
     @Inject(FileStorageAppConfig.KEY)
@@ -30,6 +30,16 @@ class FileUploaderService {
     private readonly fileRepository: FileRepository,
     private readonly fileFactory: FileFactory
   ) {}
+
+  public async uploadUserAvatar(
+    file: Express.Multer.File
+  ): Promise<FileEntity> {
+    const storedFile = await this.writeFile(file);
+    const fileEntity = await this.fileRepository.save(
+      this.fileFactory.create(storedFile)
+    );
+    return fileEntity;
+  }
 
   public async uploadFile(file: Express.Multer.File): Promise<FileEntity> {
     const storedFile = await this.writeFile(file);
@@ -42,8 +52,9 @@ class FileUploaderService {
   public async getFile(id: string): Promise<FileEntity> {
     const file = await this.fileRepository.findById(id);
     if (!file) {
-      this.logger.error(`File with id ${id} not found`);
-      throw new NotFoundException(`File with id ${id} not found`);
+      const message = `File with id ${id} not found`;
+      this.logger.error(message);
+      throw new NotFoundException(message);
     }
     return file;
   }
@@ -89,7 +100,7 @@ class FileUploaderService {
   }
 
   private getUploadDirectoryPath(): string {
-    return this.fileStorageConfig.uploadDirectory;
+    return this.fileStorageConfig.uploadDir;
   }
 
   private getSubUploadDirectoryPath(): string {
