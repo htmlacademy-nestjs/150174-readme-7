@@ -19,6 +19,9 @@
           "buildTarget": "notification:build:production"
         }
       }
+    },
+    "db:compose": {
+      "command": "docker compose -f ./apps/notification/docker-compose.dev.yml --env-file ./apps/notification/notification.env up -d"
     }
   }
 }
