@@ -1,8 +1,12 @@
-import { EntityFactory, Post, WithOptionalId } from '@avylando-readme/core';
+import {
+  EntityFactory,
+  Post,
+  WithOptionalDbAttributes,
+} from '@avylando-readme/core';
 import { BlogPostEntity } from './post.entity';
 
 class PostFactory implements EntityFactory<BlogPostEntity> {
-  public create(post: WithOptionalId<Post>): BlogPostEntity {
+  public create(post: WithOptionalDbAttributes<Post>): BlogPostEntity {
     switch (post.kind) {
       case 'link':
       case 'image':

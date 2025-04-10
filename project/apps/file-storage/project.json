@@ -19,6 +19,9 @@
           "buildTarget": "file-storage:build:production"
         }
       }
+    },
+    "db:compose": {
+      "command": "docker compose -f ./apps/file-storage/docker-compose.dev.yml --env-file ./apps/file-storage/file-storage.env up -d"
     }
   }
 }

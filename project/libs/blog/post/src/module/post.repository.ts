@@ -3,18 +3,28 @@ import {
   PostgresRepository,
   PlainObject,
   PaginationResult,
+  PostSortBy,
 } from '@avylando-readme/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientService } from '@project/blog-models';
+import { $Enums, Prisma } from '@prisma/client';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
-import { Prisma } from '@prisma/client';
 import { PostQuery } from './post.query';
 
-type RawData = Omit<Post, 'data' | 'tags'> & {
+type PostOptionalIncludes = Extract<
+  keyof Prisma.PostInclude,
+  'comments' | 'likes'
+>;
+
+type PrismaPostRawData = Omit<Post, 'data' | 'tags' | 'kind'> & {
   data: PlainObject;
+  kind: $Enums.PostKind;
   tags: { name: string }[];
+  _count?: {
+    likes: number;
+  };
 };
 
 @Injectable()
@@ -47,21 +57,10 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           })),
         },
       },
-      include: {
-        data: {
-          select: {
-            [entity.kind]: true,
-          },
-        },
-        tags: {
-          select: {
-            name: true,
-          },
-        },
-      },
+      include: this.prepareInclude(),
     });
 
-    const post = this.extractPostData(raw as RawData);
+    const post = this.adaptRawDataToPost(raw);
 
     return this.createEntityFromDocument(post);
   }
@@ -89,13 +88,18 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           },
         },
         comments: true,
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
     });
 
     if (!raw) {
       throw new NotFoundException(`Post with id ${id} not found`);
     }
-    const post = this.extractPostData(raw as RawData);
+    const post = this.adaptRawDataToPost(raw);
     return this.createEntityFromDocument(post);
   }
 
@@ -130,7 +134,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
         data: {
           select: {
             [entity.kind]: true,
-          },
+          } as Prisma.PostToKindSelect,
         },
         tags: {
           select: {
@@ -140,7 +144,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       },
     });
 
-    const post = this.extractPostData(updatedEntity as RawData);
+    const post = this.adaptRawDataToPost(updatedEntity);
     return this.createEntityFromDocument(post);
   }
 
@@ -155,9 +159,151 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   public async findMany(
     query: PostQuery
   ): Promise<PaginationResult<BlogPostEntity>> {
-    const { limit, page, sortDirection, tags } = query;
+    const { limit, page } = query;
 
-    const where: Prisma.PostWhereInput = {};
+    const options = this.getQueryOptions(query);
+
+    const [posts, totalItems] = await Promise.all([
+      this.client.post.findMany({
+        ...options,
+        include: this.prepareInclude({
+          comments: true,
+          likes: true,
+        }),
+      }),
+      this.getPostCount(options.where as Prisma.PostWhereInput),
+    ]);
+
+    return {
+      entities: posts.map((post) =>
+        this.createEntityFromDocument(this.adaptRawDataToPost(post))
+      ),
+      totalItems,
+      totalPages: this.calculatePostsPage(totalItems, limit),
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
+  public async addPostToFavorites(
+    postId: string,
+    userId: string
+  ): Promise<BlogPostEntity> {
+    const result = await this.client.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        likes: {
+          create: {
+            userId: userId,
+          },
+        },
+      },
+      include: this.prepareInclude({ likes: true }),
+    });
+
+    const post = this.adaptRawDataToPost(result);
+    return this.createEntityFromDocument(post);
+  }
+
+  public async removePostFromFavorites(
+    postId: string,
+    userId: string
+  ): Promise<BlogPostEntity> {
+    const result = await this.client.post.update({
+      where: {
+        id: postId,
+      },
+      data: {
+        likes: {
+          deleteMany: {
+            userId,
+          },
+        },
+      },
+      include: this.prepareInclude({ likes: true }),
+    });
+
+    const post = this.adaptRawDataToPost(result);
+    return this.createEntityFromDocument(post);
+  }
+
+  // This method is used to prepare the include object for Prisma queries
+  private prepareInclude(
+    includes: Partial<Record<PostOptionalIncludes, true>> = {}
+  ): Prisma.PostInclude {
+    const include: Prisma.PostInclude = {
+      data: {
+        select: {
+          link: true,
+          image: true,
+          quote: true,
+          text: true,
+          video: true,
+        } as Prisma.PostToKindSelect,
+      },
+      tags: {
+        select: {
+          name: true,
+        },
+      },
+    };
+
+    if (includes) {
+      include.comments = true;
+    }
+
+    if (includes.likes) {
+      include._count = {
+        select: {
+          likes: true,
+        },
+      };
+    }
+    return include;
+  }
+
+  private adaptRawDataToPost(rawData: PrismaPostRawData): Post {
+    const { data: relatedData, tags, kind, _count, ...rest } = rawData;
+    const kindData = relatedData[kind];
+    return {
+      ...rest,
+      kind,
+      data: kindData,
+      tags: tags.map((el) => el.name),
+      likesCount: _count?.likes,
+    } as Post;
+  }
+
+  private async getPostCount(where: Prisma.PostWhereInput): Promise<number> {
+    return this.client.post.count({ where });
+  }
+
+  private calculatePostsPage(totalCount: number, limit: number): number {
+    return Math.ceil(totalCount / limit);
+  }
+
+  private getQueryOptions(query: PostQuery): Prisma.PostFindManyArgs {
+    const { limit, page, sortDirection, sortBy, tags, authorId } = query;
+
+    const where: Prisma.PostWhereInput = {
+      status: 'published',
+    };
+
+    const orderBy: Prisma.PostOrderByWithRelationInput = {};
+
+    if (sortBy === PostSortBy.CreatedAt) {
+      orderBy.createdAt = sortDirection;
+    } else if (sortBy === PostSortBy.CommentsCount) {
+      orderBy.comments = {
+        _count: sortDirection,
+      };
+    } else if (sortBy === PostSortBy.LikesCount) {
+      orderBy.likes = {
+        _count: sortDirection,
+      };
+    }
 
     if (tags) {
       where.tags = {
@@ -169,58 +315,16 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       };
     }
 
-    const [posts, totalItems] = await Promise.all([
-      this.client.post.findMany({
-        take: limit,
-        skip: (page - 1) * limit,
-        orderBy: {
-          createdAt: sortDirection,
-        },
-        where,
-        include: {
-          data: {
-            select: {
-              link: true,
-              image: true,
-              quote: true,
-              text: true,
-              video: true,
-            },
-          },
-          tags: {
-            select: {
-              name: true,
-            },
-          },
-          comments: true,
-        },
-      }),
-      this.getPostCount(where),
-    ]);
+    if (authorId) {
+      where.authorId = authorId;
+    }
 
     return {
-      entities: posts.map((post) =>
-        this.createEntityFromDocument(this.extractPostData(post as RawData))
-      ),
-      totalItems,
-      totalPages: this.calculatePostsPage(totalItems, limit),
-      currentPage: page,
-      itemsPerPage: limit,
+      take: limit,
+      skip: (page - 1) * limit,
+      where,
+      orderBy,
     };
-  }
-
-  private extractPostData(rawData: RawData): Post {
-    const { data: relatedData, tags, ...rest } = rawData;
-    const kindData = relatedData[rest.kind] as Post['data'];
-    return { ...rest, data: kindData, tags: tags.map((el) => el.name) } as Post;
-  }
-
-  private async getPostCount(where: Prisma.PostWhereInput): Promise<number> {
-    return this.client.post.count({ where });
-  }
-
-  private calculatePostsPage(totalCount: number, limit: number): number {
-    return Math.ceil(totalCount / limit);
   }
 }
 

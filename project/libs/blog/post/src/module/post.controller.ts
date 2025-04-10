@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -15,6 +16,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto, PaginationResult } from '@avylando-readme/core';
 import { PostRdo } from '../rdo/post.rdo';
 import { PostQuery } from './post.query';
+import { LikePostDto } from '../dto/like-post-dto/like-post.dto';
 
 @ApiTags('posts', 'blog')
 @Controller('posts')
@@ -46,7 +48,7 @@ class PostController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Find post' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
   @Get('/:id')
-  public async findPost(@Param('id') id: string) {
+  public async findPost(@Param('id', ParseUUIDPipe) id: string) {
     const post = await this.postService.findPost(id);
     return fillDto(PostRdo, post.toPlainObject());
   }
@@ -54,7 +56,7 @@ class PostController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
   @Put('/:id')
   public async updatePost(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() post: CreatePostDto
   ) {
     const updatedPost = await this.postService.updatePost(id, post);
@@ -63,8 +65,42 @@ class PostController {
 
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })
   @Delete('/:id')
-  public async deletePost(@Param('id') id: string) {
+  public async deletePost(@Param('id', ParseUUIDPipe) id: string) {
     await this.postService.deletePost(id);
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Post added to favorites',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Post not found',
+  })
+  @Post('/:id/favorites')
+  public async addPostToFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: LikePostDto
+  ) {
+    const post = await this.postService.addPostToFavorites(id, dto.userId);
+    return fillDto(PostRdo, post.toPlainObject());
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Post removed from favorites',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Post not found',
+  })
+  @Delete('/:id/favorites')
+  public async removePostFromFavorites(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: LikePostDto
+  ) {
+    const post = await this.postService.removePostFromFavorites(id, dto.userId);
+    return fillDto(PostRdo, post.toPlainObject());
   }
 }
 

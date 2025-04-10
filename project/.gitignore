@@ -44,3 +44,6 @@ Thumbs.db
 # Environment
 *.env
 !*.example.env
+
+# Static files
+/static/uploads/**

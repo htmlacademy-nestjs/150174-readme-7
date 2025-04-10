@@ -6,7 +6,7 @@ import {
   StorablePlainObject,
 } from '../../interfaces/base/storable-entity.interface';
 import { EntityFactory } from '../../interfaces/base/entity-factory.interface';
-import { WithOptionalId } from '../../types/with-optional-id.type';
+import { WithOptionalDbAttributes } from '../../types/with-optional-db-attributes.type';
 
 export abstract class PostgresRepository<
   T extends StorableEntity<StorablePlainObject<T>>,
@@ -26,7 +26,7 @@ export abstract class PostgresRepository<
     throw new Error('Not implemented');
   }
 
-  public async save(entity: WithOptionalId<T>): Promise<T> {
+  public async save(entity: WithOptionalDbAttributes<T>): Promise<T> {
     throw new Error('Not implemented');
   }
 

@@ -1,7 +1,8 @@
 import { Post, PostData, BaseEntity } from '@avylando-readme/core';
 
 const CreatePostValidationMessage: Record<
-  keyof (Omit<Post, 'data' | 'comments' | keyof BaseEntity> & PostData),
+  keyof (Omit<Post, 'data' | 'comments' | 'likesCount' | keyof BaseEntity> &
+    PostData),
   string
 > = {
   status: 'Invalid public status',
@@ -20,4 +21,8 @@ const CreatePostValidationMessage: Record<
   preview: 'Invalid preview',
 };
 
-export { CreatePostValidationMessage };
+const LikePostValidationMessage = {
+  userId: 'Invalid user id',
+} as const;
+
+export { CreatePostValidationMessage, LikePostValidationMessage };

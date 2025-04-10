@@ -1,9 +1,9 @@
 import { PlainObject } from '../../types/plain-object.type';
-import { WithOptionalId } from '../../types/with-optional-id.type';
+import { WithOptionalDbAttributes } from '../../types/with-optional-db-attributes.type';
 import { BaseEntity } from './base-entity.interface';
 
 export interface StorableEntity<T extends PlainObject>
-  extends WithOptionalId<BaseEntity> {
+  extends WithOptionalDbAttributes<BaseEntity> {
   toPlainObject(): T;
 }
 

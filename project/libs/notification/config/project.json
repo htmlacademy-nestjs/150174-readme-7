@@ -1,0 +1,9 @@
+{
+  "name": "notification-config",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/notification/config/src",
+  "projectType": "library",
+  "tags": ["lib"],
+  "// targets": "to see all targets run: nx show project notification-config --web",
+  "targets": {}
+}

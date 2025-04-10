@@ -8,12 +8,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { BlogUserEntity, BlogUserRepository } from '@project/blog-user';
+import {
+  BlogUserEntity,
+  BlogUserFactory,
+  BlogUserRepository,
+} from '@project/blog-user';
+import { AccountNotifyService } from '@project/account-notify';
 
 import { LoginUserDto } from '../dto/login-user.dto';
 import { AuthError } from './authentication.constants';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { BlogUserFactory } from 'libs/account/blog-user/src/module/blog-user.factory';
 import { JwtToken, JwtTokenPayload, User } from '@avylando-readme/core';
 import { JwtService } from '@nestjs/jwt';
 
@@ -24,7 +28,8 @@ export class AuthenticationService {
   constructor(
     protected readonly blogUserRepository: BlogUserRepository,
     protected readonly blogUserFactory: BlogUserFactory,
-    protected readonly jwtService: JwtService
+    protected readonly jwtService: JwtService,
+    protected readonly notifyService: AccountNotifyService
   ) {}
 
   public async login(dto: LoginUserDto): Promise<BlogUserEntity> {
@@ -55,7 +60,8 @@ export class AuthenticationService {
       })
       .setPassword(dto.password);
 
-    await this.blogUserRepository.save(user);
+    const createdUser = await this.blogUserRepository.save(user);
+    await this.notifyService.registerSubscriber(createdUser.toPlainObject());
 
     return user;
   }

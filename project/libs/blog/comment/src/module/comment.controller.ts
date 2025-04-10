@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -25,7 +26,9 @@ class CommentController {
     description: 'Get comments by post id',
   })
   @Get('/')
-  public async getCommentsByPostId(@Param('postId') postId: string) {
+  public async getCommentsByPostId(
+    @Param('postId', ParseUUIDPipe) postId: string
+  ) {
     const comments = await this.commentService.getCommentsByPostId(postId);
     return fillDto(
       CommentRdo,
@@ -35,7 +38,10 @@ class CommentController {
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Get comment by id' })
   @Get('/:id')
-  public async getComment(@Param('id') id: string) {
+  public async getComment(
+    @Param('postId', ParseUUIDPipe) _postId: string,
+    @Param('id', ParseUUIDPipe) id: string
+  ) {
     const comment = await this.commentService.findComment(id);
     return fillDto(CommentRdo, comment.toPlainObject());
   }
@@ -43,7 +49,7 @@ class CommentController {
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Comment created' })
   @Post('/')
   public async createComment(
-    @Param('postId') postId: string,
+    @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: CreateCommentDto
   ) {
     const comment = await this.commentService.createComment(postId, dto);
@@ -53,7 +59,8 @@ class CommentController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Comment updated' })
   @Put('/:id')
   public async updateComment(
-    @Param('id') id: string,
+    @Param('postId', ParseUUIDPipe) _postId: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCommentDto
   ) {
     const comment = await this.commentService.updateComment(id, dto);
@@ -65,7 +72,10 @@ class CommentController {
     description: 'Comment deleted',
   })
   @Delete('/:id')
-  public async deleteComment(@Param('id') id: string) {
+  public async deleteComment(
+    @Param('postId', ParseUUIDPipe) _postId: string,
+    @Param('id', ParseUUIDPipe) id: string
+  ) {
     return this.commentService.deleteComment(id);
   }
 }

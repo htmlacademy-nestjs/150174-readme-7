@@ -1,7 +1,13 @@
-import { SortDirection, Tag } from '@avylando-readme/core';
+import {
+  BasePost,
+  PostSortBy,
+  SortDirection,
+  Tag,
+} from '@avylando-readme/core';
 import {
   IsArray,
   IsEnum,
+  IsMongoId,
   IsNumber,
   IsOptional,
   IsString,
@@ -9,7 +15,8 @@ import {
 import {
   DEFAULT_POSTS_LIMIT,
   DEFAULT_POSTS_PAGE,
-  DEFAULT_POSTS_SORT,
+  DEFAULT_POSTS_SORT_BY,
+  DEFAULT_POSTS_SORT_DIRECTION,
 } from './post.constants';
 import { Transform } from 'class-transformer';
 
@@ -26,12 +33,20 @@ class PostQuery {
 
   @IsEnum(SortDirection)
   @IsOptional()
-  public sortDirection: SortDirection = DEFAULT_POSTS_SORT;
+  public sortDirection: SortDirection = DEFAULT_POSTS_SORT_DIRECTION;
+
+  @IsEnum(PostSortBy)
+  @IsOptional()
+  public sortBy: PostSortBy = DEFAULT_POSTS_SORT_BY;
 
   @IsString({ each: true })
   @IsArray()
   @IsOptional()
   public tags?: Tag[];
+
+  @IsMongoId()
+  @IsOptional()
+  public authorId?: string;
 }
 
 export { PostQuery };

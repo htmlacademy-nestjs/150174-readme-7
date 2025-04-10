@@ -1,9 +1,9 @@
-import { Comment, EntityFactory, WithOptionalId } from '@avylando-readme/core';
+import { BaseFactory, Comment } from '@avylando-readme/core';
 import { CommentEntity } from './comment.entity';
 
-class CommentFactory implements EntityFactory<CommentEntity> {
-  public create(comment: WithOptionalId<Comment>): CommentEntity {
-    return new CommentEntity(comment);
+class CommentFactory extends BaseFactory<Comment, CommentEntity> {
+  constructor() {
+    super(CommentEntity);
   }
 }
 

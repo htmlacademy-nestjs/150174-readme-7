@@ -51,6 +51,16 @@ class PostService {
     const posts = await this.postRepository.findMany(query);
     return posts;
   }
+
+  public async addPostToFavorites(id: string, userId: string) {
+    const post = await this.postRepository.addPostToFavorites(id, userId);
+    return post;
+  }
+
+  public async removePostFromFavorites(id: string, userId: string) {
+    const post = await this.postRepository.removePostFromFavorites(id, userId);
+    return post;
+  }
 }
 
 export { PostService };
