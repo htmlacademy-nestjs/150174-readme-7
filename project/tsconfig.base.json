@@ -30,6 +30,9 @@
       "@project/file-storage-config": ["libs/file-storage/config/src/index.ts"],
       "@project/file-uploader": ["libs/file-storage/uploader/src/index.ts"],
       "@project/notification-config": ["libs/notification/config/src/index.ts"],
+      "@project/notification-email-subscriber": [
+        "libs/notification/email-subscriber/src/index.ts"
+      ],
       "@project/pipes": ["libs/pipes/src/index.ts"]
     }
   },

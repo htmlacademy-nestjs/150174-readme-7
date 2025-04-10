@@ -5,9 +5,12 @@ import {
   getNotificationMongooseOptions,
   NotificationConfigModule,
 } from '@project/notification-config';
+import { EmailSubscriberModule } from '@project/notification-email-subscriber';
+
 @Module({
   imports: [
     NotificationConfigModule,
+    EmailSubscriberModule,
     MongooseModule.forRootAsync(getNotificationMongooseOptions()),
   ],
 })

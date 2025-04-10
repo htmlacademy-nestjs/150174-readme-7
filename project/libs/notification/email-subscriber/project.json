@@ -1,0 +1,9 @@
+{
+  "name": "notification-email-subscriber",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/notification/email-subscriber/src",
+  "projectType": "library",
+  "tags": ["lib"],
+  "// targets": "to see all targets run: nx show project notification-email-subscriber --web",
+  "targets": {}
+}
