@@ -45,6 +45,10 @@ export { PaginationResult } from './lib/interfaces/query/pagination-result.inter
 export { SortDirection } from './lib/interfaces/query/sort-direction.enum';
 export { PostSortBy } from './lib/interfaces/query/sort-by.enum';
 
+// Notification
+export { RabbitMqRouting } from './lib/interfaces/notification/rabbit-routing.enum';
+export { NotificationSubscriber } from './lib/interfaces/notification/subscriber.interface';
+
 // Schema
 export { ConfigSchema } from './lib/classes/config-schema';
 

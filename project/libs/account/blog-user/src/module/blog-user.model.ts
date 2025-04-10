@@ -1,5 +1,9 @@
 import { Document, ObjectId } from 'mongoose';
-import { User, UserRole, WithOptionalId } from '@avylando-readme/core';
+import {
+  User,
+  UserRole,
+  WithOptionalDbAttributes,
+} from '@avylando-readme/core';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({
@@ -8,7 +12,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 })
 class BlogUserModel
   extends Document<ObjectId, any, User>
-  implements WithOptionalId<User>
+  implements WithOptionalDbAttributes<User>
 {
   @Prop({ required: true })
   public firstName: string;

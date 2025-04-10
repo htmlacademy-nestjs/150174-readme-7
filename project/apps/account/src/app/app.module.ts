@@ -7,11 +7,12 @@ import {
 
 import { AuthenticationModule } from '@project/authentication';
 import { BlogUserModule } from '@project/blog-user';
-
+import { AccountNotifyModule } from '@project/account-notify';
 @Module({
   imports: [
     BlogUserModule,
     AuthenticationModule,
+    AccountNotifyModule,
     AccountConfigModule,
     MongooseModule.forRootAsync(getAccountMongooseOptions()),
   ],
