@@ -33,6 +33,7 @@
       "@project/notification-email-subscriber": [
         "libs/notification/email-subscriber/src/index.ts"
       ],
+      "@project/notification-mailer": ["libs/notification/mailer/src/index.ts"],
       "@project/pipes": ["libs/pipes/src/index.ts"]
     }
   },

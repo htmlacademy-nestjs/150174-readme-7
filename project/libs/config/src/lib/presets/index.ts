@@ -29,3 +29,9 @@ export { getRabbitMQOptions } from './rabbit-mq/rabbit.helpers';
 
 export type { RabbitMqConfig } from './rabbit-mq/rabbit-config.interface';
 export { RabbitMqConfigurationSchema } from './rabbit-mq/rabbit.schema';
+
+export { createMailConfig } from './mail/mail.config';
+export { getMailerAsyncOptions } from './mail/mail.helpers';
+
+export { MailConfigSchema } from './mail/mail.schema';
+export type { MailConfig } from './mail/mail.interface';
