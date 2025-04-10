@@ -16,7 +16,7 @@ export function getRabbitMQOptions(namespace: string) {
       return {
         exchanges: [
           {
-            name: config.get<string>(`${namespace}.queue`),
+            name: config.get<string>(`${namespace}.exchange`),
             type: 'direct',
           },
         ],
