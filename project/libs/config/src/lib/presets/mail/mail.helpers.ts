@@ -7,7 +7,6 @@ import { resolve } from 'node:path';
 export function getMailerAsyncOptions(namespace: string): MailerAsyncOptions {
   return {
     useFactory: async (configService: ConfigService) => {
-      console.log('MAIL_FROM:', configService.get<string>(`${namespace}.from`));
       return {
         transport: {
           host: configService.get<string>(`${namespace}.host`),

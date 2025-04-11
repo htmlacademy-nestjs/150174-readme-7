@@ -11,6 +11,7 @@ import {
 } from '@project/file-storage-config';
 import { FileUploaderController } from './file-uploader.controller';
 import { FileUploaderService } from './file-uploader.service';
+import { FileStorageNotifyModule } from '@project/file-storage-notify';
 
 const SERVE_ROOT = '/static';
 
@@ -36,6 +37,7 @@ const SERVE_ROOT = '/static';
     }),
     MongooseModule.forFeature([{ name: FileModel.name, schema: FileSchema }]),
     FileStorageConfigModule,
+    FileStorageNotifyModule,
   ],
   controllers: [FileUploaderController],
   providers: [FileRepository, FileFactory, FileUploaderService],

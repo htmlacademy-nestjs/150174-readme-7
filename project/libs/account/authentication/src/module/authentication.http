@@ -13,8 +13,8 @@ Content-Type: application/json
 ###
 
 # Get user by ID
-GET http://localhost:3333/account/auth/67d9e507897b919848c35d95 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Q5ZTUwNzg5N2I5MTk4NDhjMzVkOTUiLCJlbWFpbCI6InVzZXJAbm90Zm91bmQubG9jYWwiLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiU21pdGgiLCJmaXJzdE5hbWUiOiJLZWtzIiwiaWF0IjoxNzQzMzY3ODUzLCJleHAiOjE3NDMzNjgxNTN9.BMkmoX8kVpCiJ_Fk--mUxagEhYwNSzz2VH0hb1ci18s
+GET http://localhost:3333/account/auth/67f85d233346ca3e3f5f7714 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0MzMwMzk2LCJleHAiOjE3NDQzMzA2OTZ9.VR6xky5XtKB8mA3g1AquA_L67oSoe_amJvjApguEq0k
 
 ###
 
@@ -23,8 +23,8 @@ POST http://localhost:3333/account/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "user@notfound.local",
-  "password": "123456"
+  "email": "wasd@mail.com",
+  "password": "ed323cw!4cds!D"
 }
 
 ###

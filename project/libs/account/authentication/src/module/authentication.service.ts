@@ -20,6 +20,7 @@ import { AuthError } from './authentication.constants';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { JwtToken, JwtTokenPayload, User } from '@avylando-readme/core';
 import { JwtService } from '@nestjs/jwt';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -47,7 +48,10 @@ export class AuthenticationService {
     return user;
   }
 
-  public async register(dto: CreateUserDto): Promise<BlogUserEntity> {
+  public async register(
+    dto: CreateUserDto,
+    avatar?: Express.Multer.File
+  ): Promise<BlogUserEntity> {
     const existedUser = await this.blogUserRepository.findByEmail(dto.email);
 
     if (existedUser) {
@@ -62,6 +66,13 @@ export class AuthenticationService {
 
     const createdUser = await this.blogUserRepository.save(user);
     await this.notifyService.registerSubscriber(createdUser.toPlainObject());
+
+    if (avatar) {
+      await this.notifyService.updateUserAvatar({
+        userId: createdUser.id as string,
+        file: avatar,
+      });
+    }
 
     return user;
   }
@@ -95,5 +106,11 @@ export class AuthenticationService {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  public async updateUser(dto: UpdateUserDto): Promise<BlogUserEntity> {
+    const user = await this.blogUserRepository.update(dto);
+
+    return user;
   }
 }

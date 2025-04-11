@@ -13,8 +13,10 @@ import { ValidateImagePipe, ValidateMongoIdPipe } from '@project/pipes';
 
 import { UploadedFileRdo } from '../rdo/uploaded-file.rdo';
 import { FileUploaderService } from './file-uploader.service';
-import { fillDto } from '@avylando-readme/core';
+import { fillDto, RabbitMqRouting } from '@avylando-readme/core';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { UpdateAvatarDto } from '@project/account-notify';
 
 @Controller('/')
 export class FileUploaderController {
@@ -39,7 +41,6 @@ export class FileUploaderController {
     return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 
-  @Post('/avatar')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -49,15 +50,24 @@ export class FileUploaderController {
           type: 'string',
           format: 'binary',
         },
+        userId: {
+          type: 'string',
+          format: 'mongo-id',
+        },
       },
     },
   })
+  @RabbitSubscribe({
+    exchange: process.env.RABBIT_EXCHANGE,
+    routingKey: RabbitMqRouting.UpdateAvatar,
+    queue: process.env.RABBIT_QUEUE,
+  })
   @UseInterceptors(FileInterceptor('file'))
   public async uploadAvatar(
-    @UploadedFile(ValidateImagePipe) file: Express.Multer.File
+    @UploadedFile()
+    dto: UpdateAvatarDto
   ) {
-    const fileEntity = await this.fileUploaderService.uploadUserAvatar(file);
-    return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
+    this.fileUploaderService.uploadUserAvatar(dto);
   }
 
   @Post('/posts/image')

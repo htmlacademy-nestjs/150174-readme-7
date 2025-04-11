@@ -5,19 +5,24 @@ import {
   HttpStatus,
   Param,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
-import { fillDto, User } from '@avylando-readme/core';
+import { fillDto, RabbitMqRouting, User } from '@avylando-readme/core';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { AuthenticationService } from './authentication.service';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoggedUserRdo } from '../rdo/logged-user.rdo';
 import { UserRdo } from '../rdo/user.rdo';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { NotifyAvatarUploadedDto } from '@project/file-storage-notify';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('authentication')
 @Controller('auth')
@@ -50,9 +55,14 @@ export class AuthenticationController {
     status: HttpStatus.CONFLICT,
     description: 'User already exists',
   })
+  @ApiConsumes('multipart/form-data', 'application/json')
   @Post('register')
-  public async register(@Body() dto: CreateUserDto): Promise<User> {
-    const user = await this.authenticationService.register(dto);
+  @UseInterceptors(FileInterceptor('avatar'))
+  public async register(
+    @Body() dto: CreateUserDto,
+    @UploadedFile() file?: Express.Multer.File
+  ): Promise<User> {
+    const user = await this.authenticationService.register(dto, file);
     return fillDto(UserRdo, user.toPlainObject());
   }
 
@@ -65,5 +75,17 @@ export class AuthenticationController {
   ): Promise<User> {
     const user = await this.authenticationService.findUser(id);
     return fillDto(UserRdo, user.toPlainObject());
+  }
+
+  @RabbitSubscribe({
+    exchange: process.env['RABBIT_EXCHANGE'],
+    routingKey: RabbitMqRouting.NotifyAvatarUploaded,
+    queue: process.env['RABBIT_QUEUE'],
+  })
+  public async updateUserAvatar(dto: NotifyAvatarUploadedDto) {
+    this.authenticationService.updateUser({
+      id: dto.userId,
+      avatarSrc: dto.path,
+    });
   }
 }

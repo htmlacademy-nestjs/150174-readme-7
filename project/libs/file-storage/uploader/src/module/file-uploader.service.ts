@@ -19,6 +19,8 @@ import { extension } from 'mime-types';
 import { StoredFile } from '@avylando-readme/core';
 import { FileFactory } from './file-uploader.factory';
 import { FileEntity } from './file-uploader.entity';
+import { UpdateAvatarDto } from '@project/account-notify';
+import { FileStorageNotifyService } from '@project/file-storage-notify';
 
 class FileUploaderService {
   private readonly logger = new Logger(FileUploaderService.name);
@@ -26,15 +28,27 @@ class FileUploaderService {
 
   constructor(
     @Inject(FileStorageAppConfig.KEY)
-    private readonly fileStorageConfig: FileStorageConfig,
+    private readonly appConfig: FileStorageConfig,
     private readonly fileRepository: FileRepository,
-    private readonly fileFactory: FileFactory
+    private readonly fileFactory: FileFactory,
+    private readonly notifyService: FileStorageNotifyService
   ) {}
 
-  public async uploadUserAvatar(
-    file: Express.Multer.File
-  ): Promise<FileEntity> {
-    return this.uploadFile(file, this.getAvatarUploadDirectoryPath());
+  public async uploadUserAvatar({
+    userId,
+    file,
+  }: UpdateAvatarDto): Promise<FileEntity> {
+    const fileEntity = await this.uploadFile(
+      file,
+      this.getAvatarUploadDirectoryPath()
+    );
+
+    await this.notifyService.notifyAvatarUploaded({
+      userId,
+      path: fileEntity.path,
+    });
+
+    return fileEntity;
   }
 
   public async uploadPostImage(file: Express.Multer.File): Promise<FileEntity> {
@@ -83,7 +97,7 @@ class FileUploaderService {
       const path = join(uploadDirectoryPath, subDirectory, filename);
 
       await ensureDir(join(uploadDirectoryPath, subDirectory));
-      await writeFile(path, file.buffer);
+      await writeFile(path, Buffer.from(file.buffer));
 
       return {
         extension: fileExtension as string,
@@ -101,29 +115,26 @@ class FileUploaderService {
   }
 
   private getUploadDirectoryPath(): string {
-    return this.fileStorageConfig.uploadDir;
+    return this.appConfig.uploadDir;
   }
 
   private getAvatarUploadDirectoryPath(): string {
-    return join(
-      this.getUploadDirectoryPath(),
-      this.fileStorageConfig.avatarsDir
-    );
+    return join(this.getUploadDirectoryPath(), this.appConfig.avatarsDir);
   }
 
   private getPostsImageDirectoryPath(): string {
     return join(
       this.getUploadDirectoryPath(),
-      this.fileStorageConfig.postsAssetsRoot,
-      this.fileStorageConfig.postsImagesDir
+      this.appConfig.postsAssetsRoot,
+      this.appConfig.postsImagesDir
     );
   }
 
   private getPostsVideoDirectoryPath(): string {
     return join(
       this.getUploadDirectoryPath(),
-      this.fileStorageConfig.postsAssetsRoot,
-      this.fileStorageConfig.postsVideosDir
+      this.appConfig.postsAssetsRoot,
+      this.appConfig.postsVideosDir
     );
   }
 

@@ -1,11 +1,17 @@
 import { User, WithOptionalDbAttributes } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsStrongPassword,
+} from 'class-validator';
 import { CreateUserValidationMessage } from './dto-validations.const';
 
 export class CreateUserDto
-  implements Omit<WithOptionalDbAttributes<User>, 'role' | 'passwordHash'>
+  implements
+    Omit<WithOptionalDbAttributes<User>, 'role' | 'passwordHash' | 'avatarSrc'>
 {
   @ApiProperty({
     description: 'User email',
@@ -35,15 +41,6 @@ export class CreateUserDto
   public lastName: User['lastName'];
 
   @ApiProperty({
-    description: 'User avatar source',
-    type: 'string',
-    example: '/avatars/avatar.png',
-  })
-  @IsString({ message: CreateUserValidationMessage.avatarSrc })
-  @Expose()
-  public avatarSrc: User['avatarSrc'];
-
-  @ApiProperty({
     description: 'User password',
     type: 'string',
     example: 'password',
@@ -51,4 +48,14 @@ export class CreateUserDto
   @IsStrongPassword({}, { message: CreateUserValidationMessage.password })
   @Expose()
   public password: string;
+
+  @ApiProperty({
+    description: 'User avatar',
+    type: 'string',
+    format: 'binary',
+  })
+  @IsString({ message: CreateUserValidationMessage.avatar })
+  @IsOptional()
+  @Expose()
+  public avatar?: Express.Multer.File;
 }

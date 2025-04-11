@@ -6,6 +6,7 @@ import { RabbitMqRouting } from '@avylando-readme/core';
 import { accountRabbitConfig } from '@project/account-config';
 
 import { CreateSubscriberDto } from './dto/create-subscriber.dto';
+import { UpdateAvatarDto } from './dto/update-avatar.dto';
 
 @Injectable()
 export class AccountNotifyService {
@@ -19,6 +20,22 @@ export class AccountNotifyService {
     return this.rabbitClient.publish<CreateSubscriberDto>(
       this.rabbitOptions.exchange,
       RabbitMqRouting.AddSubscriber,
+      { ...dto }
+    );
+  }
+
+  public async deleteSubscriber(email: string) {
+    return this.rabbitClient.publish<string>(
+      this.rabbitOptions.exchange,
+      RabbitMqRouting.DeleteSubscriber,
+      email
+    );
+  }
+
+  public async updateUserAvatar(dto: UpdateAvatarDto) {
+    return this.rabbitClient.publish<UpdateAvatarDto>(
+      this.rabbitOptions.exchange,
+      RabbitMqRouting.UpdateAvatar,
       { ...dto }
     );
   }

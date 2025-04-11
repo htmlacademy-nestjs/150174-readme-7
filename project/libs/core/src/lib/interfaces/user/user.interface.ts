@@ -5,7 +5,7 @@ type User = BaseEntity & {
   firstName: string;
   lastName: string;
   email: string;
-  avatarSrc: string;
+  avatarSrc?: string;
   role: UserRole;
   passwordHash?: string;
 };

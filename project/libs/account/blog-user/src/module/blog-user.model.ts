@@ -20,8 +20,8 @@ class BlogUserModel
   @Prop({ required: true })
   public lastName: string;
 
-  @Prop({ required: true })
-  public avatarSrc: string;
+  @Prop({ required: false })
+  public avatarSrc?: string;
 
   @Prop({
     required: true,

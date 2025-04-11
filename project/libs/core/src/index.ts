@@ -55,6 +55,7 @@ export { ConfigSchema } from './lib/classes/config-schema';
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';
 export { formatSchemaValidationErrors } from './lib/helpers/schema.helpers';
+export { transformFileBuffer } from './lib/helpers/file.helpers';
 
 // Utility types
 export type {
@@ -64,3 +65,5 @@ export type {
 export type { PlainObject } from './lib/types/plain-object.type';
 export type { UnionToIntersection } from './lib/types/union-to-intersection.type';
 export type { WithOptionalDbAttributes } from './lib/types/with-optional-db-attributes.type';
+export type { WithRequiredId } from './lib/types/with-required-id.type';
+export type { WithRequiredEntityAttributes } from './lib/types/with-required-entity-attributes.type';

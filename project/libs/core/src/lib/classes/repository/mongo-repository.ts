@@ -8,6 +8,8 @@ import {
 import { Repository } from './repository.interface';
 import { EntityFactory } from '../../interfaces/base/entity-factory.interface';
 import { WithOptionalDbAttributes } from '../../types/with-optional-db-attributes.type';
+import { WithRequiredId } from '../../types/with-required-id.type';
+import { WithRequiredEntityAttributes } from '../../types/with-required-entity-attributes.type';
 
 abstract class MongoRepository<
   T extends StorableEntity<StorablePlainObject<T>>,
@@ -38,9 +40,9 @@ abstract class MongoRepository<
     return entity as T;
   }
 
-  public async update(entity: T): Promise<T> {
+  public async update(entity: WithRequiredEntityAttributes<T>): Promise<T> {
     const document = await this.model
-      .findByIdAndUpdate(entity.id, entity.toPlainObject(), {
+      .findByIdAndUpdate(entity.id, entity, {
         new: true,
         runValidators: true,
       })
