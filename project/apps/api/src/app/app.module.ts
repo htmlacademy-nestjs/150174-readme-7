@@ -1,11 +1,25 @@
 import { Module } from '@nestjs/common';
+import { ApiConfigModule, ApiConfigNamespace } from '@project/api-config';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { UsersController } from './controllers/users.controller';
+import { getRabbitMQOptions } from '@avylando/config';
+import { HttpModule } from '@nestjs/axios';
+import { HTTP_CLIENT_MAX_REDIRECTS, HTTP_CLIENT_TIMEOUT } from './app.const';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    HttpModule.register({
+      timeout: HTTP_CLIENT_TIMEOUT,
+      maxRedirects: HTTP_CLIENT_MAX_REDIRECTS,
+    }),
+    RabbitMQModule.forRootAsync(
+      RabbitMQModule,
+      getRabbitMQOptions(ApiConfigNamespace.RABBIT)
+    ),
+    ApiConfigModule,
+  ],
+  controllers: [UsersController],
+  providers: [],
 })
 export class AppModule {}

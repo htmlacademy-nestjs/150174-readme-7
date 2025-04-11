@@ -23,4 +23,10 @@ const ApiConfigErrorMessages: Record<keyof ApiAppConfig, string> = {
   notificationPath: 'notificationPath is required',
 };
 
-export { ApiConfigNamespace, ApiConfigErrorMessages };
+const API_SERVICES_PROVIDER_NAME = 'API_SERVICES_PROVIDER';
+
+export {
+  ApiConfigNamespace,
+  ApiConfigErrorMessages,
+  API_SERVICES_PROVIDER_NAME,
+};
