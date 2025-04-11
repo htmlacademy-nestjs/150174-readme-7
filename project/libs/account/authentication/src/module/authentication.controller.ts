@@ -1,11 +1,14 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 
@@ -26,6 +29,8 @@ import {
   AuthEndpoints,
 } from './authentication.constants';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
+import { RequestWithUser } from './request-with-user.interface';
 
 @ApiTags('authentication')
 @Controller(AUTH_CONTROLLER_NAME)
@@ -44,12 +49,12 @@ export class AuthenticationController {
   @Post(AuthEndpoints.LOGIN)
   public async login(@Body() dto: LoginUserDto) {
     const user = await this.authenticationService.login(dto);
-    const { accessToken } = await this.authenticationService.createUserToken(
-      user.toPlainObject()
-    );
+    const { accessToken, refreshToken } =
+      await this.authenticationService.createUserToken(user.toPlainObject());
     return fillDto(LoggedUserRdo, {
       ...user.toPlainObject(),
       accessToken,
+      refreshToken,
     });
   }
 
@@ -85,6 +90,20 @@ export class AuthenticationController {
   ): Promise<User> {
     const user = await this.authenticationService.updateUser(dto);
     return fillDto(UserRdo, user.toPlainObject());
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get a new access/refresh tokens',
+  })
+  public async refreshToken(@Req() { user }: RequestWithUser) {
+    if (!user) {
+      throw BadRequestException;
+    }
+    return this.authenticationService.createUserToken(user);
   }
 
   @RabbitSubscribe({

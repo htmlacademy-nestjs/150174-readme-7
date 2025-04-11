@@ -2,6 +2,7 @@ import {
   ConflictException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
@@ -18,9 +19,17 @@ import { AccountNotifyService } from '@project/account-notify';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { AuthError } from './authentication.constants';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { JwtToken, JwtTokenPayload, User } from '@avylando-readme/core';
+import {
+  AuthTokens,
+  createJWTPayload,
+  createRefreshJWTPayload,
+  User,
+} from '@avylando-readme/core';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { accountJwtConfig } from '@project/account-config';
+import { ConfigType } from '@nestjs/config';
+import { RefreshTokenService } from '../refresh-token/refresh-token.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -30,7 +39,10 @@ export class AuthenticationService {
     protected readonly blogUserRepository: BlogUserRepository,
     protected readonly blogUserFactory: BlogUserFactory,
     protected readonly jwtService: JwtService,
-    protected readonly notifyService: AccountNotifyService
+    protected readonly notifyService: AccountNotifyService,
+    protected readonly refreshTokenService: RefreshTokenService,
+    @Inject(accountJwtConfig.KEY)
+    protected readonly jwtOptions: ConfigType<typeof accountJwtConfig>
   ) {}
 
   public async login(dto: LoginUserDto): Promise<BlogUserEntity> {
@@ -77,18 +89,35 @@ export class AuthenticationService {
     return user;
   }
 
-  public async createUserToken(user: User): Promise<JwtToken> {
-    const payload: JwtTokenPayload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-      lastName: user.lastName,
-      firstName: user.firstName,
-    };
+  public async findUserByEmail(email: string): Promise<BlogUserEntity> {
+    const user = await this.blogUserRepository.findByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException(AuthError.NOT_FOUND);
+    }
+
+    return user;
+  }
+
+  public async createUserToken(user: User): Promise<AuthTokens> {
+    const accessTokenPayload = createJWTPayload(user);
+    const refreshTokenPayload = createRefreshJWTPayload(user);
+
+    await this.refreshTokenService.createRefreshSession(refreshTokenPayload);
 
     try {
-      const accessToken = await this.jwtService.signAsync(payload);
-      return { accessToken };
+      const accessToken = await this.jwtService.signAsync(accessTokenPayload, {
+        expiresIn: this.jwtOptions.accessTokenExpiration,
+        secret: this.jwtOptions.accessTokenSecret,
+      });
+      const refreshToken = await this.jwtService.signAsync(
+        refreshTokenPayload,
+        {
+          expiresIn: this.jwtOptions.refreshTokenExpiration,
+          secret: this.jwtOptions.refreshTokenSecret,
+        }
+      );
+      return { accessToken, refreshToken };
     } catch (error) {
       this.logger.error('[Token generation error]: ' + error.message);
       throw new HttpException(
@@ -96,6 +125,26 @@ export class AuthenticationService {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  public async verifyRefreshToken(
+    token: string
+  ): Promise<BlogUserEntity | null> {
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: this.jwtOptions.refreshTokenSecret,
+    });
+
+    if (!payload) {
+      return null;
+    }
+
+    const user = await this.blogUserRepository.findById(payload.sub);
+
+    if (!user) {
+      throw new NotFoundException(AuthError.NOT_FOUND);
+    }
+
+    return user;
   }
 
   public async updateUser(dto: UpdateUserDto): Promise<BlogUserEntity> {

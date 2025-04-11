@@ -37,8 +37,10 @@ export { MongoRepository } from './lib/classes/repository/mongo-repository';
 export { PostgresRepository } from './lib/classes/repository/postgres-repository';
 
 // Auth
+export { AuthTokens } from './lib/interfaces/auth/auth-tokens.interface';
 export { JwtTokenPayload } from './lib/interfaces/auth/jwt-payload.interface';
 export { JwtToken } from './lib/interfaces/auth/jwt-token.interface';
+export { RefreshTokenPayload } from './lib/interfaces/auth/refresh-token-payload.interface';
 
 // Query
 export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
@@ -57,6 +59,11 @@ export { fillDto } from './lib/helpers/dto.helpers';
 export { formatSchemaValidationErrors } from './lib/helpers/schema.helpers';
 export { transformFileBuffer } from './lib/helpers/file.helpers';
 export { buildURI } from './lib/helpers/uri.helpers';
+export {
+  createJWTPayload,
+  createRefreshJWTPayload,
+} from './lib/helpers/jwt.helpers';
+export { parseTime } from './lib/helpers/datetime.helpers';
 
 // Utility types
 export type {

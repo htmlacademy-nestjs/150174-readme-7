@@ -124,19 +124,15 @@ export class UsersController {
     @Param('id', ValidateMongoIdPipe) id: string,
     @Req() req: Request
   ) {
-    try {
-      const { data } = await this.httpService.axiosRef.get<UserRdo>(
-        this.getUserPath(id),
-        {
-          headers: {
-            Authorization: req.headers['authorization'],
-          },
-        }
-      );
-      return data;
-    } catch (error) {
-      // console.log(error);
-    }
+    const { data } = await this.httpService.axiosRef.get<UserRdo>(
+      this.getUserPath(id),
+      {
+        headers: {
+          Authorization: req.headers['authorization'],
+        },
+      }
+    );
+    return data;
   }
 
   @RabbitSubscribe({

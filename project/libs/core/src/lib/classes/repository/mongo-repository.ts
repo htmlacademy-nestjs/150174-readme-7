@@ -8,7 +8,6 @@ import {
 import { Repository } from './repository.interface';
 import { EntityFactory } from '../../interfaces/base/entity-factory.interface';
 import { WithOptionalDbAttributes } from '../../types/with-optional-db-attributes.type';
-import { WithRequiredId } from '../../types/with-required-id.type';
 import { WithRequiredEntityAttributes } from '../../types/with-required-entity-attributes.type';
 
 abstract class MongoRepository<
@@ -29,6 +28,7 @@ abstract class MongoRepository<
     const object = document.toObject({
       flattenObjectIds: true,
       virtuals: true,
+      getters: true,
     });
     return this.entityFactory.create(object);
   }
