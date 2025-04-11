@@ -20,8 +20,8 @@ class AppBaseConfigSchema extends ConfigSchema implements AppBaseConfig {
   @IsOptional()
   public environment: Environment;
 
-  constructor() {
-    super('AppBaseConfigSchema');
+  constructor(schemaName: string = 'AppBaseConfigSchema') {
+    super(schemaName);
   }
 }
 
