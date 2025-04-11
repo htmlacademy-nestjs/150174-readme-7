@@ -1,11 +1,6 @@
 import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
-import { ConfigSchema } from '@avylando-readme/core';
-import {
-  MIN_PORT,
-  MAX_PORT,
-  DEFAULT_MONGO_PORT,
-  MongoConfigErrorMessages,
-} from './mongo.const';
+import { ConfigSchema, MAX_PORT, MIN_PORT } from '@avylando-readme/core';
+import { DEFAULT_MONGO_PORT, MongoConfigErrorMessages } from './mongo.const';
 import { MongoConfig } from './mongo-config.interface';
 
 export class MongoConfigurationSchema

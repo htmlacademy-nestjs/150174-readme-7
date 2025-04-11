@@ -67,3 +67,6 @@ export type { UnionToIntersection } from './lib/types/union-to-intersection.type
 export type { WithOptionalDbAttributes } from './lib/types/with-optional-db-attributes.type';
 export type { WithRequiredId } from './lib/types/with-required-id.type';
 export type { WithRequiredEntityAttributes } from './lib/types/with-required-entity-attributes.type';
+
+// Constants
+export { MAX_PORT, MIN_PORT } from './lib/constants/network.constants';

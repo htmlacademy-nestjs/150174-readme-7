@@ -1,13 +1,8 @@
 import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 
-import {
-  MIN_PORT,
-  MAX_PORT,
-  DEFAULT_RABBIT_PORT,
-  RabbitConfigErrorMessages,
-} from './rabbit.const';
+import { DEFAULT_RABBIT_PORT, RabbitConfigErrorMessages } from './rabbit.const';
 import { RabbitMqConfig } from './rabbit-config.interface';
-import { ConfigSchema } from '@avylando-readme/core';
+import { ConfigSchema, MAX_PORT, MIN_PORT } from '@avylando-readme/core';
 
 export class RabbitMqConfigurationSchema
   extends ConfigSchema

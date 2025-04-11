@@ -1,13 +1,11 @@
 import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 
 import {
-  MIN_PORT,
-  MAX_PORT,
   DEFAULT_POSTGRES_PORT,
   PostgresConfigErrorMessages,
 } from './postgres.const';
 import { PostgresConfig } from './postgres-config.interface';
-import { ConfigSchema } from '@avylando-readme/core';
+import { ConfigSchema, MAX_PORT, MIN_PORT } from '@avylando-readme/core';
 
 export class PostgresConfigurationSchema
   extends ConfigSchema
