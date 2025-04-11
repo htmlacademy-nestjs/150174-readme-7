@@ -6,6 +6,7 @@ import { UsersController } from './controllers/users.controller';
 import { getRabbitMQOptions } from '@avylando/config';
 import { HttpModule } from '@nestjs/axios';
 import { HTTP_CLIENT_MAX_REDIRECTS, HTTP_CLIENT_TIMEOUT } from './app.const';
+import { ApiNotifyModule } from '@project/api-notify';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { HTTP_CLIENT_MAX_REDIRECTS, HTTP_CLIENT_TIMEOUT } from './app.const';
       getRabbitMQOptions(ApiConfigNamespace.RABBIT)
     ),
     ApiConfigModule,
+    ApiNotifyModule,
   ],
   controllers: [UsersController],
   providers: [],

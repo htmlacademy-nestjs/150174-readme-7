@@ -5,9 +5,8 @@ import {
   HttpStatus,
   Param,
   Post,
-  UploadedFile,
+  Put,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 
 import { fillDto, RabbitMqRouting, User } from '@avylando-readme/core';
@@ -16,16 +15,20 @@ import { ValidateMongoIdPipe } from '@project/pipes';
 import { AuthenticationService } from './authentication.service';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoggedUserRdo } from '../rdo/logged-user.rdo';
 import { UserRdo } from '../rdo/user.rdo';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { NotifyAvatarUploadedDto } from '@project/file-storage-notify';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  AUTH_CONTROLLER_NAME,
+  AuthEndpoints,
+} from './authentication.constants';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @ApiTags('authentication')
-@Controller('auth')
+@Controller(AUTH_CONTROLLER_NAME)
 export class AuthenticationController {
   constructor(private authenticationService: AuthenticationService) {}
 
@@ -38,7 +41,7 @@ export class AuthenticationController {
     status: HttpStatus.NOT_FOUND,
     description: 'User not found',
   })
-  @Post('login')
+  @Post(AuthEndpoints.LOGIN)
   public async login(@Body() dto: LoginUserDto) {
     const user = await this.authenticationService.login(dto);
     const { accessToken } = await this.authenticationService.createUserToken(
@@ -55,25 +58,32 @@ export class AuthenticationController {
     status: HttpStatus.CONFLICT,
     description: 'User already exists',
   })
-  @ApiConsumes('multipart/form-data', 'application/json')
-  @Post('register')
-  @UseInterceptors(FileInterceptor('avatar'))
-  public async register(
-    @Body() dto: CreateUserDto,
-    @UploadedFile() file?: Express.Multer.File
-  ): Promise<User> {
-    const user = await this.authenticationService.register(dto, file);
+  @Post(AuthEndpoints.REGISTER)
+  public async register(@Body() dto: CreateUserDto): Promise<User> {
+    const user = await this.authenticationService.register(dto);
     return fillDto(UserRdo, user.toPlainObject());
   }
 
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ status: HttpStatus.OK, description: 'Find user' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
-  @Get(':id')
+  @Get(AuthEndpoints.USER)
   public async findUser(
     @Param('id', ValidateMongoIdPipe) id: string
   ): Promise<User> {
     const user = await this.authenticationService.findUser(id);
+    return fillDto(UserRdo, user.toPlainObject());
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({ status: HttpStatus.OK, description: 'User updated' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
+  @Put(AuthEndpoints.USER)
+  public async updateUser(
+    @Param('id', ValidateMongoIdPipe) id: string,
+    @Body() dto: UpdateUserDto
+  ): Promise<User> {
+    const user = await this.authenticationService.updateUser(dto);
     return fillDto(UserRdo, user.toPlainObject());
   }
 

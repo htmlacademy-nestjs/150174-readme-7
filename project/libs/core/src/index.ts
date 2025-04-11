@@ -56,6 +56,7 @@ export { ConfigSchema } from './lib/classes/config-schema';
 export { fillDto } from './lib/helpers/dto.helpers';
 export { formatSchemaValidationErrors } from './lib/helpers/schema.helpers';
 export { transformFileBuffer } from './lib/helpers/file.helpers';
+export { buildURI } from './lib/helpers/uri.helpers';
 
 // Utility types
 export type {

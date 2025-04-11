@@ -48,10 +48,7 @@ export class AuthenticationService {
     return user;
   }
 
-  public async register(
-    dto: CreateUserDto,
-    avatar?: Express.Multer.File
-  ): Promise<BlogUserEntity> {
+  public async register(dto: CreateUserDto): Promise<BlogUserEntity> {
     const existedUser = await this.blogUserRepository.findByEmail(dto.email);
 
     if (existedUser) {
@@ -66,13 +63,6 @@ export class AuthenticationService {
 
     const createdUser = await this.blogUserRepository.save(user);
     await this.notifyService.registerSubscriber(createdUser.toPlainObject());
-
-    if (avatar) {
-      await this.notifyService.updateUserAvatar({
-        userId: createdUser.id as string,
-        file: avatar,
-      });
-    }
 
     return user;
   }

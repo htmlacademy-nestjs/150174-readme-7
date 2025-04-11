@@ -7,3 +7,5 @@ export {
 
 export { ApiServicesProvider } from './lib/api-config.provider';
 export type { ApiServicesConfig } from './lib/api-config.provider';
+
+export { default as ApiRabbitConfig } from './lib/configurations/api-rabbit.config';
