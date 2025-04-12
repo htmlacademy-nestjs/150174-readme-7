@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { ApiConfigModule, ApiConfigNamespace } from '@project/api-config';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
-import { UsersController } from './controllers/users.controller';
 import { getRabbitMQOptions } from '@avylando/config';
 import { HttpModule } from '@nestjs/axios';
-import { HTTP_CLIENT_MAX_REDIRECTS, HTTP_CLIENT_TIMEOUT } from './app.const';
 import { ApiNotifyModule } from '@project/api-notify';
+
+import { CheckAuthGuard } from './guards/check-auth.guard';
+import { HTTP_CLIENT_MAX_REDIRECTS, HTTP_CLIENT_TIMEOUT } from './app.const';
+import { UsersController } from './controllers/users.controller';
 
 @Module({
   imports: [
@@ -22,6 +24,6 @@ import { ApiNotifyModule } from '@project/api-notify';
     ApiNotifyModule,
   ],
   controllers: [UsersController],
-  providers: [],
+  providers: [CheckAuthGuard],
 })
 export class AppModule {}

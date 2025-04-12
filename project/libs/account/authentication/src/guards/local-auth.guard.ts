@@ -3,4 +3,4 @@ import { JwtStrategy } from '../strategies/strategies.const';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class JwtRefreshGuard extends AuthGuard(JwtStrategy.refreshToken) {}
+export class LocalAuthGuard extends AuthGuard(JwtStrategy.local) {}

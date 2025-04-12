@@ -5,10 +5,12 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
   Param,
   Post,
   Put,
   Req,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
@@ -16,7 +18,6 @@ import { fillDto, RabbitMqRouting, User } from '@avylando-readme/core';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { AuthenticationService } from './authentication.service';
-import { LoginUserDto } from '../dto/login-user.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoggedUserRdo } from '../rdo/logged-user.rdo';
@@ -31,12 +32,15 @@ import {
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
 import { RequestWithUser } from './request-with-user.interface';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+import { RequestWithTokenPayload } from './request-with-token-payload';
 
 @ApiTags('authentication')
 @Controller(AUTH_CONTROLLER_NAME)
 export class AuthenticationController {
   constructor(private authenticationService: AuthenticationService) {}
 
+  @UseGuards(LocalAuthGuard)
   @ApiResponse({ status: HttpStatus.CREATED, description: 'User logged in' })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -47,8 +51,10 @@ export class AuthenticationController {
     description: 'User not found',
   })
   @Post(AuthEndpoints.LOGIN)
-  public async login(@Body() dto: LoginUserDto) {
-    const user = await this.authenticationService.login(dto);
+  public async login(@Req() { user }: RequestWithUser) {
+    if (!user) {
+      throw new NotFoundException();
+    }
     const { accessToken, refreshToken } =
       await this.authenticationService.createUserToken(user.toPlainObject());
     return fillDto(LoggedUserRdo, {
@@ -81,8 +87,6 @@ export class AuthenticationController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiResponse({ status: HttpStatus.OK, description: 'User updated' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
   @Put(AuthEndpoints.USER)
   public async updateUser(
     @Param('id', ValidateMongoIdPipe) id: string,
@@ -92,18 +96,40 @@ export class AuthenticationController {
     return fillDto(UserRdo, user.toPlainObject());
   }
 
-  @UseGuards(JwtRefreshGuard)
-  @Post('refresh')
-  @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Get a new access/refresh tokens',
   })
+  @UseGuards(JwtRefreshGuard)
+  @Post(AuthEndpoints.REFRESH_TOKEN)
+  @HttpCode(HttpStatus.OK)
   public async refreshToken(@Req() { user }: RequestWithUser) {
     if (!user) {
-      throw BadRequestException;
+      throw new UnauthorizedException();
     }
     return this.authenticationService.createUserToken(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(AuthEndpoints.CHECK_TOKEN)
+  @HttpCode(HttpStatus.OK)
+  public async checkToken(@Req() { user: payload }: RequestWithTokenPayload) {
+    return payload;
+  }
+
+  @ApiResponse({ status: HttpStatus.OK, description: 'User logged out' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Invalid credentials',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post(AuthEndpoints.LOGOUT)
+  @HttpCode(HttpStatus.OK)
+  public async logout(@Req() { user }: RequestWithUser) {
+    if (!user?.id) {
+      throw new UnauthorizedException();
+    }
+    await this.authenticationService.logout(user.id);
   }
 
   @RabbitSubscribe({

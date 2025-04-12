@@ -10,6 +10,8 @@ import { getJwtOptions } from '@project/account-config';
 import { JwtAccessStrategy } from '../strategies/jwt-auth.strategy';
 import { AccountNotifyModule } from '@project/account-notify';
 import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
+import { JwtRefreshStrategy } from '../strategies/jwt-refresh.strategy';
+import { LocalStrategy } from '../strategies/local.strategy';
 
 @Module({
   imports: [
@@ -22,6 +24,11 @@ import { RefreshTokenModule } from '../refresh-token/refresh-token.module';
     RefreshTokenModule,
   ],
   controllers: [AuthenticationController],
-  providers: [AuthenticationService, JwtAccessStrategy],
+  providers: [
+    AuthenticationService,
+    JwtAccessStrategy,
+    JwtRefreshStrategy,
+    LocalStrategy,
+  ],
 })
 export class AuthenticationModule {}

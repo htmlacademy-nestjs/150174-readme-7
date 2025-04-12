@@ -10,6 +10,8 @@ import { AppModule } from './app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ApiConfigNamespace } from '@project/api-config';
 import { ConfigService } from '@nestjs/config';
+import { RequestIdInterceptor } from '@project/interceptors';
+import { AxiosExceptionFilter } from './app/filters/axios-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -28,6 +30,9 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix(globalPrefix);
+  app.useGlobalInterceptors(new RequestIdInterceptor());
+  app.useGlobalFilters(new AxiosExceptionFilter());
+
   await app.listen(port);
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`

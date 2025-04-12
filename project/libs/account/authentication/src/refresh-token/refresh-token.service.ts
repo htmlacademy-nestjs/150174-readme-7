@@ -25,7 +25,6 @@ export class RefreshTokenService {
       userId: payload.sub,
       expiresIn: dayjs().add(timeValue.value, timeValue.unit).toDate(),
     });
-    console.log(refreshToken);
     return this.refreshTokenRepository.save(refreshToken);
   }
 

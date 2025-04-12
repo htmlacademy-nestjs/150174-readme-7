@@ -1,11 +1,10 @@
-import { UserRole } from '../user/user-role.type';
+import { User } from '../user/user.interface';
 
-interface JwtTokenPayload {
+type JwtTokenPayload = Pick<
+  User,
+  'email' | 'firstName' | 'lastName' | 'role'
+> & {
   sub: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: UserRole;
-}
+};
 
 export type { JwtTokenPayload };

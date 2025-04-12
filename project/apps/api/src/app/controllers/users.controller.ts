@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Inject,
   Param,
@@ -10,6 +11,7 @@ import {
   Put,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -29,7 +31,7 @@ import { ApiConsumes, ApiResponse } from '@nestjs/swagger';
 import { RegisterUserDto } from '../dto/register-user.dto';
 import { ApiNotifyService } from '@project/api-notify';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { buildURI, RabbitMqRouting } from '@avylando-readme/core';
+import { AuthTokens, buildURI, RabbitMqRouting } from '@avylando-readme/core';
 import { NotifyAvatarUploadedDto } from '@project/file-storage-notify';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
@@ -51,9 +53,10 @@ export class UsersController {
     status: HttpStatus.NOT_FOUND,
     description: 'User not found',
   })
-  @Post('login')
-  public async login(@Body() dto: LoginUserDto) {
-    const { data } = await this.httpService.axiosRef.post(
+  @Post(AuthEndpoints.LOGIN)
+  @HttpCode(HttpStatus.OK)
+  public async login(@Body() dto: LoginUserDto): Promise<UserRdo> {
+    const { data } = await this.httpService.axiosRef.post<UserRdo>(
       this.getLoginPath(),
       dto
     );
@@ -67,11 +70,12 @@ export class UsersController {
   })
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiConsumes('multipart/form-data', 'application/json')
-  @Post('register')
+  @Post(AuthEndpoints.REGISTER)
+  @HttpCode(HttpStatus.CREATED)
   public async register(
     @Body() dto: Omit<RegisterUserDto, 'avatar'>,
     @UploadedFile() avatar?: Express.Multer.File
-  ) {
+  ): Promise<UserRdo> {
     const { data } = await this.httpService.axiosRef.post<UserRdo>(
       this.getRegisterPath(),
       dto
@@ -94,12 +98,12 @@ export class UsersController {
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
   @UseInterceptors(FileInterceptor('avatar'))
   @ApiConsumes('multipart/form-data', 'application/json')
-  @Put(':id')
+  @Put(AuthEndpoints.USER)
   public async updateUser(
     @Param('id', ValidateMongoIdPipe) id: string,
     @Body() dto: UpdateUserDto,
     @UploadedFile() avatar?: Express.Multer.File
-  ) {
+  ): Promise<UserRdo> {
     const { data } = await this.httpService.axiosRef.put<UserRdo>(
       this.getUserPath(id),
       dto
@@ -119,13 +123,51 @@ export class UsersController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Invalid credentials',
   })
-  @Get(':id')
+  @Get(AuthEndpoints.USER)
   public async findUser(
     @Param('id', ValidateMongoIdPipe) id: string,
     @Req() req: Request
-  ) {
+  ): Promise<UserRdo> {
     const { data } = await this.httpService.axiosRef.get<UserRdo>(
       this.getUserPath(id),
+      {
+        headers: {
+          Authorization: req.headers['authorization'],
+        },
+      }
+    );
+    return data;
+  }
+
+  @ApiResponse({ status: HttpStatus.OK, description: 'Token refreshed' })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Invalid credentials',
+  })
+  @Post(AuthEndpoints.REFRESH_TOKEN)
+  @HttpCode(HttpStatus.OK)
+  public async refreshToken(@Req() req: Request): Promise<AuthTokens> {
+    console.log('CALL GATEWAY! refreshToken', req.headers['authorization']);
+
+    const { data } = await this.httpService.axiosRef.post<AuthTokens>(
+      this.getRefreshTokenPath(),
+      {},
+      {
+        headers: {
+          Authorization: req.headers['authorization'],
+        },
+      }
+    );
+    return data;
+  }
+
+  @Post(AuthEndpoints.CHECK_TOKEN)
+  @HttpCode(HttpStatus.OK)
+  public async checkToken(@Req() req: Request): Promise<UserRdo> {
+    const { data } = await this.httpService.axiosRef.post<UserRdo>(
+      this.getCheckTokenPath(),
+      {},
       {
         headers: {
           Authorization: req.headers['authorization'],
@@ -164,5 +206,16 @@ export class UsersController {
       join(this.getAuthenticationServicePath(), AuthEndpoints.USER),
       { pathParams: { id: userId } }
     );
+  }
+
+  private getRefreshTokenPath() {
+    return join(
+      this.getAuthenticationServicePath(),
+      AuthEndpoints.REFRESH_TOKEN
+    );
+  }
+
+  private getCheckTokenPath() {
+    return join(this.getAuthenticationServicePath(), AuthEndpoints.CHECK_TOKEN);
   }
 }

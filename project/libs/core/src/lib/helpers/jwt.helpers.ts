@@ -5,7 +5,7 @@ import { User } from '../interfaces/user/user.interface';
 
 export function createJWTPayload(user: User): JwtTokenPayload {
   return {
-    sub: user.id,
+    sub: user.id as string,
     email: user.email,
     role: user.role,
     lastName: user.lastName,

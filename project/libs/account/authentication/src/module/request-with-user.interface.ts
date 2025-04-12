@@ -1,5 +1,5 @@
-import { User } from '@avylando-readme/core';
+import { BlogUserEntity } from '@project/blog-user';
 
 export interface RequestWithUser {
-  user?: User;
+  user?: BlogUserEntity;
 }

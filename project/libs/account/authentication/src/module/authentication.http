@@ -14,7 +14,8 @@ Content-Type: application/json
 
 # Get user by ID
 GET http://localhost:4000/api/users/67f85d233346ca3e3f5f7714 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NDA5OTA2LCJleHAiOjE3NDQ0MTAyMDZ9.y7FPPMOX-0jwwEXyO9tVw_gFKJqpWREOe9KEt0H0lmU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NDk3NTkwLCJleHAiOjE3NDQ0OTc4OTB9.Kjm12ZQ8fg3LJDD5_6uiXc19lerkUWauWEA6JlOYJIg
+
 ###
 
 # Login user by email and password
@@ -25,5 +26,17 @@ Content-Type: application/json
   "email": "wasd@mail.com",
   "password": "ed323cw!4cds!D"
 }
+
+###
+
+# Refresh token
+POST http://localhost:4000/api/users/refresh HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwidG9rZW5JZCI6ImIxODJkMWE1LWE4NDYtNDQ1OS1iNTZjLWU4YjQzYjMyOWFiZSIsImlhdCI6MTc0NDQ5OTg0MSwiZXhwIjoxNzQ3MDkxODQxfQ.X1-TgeteCsWTEorot3kOH6v0niQRK979xvOB58qJ5zM
+
+###
+
+# Check token
+POST http://localhost:4000/api/users/check HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NDk5ODU4LCJleHAiOjE3NDQ1MDAxNTh9.w3uesHsip_KjvXXTRqxUn0zZlOtZ-GlMLtax0lCcmPM
 
 ###
