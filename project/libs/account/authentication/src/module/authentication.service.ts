@@ -61,16 +61,6 @@ export class AuthenticationService {
     return user;
   }
 
-  public async logout(userId: string): Promise<void> {
-    const user = await this.blogUserRepository.findById(userId);
-
-    if (!user) {
-      throw new NotFoundException(AuthError.NOT_FOUND);
-    }
-
-    await this.refreshTokenService.deleteRefreshSession(userId);
-  }
-
   public async register(dto: CreateUserDto): Promise<BlogUserEntity> {
     const existedUser = await this.blogUserRepository.findByEmail(dto.email);
 
@@ -119,7 +109,7 @@ export class AuthenticationService {
     return user;
   }
 
-  public async setUserAvatar(
+  public async initUserAvatar(
     id: string,
     dto: UpdateUserDto
   ): Promise<BlogUserEntity> {

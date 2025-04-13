@@ -43,10 +43,13 @@ class FileUploaderService {
       this.getAvatarUploadDirectoryPath()
     );
 
-    await this.notifyService.notifyAvatarUploaded({
+    const published = await this.notifyService.notifyAvatarUploaded({
       userId,
       path: fileEntity.path,
     });
+    this.logger.log(
+      `Avatar uploaded for user ${userId} and published to RabbitMQ: ${published}`
+    );
 
     return fileEntity;
   }

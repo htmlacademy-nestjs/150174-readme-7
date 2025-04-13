@@ -67,6 +67,7 @@ export class FileUploaderController {
     @UploadedFile()
     dto: UpdateAvatarDto
   ) {
+    console.log('Upload avatar', dto);
     this.fileUploaderService.uploadUserAvatar(dto);
   }
 

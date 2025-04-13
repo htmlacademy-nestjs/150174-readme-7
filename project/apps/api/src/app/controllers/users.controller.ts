@@ -150,8 +150,6 @@ export class UsersController {
   @Post(AuthEndpoints.REFRESH_TOKEN)
   @HttpCode(HttpStatus.OK)
   public async refreshToken(@Req() req: Request): Promise<AuthTokens> {
-    console.log('CALL GATEWAY! refreshToken', req.headers['authorization']);
-
     const { data } = await this.httpService.axiosRef.post<AuthTokens>(
       this.getRefreshTokenPath(),
       {},
@@ -185,16 +183,13 @@ export class UsersController {
     queue: process.env['RABBIT_QUEUE'],
   })
   public async uploadUserAvatar(dto: NotifyAvatarUploadedDto) {
-    await this.httpService.axiosRef.put(
-      this.getUserAvatarPath(dto.userId),
-      {
-        avatarSrc: dto.path,
-      },
-      { headers: {} }
-    );
     this.logger.log(
-      `User ${dto.userId} avatar ${dto.path} updated successfully`
+      'Uploading avatar for user',
+      this.getUserAvatarPath(dto.userId)
     );
+    this.httpService.axiosRef.put(this.getUserAvatarPath(dto.userId), {
+      avatarSrc: dto.path,
+    });
   }
 
   private getAuthenticationServicePath() {

@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   NotFoundException,
   Param,
   Post,
@@ -30,11 +31,13 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
 import { RequestWithUser } from './request-with-user.interface';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { RequestWithTokenPayload } from './request-with-token-payload';
+import { RequestWithTokenPayload } from './request-with-token-payload.interface';
 
 @ApiTags('authentication')
 @Controller(AUTH_CONTROLLER_NAME)
 export class AuthenticationController {
+  private readonly logger = new Logger(AuthenticationController.name);
+
   constructor(private authenticationService: AuthenticationService) {}
 
   @UseGuards(LocalAuthGuard)
@@ -112,7 +115,7 @@ export class AuthenticationController {
     @Param('id', ValidateMongoIdPipe) id: string,
     @Body() dto: UpdateUserDto
   ): Promise<User> {
-    const user = await this.authenticationService.setUserAvatar(id, {
+    const user = await this.authenticationService.initUserAvatar(id, {
       avatarSrc: dto.avatarSrc,
     });
     return fillDto(UserRdo, user.toPlainObject());
@@ -137,20 +140,5 @@ export class AuthenticationController {
   @HttpCode(HttpStatus.OK)
   public async checkToken(@Req() { user: payload }: RequestWithTokenPayload) {
     return payload;
-  }
-
-  @ApiResponse({ status: HttpStatus.OK, description: 'User logged out' })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Invalid credentials',
-  })
-  @UseGuards(JwtAuthGuard)
-  @Post(AuthEndpoints.LOGOUT)
-  @HttpCode(HttpStatus.OK)
-  public async logout(@Req() { user }: RequestWithUser) {
-    if (!user?.id) {
-      throw new UnauthorizedException();
-    }
-    await this.authenticationService.logout(user.id);
   }
 }

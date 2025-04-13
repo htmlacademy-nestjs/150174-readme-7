@@ -1,7 +1,7 @@
 import { User, WithRequiredEntityAttributes } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { UpdateUserValidationMessage } from './dto-validations.const';
 import { BlogUserEntity } from '@project/blog-user';
 
@@ -37,10 +37,7 @@ export class UpdateUserDto
     type: 'string',
     example: '/avatar.png',
   })
-  @IsUrl(
-    { require_host: false, require_protocol: false, require_port: false },
-    { message: UpdateUserValidationMessage.avatar }
-  )
+  @IsString({ message: UpdateUserValidationMessage.avatar })
   @IsOptional()
   @Expose()
   public avatarSrc?: string;
