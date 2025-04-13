@@ -21,6 +21,7 @@ import { FileFactory } from './file-uploader.factory';
 import { FileEntity } from './file-uploader.entity';
 import { UpdateAvatarDto } from '@project/account-notify';
 import { FileStorageNotifyService } from '@project/file-storage-notify';
+import { UploadPostMediaDto } from '@project/api-notify';
 
 class FileUploaderService {
   private readonly logger = new Logger(FileUploaderService.name);
@@ -54,12 +55,44 @@ class FileUploaderService {
     return fileEntity;
   }
 
-  public async uploadPostImage(file: Express.Multer.File): Promise<FileEntity> {
-    return this.uploadFile(file, this.getPostsImageDirectoryPath());
+  public async uploadPostImage({
+    postId,
+    file,
+  }: UploadPostMediaDto): Promise<FileEntity> {
+    const fileEntity = await this.uploadFile(
+      file,
+      this.getPostsImageDirectoryPath()
+    );
+
+    const published = await this.notifyService.notifyPostImageUploaded({
+      postId,
+      path: fileEntity.path,
+    });
+
+    this.logger.log(
+      `Post ${postId} image uploaded and published to RabbitMQ: ${published}`
+    );
+    return fileEntity;
   }
 
-  public async uploadPostVideo(file: Express.Multer.File): Promise<FileEntity> {
-    return this.uploadFile(file, this.getPostsVideoDirectoryPath());
+  public async uploadPostVideo({
+    postId,
+    file,
+  }: UploadPostMediaDto): Promise<FileEntity> {
+    const fileEntity = await this.uploadFile(
+      file,
+      this.getPostsVideoDirectoryPath()
+    );
+
+    const published = await this.notifyService.notifyPostVideoUploaded({
+      postId,
+      path: fileEntity.path,
+    });
+
+    this.logger.log(
+      `Post ${postId} video uploaded and published to RabbitMQ: ${published}`
+    );
+    return fileEntity;
   }
 
   public async uploadFile(

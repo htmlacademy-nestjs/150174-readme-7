@@ -17,6 +17,7 @@ import { fillDto, RabbitMqRouting } from '@avylando-readme/core';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { UpdateAvatarDto } from '@project/account-notify';
+import { UploadPostMediaDto } from '@project/api-notify';
 
 @Controller('/')
 export class FileUploaderController {
@@ -64,32 +65,32 @@ export class FileUploaderController {
   })
   @UseInterceptors(FileInterceptor('file'))
   public async uploadAvatar(
-    @UploadedFile()
+    @UploadedFile(ValidateImagePipe)
     dto: UpdateAvatarDto
   ) {
-    console.log('Upload avatar', dto);
     this.fileUploaderService.uploadUserAvatar(dto);
   }
 
-  @Post('/posts/image')
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
+  @RabbitSubscribe({
+    exchange: process.env.RABBIT_EXCHANGE,
+    routingKey: RabbitMqRouting.UploadPostImage,
+    queue: process.env.RABBIT_QUEUE,
   })
   @UseInterceptors(FileInterceptor('file'))
   public async uploadPostImage(
-    @UploadedFile(ValidateImagePipe) file: Express.Multer.File
+    @UploadedFile(ValidateImagePipe) dto: UploadPostMediaDto
   ) {
-    const fileEntity = await this.fileUploaderService.uploadPostImage(file);
-    return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
+    this.fileUploaderService.uploadPostImage(dto);
+  }
+
+  @RabbitSubscribe({
+    exchange: process.env.RABBIT_EXCHANGE,
+    routingKey: RabbitMqRouting.UploadPostVideo,
+    queue: process.env.RABBIT_QUEUE,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  public async uploadPostVideo(@UploadedFile() dto: UploadPostMediaDto) {
+    this.fileUploaderService.uploadPostVideo(dto);
   }
 
   @Get(':fileId')

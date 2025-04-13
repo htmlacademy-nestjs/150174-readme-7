@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Inject } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { join } from 'node:path';
 
@@ -7,6 +12,7 @@ import {
   ApiServicesConfig,
 } from '@project/api-config';
 import { AUTH_CONTROLLER_NAME, AuthEndpoints } from '@project/authentication';
+import { JwtTokenPayload } from '@avylando-readme/core';
 
 export class CheckAuthGuard implements CanActivate {
   constructor(
@@ -17,7 +23,7 @@ export class CheckAuthGuard implements CanActivate {
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { data } = await this.httpService.axiosRef.post(
+    const { data } = await this.httpService.axiosRef.post<JwtTokenPayload>(
       join(this.getAuthenticationServicePath(), AuthEndpoints.CHECK_TOKEN),
       {},
       {
@@ -26,6 +32,11 @@ export class CheckAuthGuard implements CanActivate {
         },
       }
     );
+    console.log(data);
+    if (!data) {
+      throw new UnauthorizedException();
+    }
+
     request['user'] = data;
     return true;
   }

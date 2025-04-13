@@ -27,7 +27,7 @@ import {
 } from '@project/api-config';
 import { join } from 'node:path';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiResponse } from '@nestjs/swagger';
+import { ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RegisterUserDto } from '../dto/register-user.dto';
 import { ApiNotifyService } from '@project/api-notify';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
@@ -35,6 +35,7 @@ import { AuthTokens, buildURI, RabbitMqRouting } from '@avylando-readme/core';
 import { NotifyAvatarUploadedDto } from '@project/file-storage-notify';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
+@ApiTags('account')
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);

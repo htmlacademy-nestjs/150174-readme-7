@@ -17,7 +17,7 @@ import {
   DEFAULT_POSTS_PAGE,
   DEFAULT_POSTS_SORT_BY,
   DEFAULT_POSTS_SORT_DIRECTION,
-} from './post.constants';
+} from '../module/post.constants';
 import { Transform } from 'class-transformer';
 
 class PostQuery {

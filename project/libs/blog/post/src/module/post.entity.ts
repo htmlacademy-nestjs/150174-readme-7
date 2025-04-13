@@ -9,10 +9,10 @@ class BlogPostEntity<T extends Post = Post>
   extends Entity
   implements StorableEntity<T>
 {
-  public status!: Post['status'];
-  public authorId!: Post['authorId'];
-  public kind!: Post['kind'];
-  public data!: Post['data'];
+  public status: Post['status'];
+  public authorId: Post['authorId'];
+  public kind: Post['kind'];
+  public data: Post['data'];
   public tags?: Post['tags'];
   public comments?: Post['comments'];
   public likesCount?: Post['likesCount'];

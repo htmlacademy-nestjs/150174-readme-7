@@ -9,6 +9,7 @@ import { ApiNotifyModule } from '@project/api-notify';
 import { CheckAuthGuard } from './guards/check-auth.guard';
 import { HTTP_CLIENT_MAX_REDIRECTS, HTTP_CLIENT_TIMEOUT } from './app.const';
 import { UsersController } from './controllers/users.controller';
+import { BlogPostsController } from './controllers/blog-posts.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { UsersController } from './controllers/users.controller';
     ApiConfigModule,
     ApiNotifyModule,
   ],
-  controllers: [UsersController],
+  controllers: [UsersController, BlogPostsController],
   providers: [CheckAuthGuard],
 })
 export class AppModule {}
