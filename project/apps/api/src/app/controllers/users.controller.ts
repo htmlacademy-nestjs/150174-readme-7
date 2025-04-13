@@ -6,12 +6,12 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Logger,
   Param,
   Post,
   Put,
   Req,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -37,6 +37,8 @@ import { ValidateMongoIdPipe } from '@project/pipes';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(
     private readonly httpService: HttpService,
     @Inject(API_SERVICES_PROVIDER_NAME)
@@ -73,7 +75,7 @@ export class UsersController {
   @Post(AuthEndpoints.REGISTER)
   @HttpCode(HttpStatus.CREATED)
   public async register(
-    @Body() dto: Omit<RegisterUserDto, 'avatar'>,
+    @Body() dto: RegisterUserDto,
     @UploadedFile() avatar?: Express.Multer.File
   ): Promise<UserRdo> {
     const { data } = await this.httpService.axiosRef.post<UserRdo>(
@@ -183,10 +185,16 @@ export class UsersController {
     queue: process.env['RABBIT_QUEUE'],
   })
   public async uploadUserAvatar(dto: NotifyAvatarUploadedDto) {
-    this.httpService.axiosRef.put(this.getUserPath(dto.userId), {
-      id: dto.userId,
-      avatarSrc: dto.path,
-    });
+    await this.httpService.axiosRef.put(
+      this.getUserAvatarPath(dto.userId),
+      {
+        avatarSrc: dto.path,
+      },
+      { headers: {} }
+    );
+    this.logger.log(
+      `User ${dto.userId} avatar ${dto.path} updated successfully`
+    );
   }
 
   private getAuthenticationServicePath() {
@@ -204,6 +212,13 @@ export class UsersController {
   private getUserPath(userId: string) {
     return buildURI(
       join(this.getAuthenticationServicePath(), AuthEndpoints.USER),
+      { pathParams: { id: userId } }
+    );
+  }
+
+  private getUserAvatarPath(userId: string) {
+    return buildURI(
+      join(this.getAuthenticationServicePath(), AuthEndpoints.USER_AVATAR),
       { pathParams: { id: userId } }
     );
   }

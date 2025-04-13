@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 
 import { NotificationSubscriber } from '@avylando-readme/core';
@@ -8,6 +8,8 @@ import { ADD_SUBSCRIBER_SUBJECT } from './mailer.const';
 
 @Injectable()
 export class NotificationMailerService {
+  private readonly logger = new Logger(NotificationMailerService.name);
+
   constructor(
     @Inject(NotificationMailConfig.KEY)
     private readonly mailConfig: ConfigType<typeof NotificationMailConfig>,
@@ -25,5 +27,6 @@ export class NotificationMailerService {
         email: `${subscriber.email}`,
       },
     });
+    this.logger.log(`New subscriber mail sent to ${subscriber.email}`);
   }
 }

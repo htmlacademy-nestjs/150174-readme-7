@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   HttpStatus,
@@ -109,6 +110,38 @@ export class AuthenticationService {
     return user;
   }
 
+  public async updateUser(
+    id: string,
+    dto: UpdateUserDto
+  ): Promise<BlogUserEntity> {
+    const user = await this.blogUserRepository.update({ id, ...dto });
+
+    return user;
+  }
+
+  public async setUserAvatar(
+    id: string,
+    dto: UpdateUserDto
+  ): Promise<BlogUserEntity> {
+    if (!dto.avatarSrc) {
+      throw new BadRequestException('Avatar source is required');
+    }
+
+    const user = await this.blogUserRepository.findById(id);
+    if (!user) {
+      throw new NotFoundException(AuthError.NOT_FOUND);
+    }
+
+    if (user.avatarSrc) {
+      throw new ConflictException('User already has an avatar');
+    }
+
+    const updatedUser = await this.updateUser(id, {
+      avatarSrc: dto.avatarSrc,
+    });
+    return updatedUser;
+  }
+
   public async createUserToken(user: User): Promise<AuthTokens> {
     const accessTokenPayload = createJWTPayload(user);
     const refreshTokenPayload = createRefreshJWTPayload(user);
@@ -153,12 +186,6 @@ export class AuthenticationService {
     if (!user) {
       throw new NotFoundException(AuthError.NOT_FOUND);
     }
-
-    return user;
-  }
-
-  public async updateUser(dto: UpdateUserDto): Promise<BlogUserEntity> {
-    const user = await this.blogUserRepository.update(dto);
 
     return user;
   }

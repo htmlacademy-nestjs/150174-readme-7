@@ -59,7 +59,7 @@ export class FileUploaderController {
   })
   @RabbitSubscribe({
     exchange: process.env.RABBIT_EXCHANGE,
-    routingKey: RabbitMqRouting.UpdateAvatar,
+    routingKey: RabbitMqRouting.UploadAvatar,
     queue: process.env.RABBIT_QUEUE,
   })
   @UseInterceptors(FileInterceptor('file'))

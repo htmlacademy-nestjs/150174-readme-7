@@ -99,6 +99,8 @@ class FileUploaderService {
       await ensureDir(join(uploadDirectoryPath, subDirectory));
       await writeFile(path, Buffer.from(file.buffer));
 
+      this.logger.log(`File saved to ${path}`);
+
       return {
         extension: fileExtension as string,
         hashName,

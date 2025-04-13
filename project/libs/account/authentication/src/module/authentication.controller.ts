@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -14,7 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { fillDto, RabbitMqRouting, User } from '@avylando-readme/core';
+import { fillDto, User } from '@avylando-readme/core';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { AuthenticationService } from './authentication.service';
@@ -23,8 +22,6 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoggedUserRdo } from '../rdo/logged-user.rdo';
 import { UserRdo } from '../rdo/user.rdo';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { NotifyAvatarUploadedDto } from '@project/file-storage-notify';
 import {
   AUTH_CONTROLLER_NAME,
   AuthEndpoints,
@@ -92,7 +89,32 @@ export class AuthenticationController {
     @Param('id', ValidateMongoIdPipe) id: string,
     @Body() dto: UpdateUserDto
   ): Promise<User> {
-    const user = await this.authenticationService.updateUser(dto);
+    const user = await this.authenticationService.updateUser(id, dto);
+    return fillDto(UserRdo, user.toPlainObject());
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User avatar updated',
+  })
+  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Avatar source is required',
+  })
+  @ApiResponse({
+    status: HttpStatus.CONFLICT,
+    description: 'User already has an avatar',
+  })
+  @Put(AuthEndpoints.USER_AVATAR)
+  @HttpCode(HttpStatus.OK)
+  public async setAvatar(
+    @Param('id', ValidateMongoIdPipe) id: string,
+    @Body() dto: UpdateUserDto
+  ): Promise<User> {
+    const user = await this.authenticationService.setUserAvatar(id, {
+      avatarSrc: dto.avatarSrc,
+    });
     return fillDto(UserRdo, user.toPlainObject());
   }
 
@@ -130,17 +152,5 @@ export class AuthenticationController {
       throw new UnauthorizedException();
     }
     await this.authenticationService.logout(user.id);
-  }
-
-  @RabbitSubscribe({
-    exchange: process.env['RABBIT_EXCHANGE'],
-    routingKey: RabbitMqRouting.NotifyAvatarUploaded,
-    queue: process.env['RABBIT_QUEUE'],
-  })
-  public async updateUserAvatar(dto: NotifyAvatarUploadedDto) {
-    this.authenticationService.updateUser({
-      id: dto.userId,
-      avatarSrc: dto.path,
-    });
   }
 }

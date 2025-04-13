@@ -7,16 +7,11 @@ import { BlogUserEntity } from '@project/blog-user';
 
 export class UpdateUserDto
   implements
-    Omit<WithRequiredEntityAttributes<BlogUserEntity>, 'role' | 'passwordHash'>
+    Omit<
+      WithRequiredEntityAttributes<BlogUserEntity>,
+      'id' | 'role' | 'passwordHash'
+    >
 {
-  @ApiProperty({
-    description: 'User id',
-    type: 'string',
-    example: '1234567890abcdef12345678',
-  })
-  @IsString({ message: 'Id required' })
-  public id: string;
-
   @ApiProperty({
     description: 'User first name',
     type: 'string',
