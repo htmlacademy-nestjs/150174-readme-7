@@ -1,14 +1,13 @@
 import 'multer';
 
-const transformFileBuffer = (
-  file: Express.Multer.File
-): Express.Multer.File => {
-  const buffer = Buffer.from(file.buffer);
-  return {
-    ...file,
-    // @ts-ignore
-    buffer: { ...file.buffer, data: Buffer.from(file.buffer.data) },
-  };
+const fileToFormData = (file: Express.Multer.File): FormData => {
+  const formData = new FormData();
+  formData.append(
+    'file',
+    new Blob([file.buffer], { type: file.mimetype }),
+    file.originalname
+  );
+  return formData;
 };
 
-export { transformFileBuffer };
+export { fileToFormData };

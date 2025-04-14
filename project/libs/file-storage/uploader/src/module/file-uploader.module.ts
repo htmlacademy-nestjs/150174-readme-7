@@ -8,10 +8,12 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import {
   FileStorageConfigModule,
   FileStorageConfigNamespace,
+  getFileStorageRabbitMQOptions,
 } from '@project/file-storage-config';
 import { FileUploaderController } from './file-uploader.controller';
 import { FileUploaderService } from './file-uploader.service';
 import { FileStorageNotifyModule } from '@project/file-storage-notify';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
 const SERVE_ROOT = '/static';
 
@@ -36,6 +38,10 @@ const SERVE_ROOT = '/static';
       },
     }),
     MongooseModule.forFeature([{ name: FileModel.name, schema: FileSchema }]),
+    RabbitMQModule.forRootAsync(
+      RabbitMQModule,
+      getFileStorageRabbitMQOptions()
+    ),
     FileStorageConfigModule,
     FileStorageNotifyModule,
   ],

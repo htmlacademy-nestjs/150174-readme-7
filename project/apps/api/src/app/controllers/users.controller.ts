@@ -23,6 +23,7 @@ import {
 } from '@project/authentication';
 import {
   API_SERVICES_PROVIDER_NAME,
+  ApiRabbitHandlerName,
   ApiServicesConfig,
 } from '@project/api-config';
 import { join } from 'node:path';
@@ -179,9 +180,7 @@ export class UsersController {
   }
 
   @RabbitSubscribe({
-    exchange: process.env['RABBIT_EXCHANGE'],
-    routingKey: RabbitMqRouting.NotifyAvatarUploaded,
-    queue: process.env['RABBIT_QUEUE'],
+    name: ApiRabbitHandlerName.UPLOAD_AVATAR,
   })
   public async uploadUserAvatar(dto: NotifyAvatarUploadedDto) {
     this.logger.log(

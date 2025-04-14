@@ -57,7 +57,7 @@ export { ConfigSchema } from './lib/classes/config-schema';
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';
 export { formatSchemaValidationErrors } from './lib/helpers/schema.helpers';
-export { transformFileBuffer } from './lib/helpers/file.helpers';
+export { fileToFormData } from './lib/helpers/file.helpers';
 export { buildURI } from './lib/helpers/uri.helpers';
 export {
   createJWTPayload,
@@ -75,6 +75,7 @@ export type { UnionToIntersection } from './lib/types/union-to-intersection.type
 export type { WithOptionalDbAttributes } from './lib/types/with-optional-db-attributes.type';
 export type { WithRequiredId } from './lib/types/with-required-id.type';
 export type { WithRequiredEntityAttributes } from './lib/types/with-required-entity-attributes.type';
+export type { GetConfigMap } from './lib/types/get-config-map.type';
 
 // Constants
 export { MAX_PORT, MIN_PORT } from './lib/constants/network.constants';

@@ -13,17 +13,18 @@ import { ValidateImagePipe, ValidateMongoIdPipe } from '@project/pipes';
 
 import { UploadedFileRdo } from '../rdo/uploaded-file.rdo';
 import { FileUploaderService } from './file-uploader.service';
-import { fillDto, RabbitMqRouting } from '@avylando-readme/core';
+import { fillDto } from '@avylando-readme/core';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
 import { UpdateAvatarDto } from '@project/account-notify';
-import { UploadPostMediaDto } from '@project/api-notify';
+import { FileStorageRabbitHandlerName } from '@project/file-storage-config';
+import { FileUploaderEndpoint } from './file-uploader.constant';
 
 @Controller('/')
 export class FileUploaderController {
   constructor(private readonly fileUploaderService: FileUploaderService) {}
 
-  @Post('/')
+  @Post(FileUploaderEndpoint.COMMON)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -42,26 +43,8 @@ export class FileUploaderController {
     return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-        userId: {
-          type: 'string',
-          format: 'mongo-id',
-        },
-      },
-    },
-  })
   @RabbitSubscribe({
-    exchange: process.env.RABBIT_EXCHANGE,
-    routingKey: RabbitMqRouting.UploadAvatar,
-    queue: process.env.RABBIT_QUEUE,
+    name: FileStorageRabbitHandlerName.NOTIFY_AVATAR_UPLOADED,
   })
   @UseInterceptors(FileInterceptor('file'))
   public async uploadAvatar(
@@ -71,29 +54,47 @@ export class FileUploaderController {
     this.fileUploaderService.uploadUserAvatar(dto);
   }
 
-  @RabbitSubscribe({
-    exchange: process.env.RABBIT_EXCHANGE,
-    routingKey: RabbitMqRouting.UploadPostImage,
-    queue: process.env.RABBIT_QUEUE,
+  @Post(FileUploaderEndpoint.POST_IMAGE)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('file'))
   public async uploadPostImage(
-    @UploadedFile(ValidateImagePipe) dto: UploadPostMediaDto
+    @UploadedFile(ValidateImagePipe) file: Express.Multer.File
   ) {
-    this.fileUploaderService.uploadPostImage(dto);
+    const fileEntity = await this.fileUploaderService.uploadPostImage(file);
+    return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 
-  @RabbitSubscribe({
-    exchange: process.env.RABBIT_EXCHANGE,
-    routingKey: RabbitMqRouting.UploadPostVideo,
-    queue: process.env.RABBIT_QUEUE,
+  @Post(FileUploaderEndpoint.POST_VIDEO)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('file'))
-  public async uploadPostVideo(@UploadedFile() dto: UploadPostMediaDto) {
-    this.fileUploaderService.uploadPostVideo(dto);
+  public async uploadPostVideo(@UploadedFile() file: Express.Multer.File) {
+    const fileEntity = await this.fileUploaderService.uploadPostVideo(file);
+    return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 
-  @Get(':fileId')
+  @Get(FileUploaderEndpoint.GET_FILE)
   public async show(@Param('fileId', ValidateMongoIdPipe) fileId: string) {
     const existFile = await this.fileUploaderService.getFile(fileId);
     return fillDto(UploadedFileRdo, existFile.toPlainObject());

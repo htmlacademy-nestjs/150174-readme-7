@@ -5,8 +5,8 @@ import {
 } from '../api-config.constants';
 import { IsNumber, IsString, Max, Min } from 'class-validator';
 import { MAX_PORT, MIN_PORT } from '@avylando-readme/core';
-import { ApiAppConfig } from './api-app-config.interface';
 import { ConfigExtentionOptions } from 'libs/config/src/lib/config-extensions.type';
+import { ApiAppConfig } from '../api-config.interface';
 
 class ApiAppConfigSchema extends AppBaseConfigSchema implements ApiAppConfig {
   @IsNumber(

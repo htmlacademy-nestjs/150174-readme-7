@@ -14,7 +14,6 @@ import {
   Query,
   Req,
   UnauthorizedException,
-  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -27,12 +26,14 @@ import {
 } from '@nestjs/swagger';
 import {
   buildURI,
+  fileToFormData,
   PaginationResult,
-  RabbitMqRouting,
+  PostData,
 } from '@avylando-readme/core';
 import { HttpService } from '@nestjs/axios';
 import {
   API_SERVICES_PROVIDER_NAME,
+  ApiRabbitHandlerName,
   ApiServicesConfig,
 } from '@project/api-config';
 import { ApiNotifyService } from '@project/api-notify';
@@ -48,8 +49,7 @@ import { CheckAuthGuard } from '../guards/check-auth.guard';
 import { RequestWithTokenPayload } from '@project/authentication';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { NotifyPostMediaUploadedDto } from 'libs/file-storage/notify/src/lib/dto/notify-post-media-uploaded.dto';
+import { FileUploaderEndpoint, UploadedFileRdo } from '@project/file-uploader';
 
 @ApiTags('blog')
 @Controller('blog/posts')
@@ -76,6 +76,20 @@ class BlogPostsController {
     return buildURI(
       join(this.getPostsServicePath(), BlogPostsEndpoint.LIKE_POST),
       { pathParams: { id: postId } }
+    );
+  }
+
+  private getPostImageUploadPath() {
+    return join(
+      this.services.fileStorageServiceUri,
+      FileUploaderEndpoint.POST_IMAGE
+    );
+  }
+
+  private getPostVideoUploadPath() {
+    return join(
+      this.services.fileStorageServiceUri,
+      FileUploaderEndpoint.POST_VIDEO
     );
   }
 
@@ -129,28 +143,44 @@ class BlogPostsController {
       (post.kind === 'image' && !postImage) ||
       (post.kind === 'video' && !postVideo)
     ) {
-      throw new BadRequestException();
+      throw new BadRequestException(`Post kind and file type mismatch`);
+    }
+
+    let postData = { ...post.data };
+    if (postImage) {
+      const { data: file } =
+        await this.httpService.axiosRef.post<UploadedFileRdo>(
+          this.getPostImageUploadPath(),
+          fileToFormData(postImage),
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+
+      postData = { ...postData, imageSrc: file.path };
+    }
+
+    if (postVideo) {
+      const { data: file } =
+        await this.httpService.axiosRef.post<UploadedFileRdo>(
+          this.getPostVideoUploadPath(),
+          fileToFormData(postVideo),
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+
+      postData = { ...postData, videoSrc: file.path };
     }
 
     const { data } = await this.httpService.axiosRef.post<PostRdo>(
       this.getShowPostsPath(),
-      { ...post, authorId: user.sub }
+      { ...post, authorId: user.sub, data: postData }
     );
-
-    if (postImage) {
-      await this.notifyService.uploadPostImage({
-        postId: data.id,
-        file: postImage,
-      });
-    }
-
-    if (postVideo) {
-      await this.notifyService.uploadPostVideo({
-        postId: data.id,
-        file: postVideo,
-      });
-    }
-
     return data;
   }
 
@@ -229,30 +259,6 @@ class BlogPostsController {
     );
 
     return data;
-  }
-
-  @RabbitSubscribe({
-    exchange: process.env['RABBIT_EXCHANGE'],
-    routingKey: RabbitMqRouting.NotifyPostImageUploaded,
-    queue: process.env['RABBIT_QUEUE'],
-  })
-  public async uploadPostImage(dto: NotifyPostMediaUploadedDto) {
-    this.logger.log('Uploading image for post', this.getPostPath(dto.postId));
-    this.httpService.axiosRef.put(this.getPostPath(dto.postId), {
-      imageSrc: dto.path,
-    });
-  }
-
-  @RabbitSubscribe({
-    exchange: process.env['RABBIT_EXCHANGE'],
-    routingKey: RabbitMqRouting.NotifyPostVideoUploaded,
-    queue: process.env['RABBIT_QUEUE'],
-  })
-  public async uploadPostVideo(dto: NotifyPostMediaUploadedDto) {
-    this.logger.log('Uploading videao for post', this.getPostPath(dto.postId));
-    this.httpService.axiosRef.put(this.getPostPath(dto.postId), {
-      videoSrc: dto.path,
-    });
   }
 }
 

@@ -1,12 +1,19 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { CreateBasePostDto } from './create-base-post.dto';
-import { CreateImagePostDto } from './create-image-post.dto';
-import { CreateVideoPostDto } from './create-video-post.dto';
-import { CreateLinkPostDto, CreateQuotePostDto, CreateTextPostDto } from '@project/blog-post';
+import {
+  CreateLinkPostDto,
+  CreateQuotePostDto,
+  CreateTextPostDto,
+  CreateImagePostDto,
+  CreateVideoPostDto,
+} from '@project/blog-post';
 
 @ApiExtraModels(
   CreateImagePostDto,
+  CreateLinkPostDto,
+  CreateTextPostDto,
+  CreateQuotePostDto,
   CreateVideoPostDto
 )
 export class CreatePostDto extends CreateBasePostDto {

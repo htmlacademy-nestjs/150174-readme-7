@@ -1,4 +1,6 @@
+import { GetConfigMap } from '@avylando-readme/core';
 import { RabbitMqConfig } from './rabbit-config.interface';
+import type { RabbitMQConfig as LibConfig } from '@golevelup/nestjs-rabbitmq';
 import { ConfigService } from '@nestjs/config';
 
 function getRabbitMQConnectionString({
@@ -10,9 +12,19 @@ function getRabbitMQConnectionString({
   return `amqp://${user}:${password}@${host}:${port}`;
 }
 
-export function getRabbitMQOptions(namespace: string) {
+export function getRabbitMQOptions<
+  Namespace extends string,
+  T extends RabbitMqConfig
+>(
+  namespace: Namespace,
+  extend?: (
+    config: ConfigService<GetConfigMap<Namespace, T>>
+  ) => Partial<LibConfig>
+) {
   return {
-    useFactory: async (config: ConfigService) => {
+    useFactory: async (
+      config: ConfigService<GetConfigMap<Namespace, T>>
+    ): Promise<LibConfig> => {
       return {
         exchanges: [
           {
@@ -28,6 +40,7 @@ export function getRabbitMQOptions(namespace: string) {
         }),
         connectionInitOptions: { wait: false },
         enableControllerDiscovery: true,
+        ...extend?.(config),
       };
     },
     inject: [ConfigService],

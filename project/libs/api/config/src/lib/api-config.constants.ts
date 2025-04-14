@@ -1,4 +1,4 @@
-import { ApiAppConfig } from './configurations/api-app-config.interface';
+import { ApiAppConfig } from './api-config.interface';
 
 const ApiConfigNamespace = {
   APP: 'api-app',

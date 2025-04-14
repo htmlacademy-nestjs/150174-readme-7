@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ApiConfigModule, ApiConfigNamespace } from '@project/api-config';
+import { ApiConfigModule, getApiRabbitMQOptions } from '@project/api-config';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 
-import { getRabbitMQOptions } from '@avylando/config';
 import { HttpModule } from '@nestjs/axios';
 import { ApiNotifyModule } from '@project/api-notify';
 
@@ -17,10 +16,7 @@ import { BlogPostsController } from './controllers/blog-posts.controller';
       timeout: HTTP_CLIENT_TIMEOUT,
       maxRedirects: HTTP_CLIENT_MAX_REDIRECTS,
     }),
-    RabbitMQModule.forRootAsync(
-      RabbitMQModule,
-      getRabbitMQOptions(ApiConfigNamespace.RABBIT)
-    ),
+    RabbitMQModule.forRootAsync(RabbitMQModule, getApiRabbitMQOptions()),
     ApiConfigModule,
     ApiNotifyModule,
   ],

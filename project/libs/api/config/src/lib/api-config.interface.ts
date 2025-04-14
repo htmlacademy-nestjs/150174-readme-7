@@ -1,3 +1,5 @@
+import { RabbitMqConfig } from '@avylando/config';
+
 interface ApiAppConfig {
   accountPort: number;
   accountHost: string;
@@ -16,4 +18,8 @@ interface ApiAppConfig {
   notificationPath: string;
 }
 
-export { ApiAppConfig };
+type ApiRabbitConfig = {
+  fileStorageRabbitQueue: string;
+};
+
+export type { ApiAppConfig, ApiRabbitConfig };

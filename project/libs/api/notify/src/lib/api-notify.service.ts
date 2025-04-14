@@ -6,7 +6,6 @@ import { RabbitMqRouting } from '@avylando-readme/core';
 import { ApiRabbitConfig } from '@project/api-config';
 
 import { UploadAvatarDto } from './dto/upload-avatar.dto';
-import { UploadPostMediaDto } from './dto/upload-post-media.dto';
 
 @Injectable()
 export class ApiNotifyService {
@@ -20,22 +19,6 @@ export class ApiNotifyService {
     return this.rabbitClient.publish<UploadAvatarDto>(
       this.rabbitOptions.exchange,
       RabbitMqRouting.UploadAvatar,
-      { ...dto }
-    );
-  }
-
-  public async uploadPostImage(dto: UploadPostMediaDto) {
-    return this.rabbitClient.publish<UploadPostMediaDto>(
-      this.rabbitOptions.exchange,
-      RabbitMqRouting.UploadPostImage,
-      { ...dto }
-    );
-  }
-
-  public async uploadPostVideo(dto: UploadPostMediaDto) {
-    return this.rabbitClient.publish<UploadPostMediaDto>(
-      this.rabbitOptions.exchange,
-      RabbitMqRouting.UploadPostVideo,
       { ...dto }
     );
   }

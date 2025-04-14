@@ -104,7 +104,8 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   }
 
   public async update(entity: BlogPostEntity): Promise<BlogPostEntity> {
-    const { data, tags, comments, ...commonPostData } = entity.toPlainObject();
+    const { data, tags, comments, likesCount, ...commonPostData } =
+      entity.toPlainObject();
 
     const updatedEntity = await this.client.post.update({
       where: {
