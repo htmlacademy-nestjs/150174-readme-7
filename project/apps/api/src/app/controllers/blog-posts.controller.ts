@@ -24,16 +24,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  buildURI,
-  fileToFormData,
-  PaginationResult,
-  PostData,
-} from '@avylando-readme/core';
+import { buildURI, PaginationResult } from '@avylando-readme/core';
 import { HttpService } from '@nestjs/axios';
 import {
   API_SERVICES_PROVIDER_NAME,
-  ApiRabbitHandlerName,
   ApiServicesConfig,
 } from '@project/api-config';
 import { ApiNotifyService } from '@project/api-notify';
@@ -49,7 +43,7 @@ import { CheckAuthGuard } from '../guards/check-auth.guard';
 import { RequestWithTokenPayload } from '@project/authentication';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { FileUploaderEndpoint, UploadedFileRdo } from '@project/file-uploader';
+import { BlogPostService } from '../services/blog-post.service';
 
 @ApiTags('blog')
 @Controller('blog/posts')
@@ -79,24 +73,11 @@ class BlogPostsController {
     );
   }
 
-  private getPostImageUploadPath() {
-    return join(
-      this.services.fileStorageServiceUri,
-      FileUploaderEndpoint.POST_IMAGE
-    );
-  }
-
-  private getPostVideoUploadPath() {
-    return join(
-      this.services.fileStorageServiceUri,
-      FileUploaderEndpoint.POST_VIDEO
-    );
-  }
-
   constructor(
     private readonly httpService: HttpService,
     @Inject(API_SERVICES_PROVIDER_NAME)
     private readonly services: ApiServicesConfig,
+    private readonly blogPostService: BlogPostService,
     private readonly notifyService: ApiNotifyService
   ) {}
 
@@ -124,8 +105,8 @@ class BlogPostsController {
   @ApiBearerAuth('JWT')
   @Post('/')
   public async createPost(
-    @Req() { user }: RequestWithTokenPayload,
-    @Body() post: CreatePostDto,
+    @Req() { user, ...req }: RequestWithTokenPayload,
+    @Body() dto: CreatePostDto,
     @UploadedFiles()
     files: {
       image?: Express.Multer.File[];
@@ -135,51 +116,11 @@ class BlogPostsController {
     if (!user) {
       throw new UnauthorizedException();
     }
-
-    const { image, video } = files;
-    const postImage = image?.[0];
-    const postVideo = video?.[0];
-    if (
-      (post.kind === 'image' && !postImage) ||
-      (post.kind === 'video' && !postVideo)
-    ) {
-      throw new BadRequestException(`Post kind and file type mismatch`);
-    }
-
-    let postData = { ...post.data };
-    if (postImage) {
-      const { data: file } =
-        await this.httpService.axiosRef.post<UploadedFileRdo>(
-          this.getPostImageUploadPath(),
-          fileToFormData(postImage),
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
-
-      postData = { ...postData, imageSrc: file.path };
-    }
-
-    if (postVideo) {
-      const { data: file } =
-        await this.httpService.axiosRef.post<UploadedFileRdo>(
-          this.getPostVideoUploadPath(),
-          fileToFormData(postVideo),
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
-
-      postData = { ...postData, videoSrc: file.path };
-    }
+    const postData = await this.blogPostService.handlePostAssets(dto, files);
 
     const { data } = await this.httpService.axiosRef.post<PostRdo>(
       this.getShowPostsPath(),
-      { ...post, authorId: user.sub, data: postData }
+      { ...postData, authorId: user.sub }
     );
     return data;
   }

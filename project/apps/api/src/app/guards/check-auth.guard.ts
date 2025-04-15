@@ -33,10 +33,6 @@ export class CheckAuthGuard implements CanActivate {
       }
     );
 
-    if (!data) {
-      throw new UnauthorizedException();
-    }
-
     request['user'] = data;
     return true;
   }

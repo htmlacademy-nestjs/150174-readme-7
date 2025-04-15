@@ -1,7 +1,7 @@
 
 # Create a new post
 POST http://localhost:4000/api/blog/posts HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NTgwNTI1LCJleHAiOjE3NDQ1ODA4MjV9.3G6zz-Dx3IDopLBUAK1sC8Vq_bNPJsfJ51vuQm2euWo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
 Content-Type: application/json
 
 {
@@ -19,7 +19,7 @@ Content-Type: application/json
 
 # Create a new image post
 POST http://localhost:4000/api/blog/posts HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NTgxNjc3LCJleHAiOjE3NDQ1ODg4Nzd9.UndoMfE-7MzZNjGM-zKfM-kzUT1IFLeDvtw_7paEuaA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -32,19 +32,36 @@ Content-Disposition: form-data; name="image"; filename="blog.http"
 ###
 
 # Create a new video post
-POST http://localhost:3334/blog/posts HTTP/1.1
+POST http://localhost:4000/api/blog/posts HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="status";
+
+published
+--boundary
+Content-Disposition: form-data; name="tags";
+Content-Type: application/json
+
+["tag1", "tag2"]
+--boundary
+Content-Disposition: form-data; name="kind";
+
+video
+--boundary
+Content-Disposition: form-data; name="data";
 Content-Type: application/json
 
 {
-  "authorId": "67d9e507897b919848c35d95",
-  "status": "published",
-  "tags": ["tag1", "tag2"],
-  "kind": "video",
-  "data": {
-    "title": "Post 1",
-    "videoSrc": "https://example.com/video.mp4"
-  }
+  "title": "Post title",
 }
+--boundary
+Content-Disposition: form-data; name="video"; filename="blog.http"
+Content-Type: text/html
+
+< ./blog.http
+--boundary--
 
 ###
 
