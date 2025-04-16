@@ -10,6 +10,7 @@ import { HTTP_CLIENT_MAX_REDIRECTS, HTTP_CLIENT_TIMEOUT } from './app.const';
 import { UsersController } from './controllers/users.controller';
 import { BlogPostsController } from './controllers/blog-posts.controller';
 import { BlogPostService } from './services/blog-post.service';
+import { BlogCommentsController } from './controllers/blog-comments.controller';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { BlogPostService } from './services/blog-post.service';
     ApiConfigModule,
     ApiNotifyModule,
   ],
-  controllers: [UsersController, BlogPostsController],
+  controllers: [UsersController, BlogPostsController, BlogCommentsController],
   providers: [CheckAuthGuard, BlogPostService],
 })
 export class AppModule {}

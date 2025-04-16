@@ -66,18 +66,19 @@ Content-Type: text/html
 ###
 
 # Get posts query
-GET http://localhost:3334/blog/posts?page=1&authorId=67d9e507897b919848c35d95&sortBy=commentsCount&sortDirection=asc HTTP/1.1
+GET http://localhost:4000/api/blog/posts?page=1&authorId=67d9e507897b919848c35d95&sortBy=commentsCount&sortDirection=asc HTTP/1.1
 Content-Type: application/json
 
 ###
 
 # Get post by ID
-GET http://localhost:3334/blog/posts/ab04593b-da99-4fe3-8b4b-e06d82e2efdd HTTP/1.1
+GET http://localhost:4000/api/blog/posts/ab04593b-da99-4fe3-8b4b-e06d82e2efdd HTTP/1.1
 
 ###
 
 # Update post by ID
-PUT http://localhost:3334/blog/posts/9a84d520-8aca-4067-8611-1f1804f2ecd7 HTTP/1.1
+PUT http://localhost:4000/api/blog/posts/62084476-916f-4f44-a7b3-7014c39f0643 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzU4NDI1LCJleHAiOjE3NDQ3NjU2MjV9.THBzknnw5aQO_wHovBR5lw6TYGbMF9Ub6pchKlsTyn8
 Content-Type: application/json
 
 {
@@ -90,12 +91,14 @@ Content-Type: application/json
 ###
 
 # Delete post by ID
-DELETE http://localhost:3334/blog/posts/57f20299-a5fa-4521-b549-d4d4067c923b HTTP/1.1
+DELETE http://localhost:4000/api/blog/posts/57f20299-a5fa-4521-b549-d4d4067c923b HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzU4NDI1LCJleHAiOjE3NDQ3NjU2MjV9.THBzknnw5aQO_wHovBR5lw6TYGbMF9Ub6pchKlsTyn8
 
 ###
 
 # Add post to favorites
-POST http://localhost:3334/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/favorites HTTP/1.1
+POST http://localhost:4000/api/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/favorites HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzU4NDI1LCJleHAiOjE3NDQ3NjU2MjV9.THBzknnw5aQO_wHovBR5lw6TYGbMF9Ub6pchKlsTyn8
 Content-Type: application/json
 
 {
@@ -105,10 +108,53 @@ Content-Type: application/json
 ###
 
 # Remove post from favorites
-DELETE http://localhost:3334/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/favorites HTTP/1.1
+DELETE http://localhost:4000/api/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/favorites HTTP/1.1
 Content-Type: application/json
 
 {
   "userId": "67d9e507897b919848c35d95"
 }
+###
+
+# /// COMMENTS
+
+# Get comments by post ID
+GET http://localhost:4000/api/blog/posts/693c1d21-a2ec-45b0-9b3c-633dc161a735/comments HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzU4NDI1LCJleHAiOjE3NDQ3NjU2MjV9.THBzknnw5aQO_wHovBR5lw6TYGbMF9Ub6pchKlsTyn8
+Content-Type: application/json
+
+###
+
+
+# Create a new comment
+POST http://localhost:4000/api/blog/posts/693c1d21-a2ec-45b0-9b3c-633dc161a735/comments HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzU4NDI1LCJleHAiOjE3NDQ3NjU2MjV9.THBzknnw5aQO_wHovBR5lw6TYGbMF9Ub6pchKlsTyn8
+Content-Type: application/json
+
+{
+  "authorId": "658170cbb954e9f5b905ccf4",
+  "content": "Something wrong.."
+}
+
+###
+
+# Get comment by ID
+GET http://localhost:4000/api/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/comments/c08fc578-4578-4958-98e3-b66f8ae64e57 HTTP/1.1
+
+###
+
+# Update comment by ID
+PUT http://localhost:4000/api/blog/posts/693c1d21-a2ec-45b0-9b3c-633dc161a735/comments/d7b4a272-705f-4ba5-8f16-bd690e35d24b HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzU4NDI1LCJleHAiOjE3NDQ3NjU2MjV9.THBzknnw5aQO_wHovBR5lw6TYGbMF9Ub6pchKlsTyn8
+Content-Type: application/json
+
+{
+  "content": "Content 1 updated"
+}
+
+###
+
+# Delete comment by ID
+DELETE http://localhost:4000/api/blog/posts/6d308040-96a2-4162-bea6-2338e9976540/comments/2d0387dd-864e-4f10-8e6b-ca5f9bd10d1c HTTP/1.1
+
 ###

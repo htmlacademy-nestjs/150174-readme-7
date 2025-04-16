@@ -8,8 +8,6 @@ export { UpdateUserDto } from './dto/update-user.dto';
 
 export { UserRdo } from './rdo/user.rdo';
 
-export { RequestWithTokenPayload } from './module/request-with-token-payload.interface';
-
 export {
   AuthEndpoints,
   AUTH_CONTROLLER_NAME,

@@ -41,6 +41,7 @@ export { AuthTokens } from './lib/interfaces/auth/auth-tokens.interface';
 export { JwtTokenPayload } from './lib/interfaces/auth/jwt-payload.interface';
 export { JwtToken } from './lib/interfaces/auth/jwt-token.interface';
 export { RefreshTokenPayload } from './lib/interfaces/auth/refresh-token-payload.interface';
+export { RequestWithTokenPayload } from './lib/interfaces/auth/request-with-token-payload.interface';
 
 // Query
 export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
@@ -78,4 +79,5 @@ export type { WithRequiredEntityAttributes } from './lib/types/with-required-ent
 export type { GetConfigMap } from './lib/types/get-config-map.type';
 
 // Constants
-export { MAX_PORT, MIN_PORT } from './lib/constants/network.constants';
+export { MAX_PORT, MIN_PORT } from './lib/constants/network.constant';
+export { PrismaHttpError } from './lib/constants/prisma-errors.constant';

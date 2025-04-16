@@ -1,4 +1,4 @@
-import { JwtTokenPayload } from '@avylando-readme/core';
+import { JwtTokenPayload } from './jwt-payload.interface';
 
 export interface RequestWithTokenPayload {
   user?: JwtTokenPayload;

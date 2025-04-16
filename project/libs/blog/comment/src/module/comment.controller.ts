@@ -15,9 +15,13 @@ import { UpdateCommentDto } from '../dto/update-comment.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto } from '@avylando-readme/core';
 import { CommentRdo } from '../rdo/comment.rdo';
+import {
+  BLOG_COMMENTS_CONTROLLER_NAME,
+  BlogCommentsEndpoint,
+} from './comment.constants';
 
 @ApiTags('comments', 'blog')
-@Controller('posts/:postId/comments')
+@Controller(BLOG_COMMENTS_CONTROLLER_NAME)
 class CommentController {
   constructor(protected readonly commentService: CommentService) {}
 
@@ -25,7 +29,7 @@ class CommentController {
     status: HttpStatus.OK,
     description: 'Get comments by post id',
   })
-  @Get('/')
+  @Get(BlogCommentsEndpoint.COMMENTS)
   public async getCommentsByPostId(
     @Param('postId', ParseUUIDPipe) postId: string
   ) {
@@ -36,18 +40,8 @@ class CommentController {
     );
   }
 
-  @ApiResponse({ status: HttpStatus.OK, description: 'Get comment by id' })
-  @Get('/:id')
-  public async getComment(
-    @Param('postId', ParseUUIDPipe) _postId: string,
-    @Param('id', ParseUUIDPipe) id: string
-  ) {
-    const comment = await this.commentService.findComment(id);
-    return fillDto(CommentRdo, comment.toPlainObject());
-  }
-
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Comment created' })
-  @Post('/')
+  @Post(BlogCommentsEndpoint.COMMENTS)
   public async createComment(
     @Param('postId', ParseUUIDPipe) postId: string,
     @Body() dto: CreateCommentDto
@@ -56,8 +50,18 @@ class CommentController {
     return fillDto(CommentRdo, comment.toPlainObject());
   }
 
+  @ApiResponse({ status: HttpStatus.OK, description: 'Get comment by id' })
+  @Get(BlogCommentsEndpoint.COMMENT)
+  public async getComment(
+    @Param('postId', ParseUUIDPipe) _postId: string,
+    @Param('id', ParseUUIDPipe) id: string
+  ) {
+    const comment = await this.commentService.findComment(id);
+    return fillDto(CommentRdo, comment.toPlainObject());
+  }
+
   @ApiResponse({ status: HttpStatus.OK, description: 'Comment updated' })
-  @Put('/:id')
+  @Put(BlogCommentsEndpoint.COMMENT)
   public async updateComment(
     @Param('postId', ParseUUIDPipe) _postId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -71,7 +75,7 @@ class CommentController {
     status: HttpStatus.NO_CONTENT,
     description: 'Comment deleted',
   })
-  @Delete('/:id')
+  @Delete(BlogCommentsEndpoint.COMMENT)
   public async deleteComment(
     @Param('postId', ParseUUIDPipe) _postId: string,
     @Param('id', ParseUUIDPipe) id: string

@@ -14,7 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { fillDto, User } from '@avylando-readme/core';
+import { fillDto, User, RequestWithTokenPayload } from '@avylando-readme/core';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { AuthenticationService } from './authentication.service';
@@ -31,7 +31,6 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { JwtRefreshGuard } from '../guards/jwt-refresh.guard';
 import { RequestWithUser } from './request-with-user.interface';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { RequestWithTokenPayload } from './request-with-token-payload.interface';
 
 @ApiTags('authentication')
 @Controller(AUTH_CONTROLLER_NAME)

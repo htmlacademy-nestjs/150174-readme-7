@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpStatus,
   Inject,
@@ -32,7 +33,8 @@ import {
 } from '@project/api-config';
 import { ApiNotifyService } from '@project/api-notify';
 import {
-  UpdatePostDto,
+  UpdatePostDto as LibUpdatePostDto,
+  CreatePostDto as LibCreatePostDto,
   PostRdo,
   PostQuery,
   BLOG_POSTS_CONTROLLER_NAME,
@@ -40,10 +42,11 @@ import {
 } from '@project/blog-post';
 import { join } from 'node:path';
 import { CheckAuthGuard } from '../guards/check-auth.guard';
-import { RequestWithTokenPayload } from '@project/authentication';
+import { RequestWithTokenPayload } from '@avylando-readme/core';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { BlogPostService } from '../services/blog-post.service';
+import { UpdatePostDto } from '../dto/update-post/update-post.dto';
 
 @ApiTags('blog')
 @Controller('blog/posts')
@@ -105,7 +108,7 @@ class BlogPostsController {
   @ApiBearerAuth('JWT')
   @Post('/')
   public async createPost(
-    @Req() { user, ...req }: RequestWithTokenPayload,
+    @Req() { user }: RequestWithTokenPayload,
     @Body() dto: CreatePostDto,
     @UploadedFiles()
     files: {
@@ -117,11 +120,15 @@ class BlogPostsController {
       throw new UnauthorizedException();
     }
     const postData = await this.blogPostService.handlePostAssets(dto, files);
-
+    const libDto: LibCreatePostDto = {
+      ...postData,
+      authorId: user.sub,
+    };
     const { data } = await this.httpService.axiosRef.post<PostRdo>(
       this.getShowPostsPath(),
-      { ...postData, authorId: user.sub }
+      libDto
     );
+    this.logger.log(`Post created: ${data.id}`);
     return data;
   }
 
@@ -141,20 +148,38 @@ class BlogPostsController {
   @Put('/:id')
   public async updatePost(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() post: UpdatePostDto
+    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Body() dto: UpdatePostDto
   ) {
+    const existingPost = await this.findPost(id);
+    if (existingPost.authorId !== user.sub) {
+      throw new ForbiddenException('You are not the author of this post');
+    }
+
+    const libDto: LibUpdatePostDto = {
+      ...dto,
+      authorId: user.sub,
+    };
+
     const { data } = await this.httpService.axiosRef.put<PostRdo>(
       this.getPostPath(id),
-      post
+      libDto
     );
-
+    this.logger.log(`Post updated: ${data.id}`);
     return data;
   }
 
   @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })
   @Delete('/:id')
-  public async deletePost(@Param('id', ParseUUIDPipe) id: string) {
+  public async deletePost(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() { user }: Required<RequestWithTokenPayload>
+  ) {
+    const existingPost = await this.findPost(id);
+    if (existingPost.authorId !== user.sub) {
+      throw new ForbiddenException('You are not the author of this post');
+    }
     await this.httpService.axiosRef.delete(this.getPostPath(id));
   }
 

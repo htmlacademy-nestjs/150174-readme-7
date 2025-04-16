@@ -33,6 +33,10 @@ export class CheckAuthGuard implements CanActivate {
       }
     );
 
+    if (!data) {
+      throw new UnauthorizedException('[CheckAuthGuard]: Invalid token');
+    }
+
     request['user'] = data;
     return true;
   }
