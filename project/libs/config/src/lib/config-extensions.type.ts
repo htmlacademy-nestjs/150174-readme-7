@@ -1,6 +1,7 @@
 type ConfigExtentionOptions = {
   envVariable: string;
   defaultValue?: string;
+  transform?: (value: string) => string | number;
 };
 
 type ConfigExtensions = {

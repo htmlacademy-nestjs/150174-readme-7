@@ -1,4 +1,4 @@
-import { ClassConstructor, plainToClass } from 'class-transformer';
+import { ClassConstructor } from 'class-transformer';
 import { JwtConfig } from './jwt.interface';
 import { JwtConfigSchema } from './jwt.schema';
 import { registerAs } from '@nestjs/config';
@@ -13,8 +13,10 @@ function getJwtConfig<Extensions extends ConfigExtensions>(
   extensions?: Extensions
 ): JwtConfig & GetConfigFromExtensions<Extensions> {
   const config: JwtConfig = {
-    tokenSecret: process.env.JWT_TOKEN_SECRET,
-    tokenExpiration: process.env.JWT_TOKEN_EXPIRATION,
+    accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
+    accessTokenExpiration: process.env.ACCESS_TOKEN_EXPIRATION,
+    refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
+    refreshTokenExpiration: process.env.REFRESH_TOKEN_EXPIRATION,
   };
 
   return getConfigWithExtensions(config, schema, extensions);

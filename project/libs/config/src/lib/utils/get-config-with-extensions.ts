@@ -10,8 +10,11 @@ const extractProcessEnv = <T extends ConfigExtensions>(
 ): GetConfigFromExtensions<T> => {
   const result = {} as GetConfigFromExtensions<T>;
   for (const key in extensions) {
-    const { envVariable, defaultValue } = extensions[key];
-    result[key] = process.env[envVariable] || defaultValue;
+    const { envVariable, defaultValue, transform } = extensions[key];
+    const value = transform
+      ? transform(process.env[envVariable])
+      : process.env[envVariable];
+    result[key] = value || defaultValue;
   }
   return result;
 };

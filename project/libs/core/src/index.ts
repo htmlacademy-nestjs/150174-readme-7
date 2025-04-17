@@ -37,8 +37,11 @@ export { MongoRepository } from './lib/classes/repository/mongo-repository';
 export { PostgresRepository } from './lib/classes/repository/postgres-repository';
 
 // Auth
+export { AuthTokens } from './lib/interfaces/auth/auth-tokens.interface';
 export { JwtTokenPayload } from './lib/interfaces/auth/jwt-payload.interface';
 export { JwtToken } from './lib/interfaces/auth/jwt-token.interface';
+export { RefreshTokenPayload } from './lib/interfaces/auth/refresh-token-payload.interface';
+export { RequestWithTokenPayload } from './lib/interfaces/auth/request-with-token-payload.interface';
 
 // Query
 export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
@@ -55,6 +58,13 @@ export { ConfigSchema } from './lib/classes/config-schema';
 // Helpers
 export { fillDto } from './lib/helpers/dto.helpers';
 export { formatSchemaValidationErrors } from './lib/helpers/schema.helpers';
+export { fileToFormData } from './lib/helpers/file.helpers';
+export { buildURI } from './lib/helpers/uri.helpers';
+export {
+  createJWTPayload,
+  createRefreshJWTPayload,
+} from './lib/helpers/jwt.helpers';
+export { parseTime } from './lib/helpers/datetime.helpers';
 
 // Utility types
 export type {
@@ -64,3 +74,10 @@ export type {
 export type { PlainObject } from './lib/types/plain-object.type';
 export type { UnionToIntersection } from './lib/types/union-to-intersection.type';
 export type { WithOptionalDbAttributes } from './lib/types/with-optional-db-attributes.type';
+export type { WithRequiredId } from './lib/types/with-required-id.type';
+export type { WithRequiredEntityAttributes } from './lib/types/with-required-entity-attributes.type';
+export type { GetConfigMap } from './lib/types/get-config-map.type';
+
+// Constants
+export { MAX_PORT, MIN_PORT } from './lib/constants/network.constant';
+export { PrismaHttpError } from './lib/constants/prisma-errors.constant';

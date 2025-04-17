@@ -6,7 +6,7 @@ export class UserRdo implements User {
   public id: string;
 
   @Expose()
-  public avatarSrc: string;
+  public avatarSrc?: string;
 
   @Expose()
   public email: string;

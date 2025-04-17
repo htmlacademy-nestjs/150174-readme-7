@@ -11,7 +11,7 @@ import { $Enums, Prisma } from '@prisma/client';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
-import { PostQuery } from './post.query';
+import { PostQuery } from '../query/post.query';
 
 type PostOptionalIncludes = Extract<
   keyof Prisma.PostInclude,
@@ -104,7 +104,8 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   }
 
   public async update(entity: BlogPostEntity): Promise<BlogPostEntity> {
-    const { data, tags, comments, ...commonPostData } = entity.toPlainObject();
+    const { data, tags, comments, likesCount, ...commonPostData } =
+      entity.toPlainObject();
 
     const updatedEntity = await this.client.post.update({
       where: {

@@ -1,5 +1,6 @@
 import { BaseEntity } from '../interfaces/base/base-entity.interface';
 import { DbAttributes } from '../interfaces/base/db-attributes.interface';
+import { StorableEntity } from '../interfaces/base/storable-entity.interface';
 import { WithOptionalDbAttributes } from '../types/with-optional-db-attributes.type';
 
 export abstract class Entity implements WithOptionalDbAttributes<BaseEntity> {
@@ -36,4 +37,6 @@ export abstract class Entity implements WithOptionalDbAttributes<BaseEntity> {
   public set updatedAt(value: Date) {
     this._updatedAt = value;
   }
+
+  abstract toPlainObject(): WithOptionalDbAttributes<BaseEntity>;
 }

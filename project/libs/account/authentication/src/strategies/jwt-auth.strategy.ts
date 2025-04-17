@@ -4,15 +4,19 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtTokenPayload } from '@avylando-readme/core';
 import { AccountConfigNamespace } from '@project/account-config';
+import { JwtStrategy } from './strategies.const';
 
 @Injectable()
-export class JwtAccessStrategy extends PassportStrategy(Strategy) {
+export class JwtAccessStrategy extends PassportStrategy(
+  Strategy,
+  JwtStrategy.accessToken
+) {
   constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get<string>(
-        `${AccountConfigNamespace.JWT}.tokenSecret`
+        `${AccountConfigNamespace.JWT}.accessTokenSecret`
       ) as string,
     });
   }

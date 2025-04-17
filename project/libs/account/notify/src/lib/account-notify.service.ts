@@ -22,4 +22,12 @@ export class AccountNotifyService {
       { ...dto }
     );
   }
+
+  public async deleteSubscriber(email: string) {
+    return this.rabbitClient.publish<string>(
+      this.rabbitOptions.exchange,
+      RabbitMqRouting.DeleteSubscriber,
+      email
+    );
+  }
 }

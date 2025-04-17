@@ -1,11 +1,12 @@
 import { NotificationSubscriber } from '@avylando-readme/core';
 import { Expose } from 'class-transformer';
-import { IsEmail, IsMongoId, IsString } from 'class-validator';
+import { IsEmail, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 class CreateSubscriberDto implements NotificationSubscriber {
   @IsMongoId()
+  @IsOptional()
   @Expose()
-  id: string;
+  id?: string;
 
   @IsEmail()
   @Expose()

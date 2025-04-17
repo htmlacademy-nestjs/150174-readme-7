@@ -1,6 +1,7 @@
 const FileStorageConfigNamespace = {
   APP: 'file-storage-app',
   MONGO: 'file-storage-mongo-db',
+  RABBIT: 'file-storage-rabbit-mq',
 } as const;
 
 const FileStorageConfigErrorMessages = {

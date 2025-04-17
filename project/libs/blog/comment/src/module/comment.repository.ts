@@ -69,15 +69,11 @@ class CommentRepository extends PostgresRepository<CommentEntity> {
   }
 
   public async deleteById(id: string): Promise<void> {
-    try {
-      await this.client.comment.delete({
-        where: {
-          id,
-        },
-      });
-    } catch (error) {
-      throw new NotFoundException(`Comment with id ${id} not found`);
-    }
+    await this.client.comment.delete({
+      where: {
+        id,
+      },
+    });
   }
 
   public async getCommentsByPostId(postId: string): Promise<CommentEntity[]> {

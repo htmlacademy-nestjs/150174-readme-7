@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Post } from '@avylando-readme/core';
 
 import { PostRepository } from './post.repository';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { PostFactory } from './post.factory';
 import { UpdatePostDto } from '../dto/update-post/update-post.dto';
-import { PostQuery } from './post.query';
+import { PostQuery } from '../query/post.query';
 
 @Injectable()
 class PostService {
@@ -26,6 +26,11 @@ class PostService {
 
   public async updatePost(id: string, dto: UpdatePostDto) {
     const existingPost = await this.findPost(id);
+
+    if (existingPost.authorId !== dto.authorId) {
+      throw new ForbiddenException(`You are not allowed to update this post.`);
+    }
+
     const postObject = existingPost.toPlainObject();
     const updatedData = {
       ...postObject,

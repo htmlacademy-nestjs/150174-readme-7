@@ -15,17 +15,22 @@ import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto, PaginationResult } from '@avylando-readme/core';
 import { PostRdo } from '../rdo/post.rdo';
-import { PostQuery } from './post.query';
+import { PostQuery } from '../query/post.query';
 import { LikePostDto } from '../dto/like-post-dto/like-post.dto';
+import { UpdatePostDto } from '../dto/update-post/update-post.dto';
+import {
+  BLOG_POSTS_CONTROLLER_NAME,
+  BlogPostsEndpoint,
+} from './post.constants';
 
 @ApiTags('posts', 'blog')
-@Controller('posts')
+@Controller(BLOG_POSTS_CONTROLLER_NAME)
 class PostController {
   constructor(private readonly postService: PostService) {}
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Get posts' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Posts not found' })
-  @Get('/')
+  @Get(BlogPostsEndpoint.POSTS)
   public async getPosts(
     @Query() query: PostQuery
   ): Promise<PaginationResult<PostRdo>> {
@@ -39,7 +44,7 @@ class PostController {
   }
 
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
-  @Post('/')
+  @Post(BlogPostsEndpoint.POSTS)
   public async createPost(@Body() post: CreatePostDto) {
     const newPost = await this.postService.createPost(post);
     return fillDto(PostRdo, newPost.toPlainObject());
@@ -47,24 +52,24 @@ class PostController {
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Find post' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
-  @Get('/:id')
+  @Get(BlogPostsEndpoint.POST)
   public async findPost(@Param('id', ParseUUIDPipe) id: string) {
     const post = await this.postService.findPost(id);
     return fillDto(PostRdo, post.toPlainObject());
   }
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
-  @Put('/:id')
+  @Put(BlogPostsEndpoint.POST)
   public async updatePost(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() post: CreatePostDto
+    @Body() post: UpdatePostDto
   ) {
     const updatedPost = await this.postService.updatePost(id, post);
     return fillDto(PostRdo, updatedPost.toPlainObject());
   }
 
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })
-  @Delete('/:id')
+  @Delete(BlogPostsEndpoint.POST)
   public async deletePost(@Param('id', ParseUUIDPipe) id: string) {
     await this.postService.deletePost(id);
   }
@@ -77,7 +82,7 @@ class PostController {
     status: HttpStatus.NOT_FOUND,
     description: 'Post not found',
   })
-  @Post('/:id/favorites')
+  @Post(BlogPostsEndpoint.LIKE_POST)
   public async addPostToFavorites(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: LikePostDto
@@ -94,7 +99,7 @@ class PostController {
     status: HttpStatus.NOT_FOUND,
     description: 'Post not found',
   })
-  @Delete('/:id/favorites')
+  @Delete(BlogPostsEndpoint.LIKE_POST)
   public async removePostFromFavorites(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: LikePostDto

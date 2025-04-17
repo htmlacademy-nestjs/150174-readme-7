@@ -1,3 +1,8 @@
+# Get comments by post ID
+GET http://localhost:3334/blog/posts/693c1d21-a2ec-45b0-9b3c-633dc161a735/comments HTTP/1.1
+Content-Type: application/json
+
+###
 
 # Create a new comment
 POST http://localhost:3334/blog/posts/2243f6bc-b406-4155-8096-387190929516/comments HTTP/1.1

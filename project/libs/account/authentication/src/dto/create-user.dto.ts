@@ -5,7 +5,8 @@ import { IsEmail, IsString, IsStrongPassword } from 'class-validator';
 import { CreateUserValidationMessage } from './dto-validations.const';
 
 export class CreateUserDto
-  implements Omit<WithOptionalDbAttributes<User>, 'role' | 'passwordHash'>
+  implements
+    Omit<WithOptionalDbAttributes<User>, 'role' | 'passwordHash' | 'avatarSrc'>
 {
   @ApiProperty({
     description: 'User email',
@@ -33,15 +34,6 @@ export class CreateUserDto
   @IsString({ message: CreateUserValidationMessage.lastName })
   @Expose()
   public lastName: User['lastName'];
-
-  @ApiProperty({
-    description: 'User avatar source',
-    type: 'string',
-    example: '/avatars/avatar.png',
-  })
-  @IsString({ message: CreateUserValidationMessage.avatarSrc })
-  @Expose()
-  public avatarSrc: User['avatarSrc'];
 
   @ApiProperty({
     description: 'User password',

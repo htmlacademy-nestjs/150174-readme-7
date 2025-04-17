@@ -1,8 +1,10 @@
 import { JwtConfig } from './jwt.interface';
 
 const JwtConfigErrorMessages: Record<keyof JwtConfig, string> = {
-  tokenSecret: 'Token secret must be a string',
-  tokenExpiration: 'Token expiration must be a string',
+  accessTokenSecret: 'Access token secret must be a string',
+  accessTokenExpiration: 'Access token expiration must be a string',
+  refreshTokenSecret: 'Refresh token secret must be a string',
+  refreshTokenExpiration: 'Refresh token expiration must be a string',
 };
 
 export { JwtConfigErrorMessages };

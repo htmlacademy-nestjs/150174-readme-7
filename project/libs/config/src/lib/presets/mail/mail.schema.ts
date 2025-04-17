@@ -1,12 +1,7 @@
-import { ConfigSchema } from '@avylando-readme/core';
+import { ConfigSchema, MAX_PORT, MIN_PORT } from '@avylando-readme/core';
 import { MailConfig } from './mail.interface';
 import { IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
-import {
-  DEFAULT_SMTP_PORT,
-  MailConfigErrorMessages,
-  MAX_PORT,
-  MIN_PORT,
-} from './mail.const';
+import { DEFAULT_SMTP_PORT, MailConfigErrorMessages } from './mail.const';
 
 class MailConfigSchema extends ConfigSchema implements MailConfig {
   @IsString({ message: MailConfigErrorMessages.host })
