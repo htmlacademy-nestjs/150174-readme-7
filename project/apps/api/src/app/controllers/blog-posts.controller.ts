@@ -48,7 +48,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { BlogPostService } from '../services/blog-post.service';
 import { UpdatePostDto } from '../dto/update-post/update-post.dto';
 
-@ApiTags('blog')
+@ApiTags('blog', 'posts')
 @Controller('blog/posts')
 class BlogPostsController {
   private readonly logger = new Logger(BlogPostsController.name);
