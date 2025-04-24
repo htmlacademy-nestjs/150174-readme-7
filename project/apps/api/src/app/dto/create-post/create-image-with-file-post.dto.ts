@@ -22,7 +22,7 @@ export const ImagePostValidation: ImagePostConstraints = {
   },
 };
 
-export class CreateImagePostDto {
+export class CreateImageWithFilePostDto {
   @ApiProperty({
     description: 'Image file',
     type: 'string',

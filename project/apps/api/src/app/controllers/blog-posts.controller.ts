@@ -96,7 +96,7 @@ class BlogPostsController {
 
   @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
-  @ApiConsumes('multipart/form-data')
+  @ApiConsumes('multipart/form-data', 'application/json')
   @ApiBearerAuth()
   @Post('/')
   public async createPost(

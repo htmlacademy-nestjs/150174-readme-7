@@ -7,10 +7,10 @@ import {
   CreateTextPostDto,
   CreateVideoPostDto,
 } from '@project/blog-post';
-import { CreateImagePostDto } from './create-image-post.dto';
+import { CreateImageWithFilePostDto } from './create-image-with-file-post.dto';
 
 @ApiExtraModels(
-  CreateImagePostDto,
+  CreateImageWithFilePostDto,
   CreateLinkPostDto,
   CreateTextPostDto,
   CreateQuotePostDto,
@@ -19,7 +19,7 @@ import { CreateImagePostDto } from './create-image-post.dto';
 export class CreatePostDto extends CreateBasePostDto {
   @ApiProperty({
     oneOf: [
-      { $ref: getSchemaPath(CreateImagePostDto) },
+      { $ref: getSchemaPath(CreateImageWithFilePostDto) },
       { $ref: getSchemaPath(CreateLinkPostDto) },
       { $ref: getSchemaPath(CreateTextPostDto) },
       { $ref: getSchemaPath(CreateQuotePostDto) },
@@ -28,7 +28,7 @@ export class CreatePostDto extends CreateBasePostDto {
   })
   @Expose()
   public data:
-    | CreateImagePostDto
+    | CreateImageWithFilePostDto
     | CreateLinkPostDto
     | CreateTextPostDto
     | CreateQuotePostDto

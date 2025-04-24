@@ -5,7 +5,7 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
 } from '@nestjs/common';
-import { ImagePostValidation } from '../dto/create-post/create-image-post.dto';
+import { ImagePostValidation } from '../dto/create-post/create-image-with-file-post.dto';
 
 export const ValidatePostImagePipe = new ParseFilePipe({
   fileIsRequired: false,
