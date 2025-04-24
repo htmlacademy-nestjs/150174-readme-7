@@ -42,6 +42,7 @@ export { JwtTokenPayload } from './lib/interfaces/auth/jwt-payload.interface';
 export { JwtToken } from './lib/interfaces/auth/jwt-token.interface';
 export { RefreshTokenPayload } from './lib/interfaces/auth/refresh-token-payload.interface';
 export { RequestWithTokenPayload } from './lib/interfaces/auth/request-with-token-payload.interface';
+export { RequestWithLogout } from './lib/interfaces/auth/request-with-logout.interface';
 
 // Query
 export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
@@ -51,6 +52,16 @@ export { PostSortBy } from './lib/interfaces/query/sort-by.enum';
 // Notification
 export { RabbitMqRouting } from './lib/interfaces/notification/rabbit-routing.enum';
 export { NotificationSubscriber } from './lib/interfaces/notification/subscriber.interface';
+
+// Validation
+export { FileValidation } from './lib/interfaces/validation/file-validation.interface';
+export { StringValidation } from './lib/interfaces/validation/string-validation.interface';
+export { UrlValidation } from './lib/interfaces/validation/url-validation.interface';
+export { EnumValidation } from './lib/interfaces/validation/enum-validation.interface';
+export {
+  Validation,
+  ValidationType,
+} from './lib/interfaces/validation/validation.interface';
 
 // Schema
 export { ConfigSchema } from './lib/classes/config-schema';

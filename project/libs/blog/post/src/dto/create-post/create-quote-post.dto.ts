@@ -1,8 +1,8 @@
 import { QuotePost } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsMongoId, IsString } from 'class-validator';
-import { CreatePostValidationMessage } from '../dto-validations.const';
+import { IsString, MaxLength, MinLength } from 'class-validator';
+import { QuotePostValidation } from '../dto-validations.const';
 
 type Data = QuotePost['data'];
 export class CreateQuotePostDto implements Data {
@@ -11,16 +11,28 @@ export class CreateQuotePostDto implements Data {
     type: 'string',
     example: 'To be or not to be',
   })
-  @IsString({ message: CreatePostValidationMessage.quote })
+  @IsString({ message: QuotePostValidation.quote.validType.message })
+  @MinLength(QuotePostValidation.quote.length.min, {
+    message: QuotePostValidation.quote.length.message,
+  })
+  @MaxLength(QuotePostValidation.quote.length.max, {
+    message: QuotePostValidation.quote.length.message,
+  })
   @Expose()
   public quote: Data['quote'];
 
   @ApiProperty({
-    description: 'Quote author ID',
+    description: 'Quote author name',
     type: 'string',
-    example: '60f5b2b3c4e9d2b9c8b2c8b2c',
+    example: 'William Shakespeare',
   })
-  @IsMongoId({ message: CreatePostValidationMessage.quoteAuthorId })
+  @IsString({ message: QuotePostValidation.authorName.validType.message })
+  @MinLength(QuotePostValidation.authorName.length.min, {
+    message: QuotePostValidation.authorName.length.message,
+  })
+  @MaxLength(QuotePostValidation.authorName.length.max, {
+    message: QuotePostValidation.authorName.length.message,
+  })
   @Expose()
-  public quoteAuthorId: Data['quoteAuthorId'];
+  public authorName: Data['authorName'];
 }

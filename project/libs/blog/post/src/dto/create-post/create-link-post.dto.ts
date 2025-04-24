@@ -2,7 +2,7 @@ import { LinkPost } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsString, IsUrl } from 'class-validator';
-import { CreatePostValidationMessage } from '../dto-validations.const';
+import { LinkPostValidation } from '../dto-validations.const';
 
 type Data = LinkPost['data'];
 export class CreateLinkPostDto implements Data {
@@ -11,7 +11,7 @@ export class CreateLinkPostDto implements Data {
     type: 'string',
     example: 'https://avylando.com',
   })
-  @IsUrl({}, { message: CreatePostValidationMessage.link })
+  @IsUrl({}, { message: LinkPostValidation.link.validType.message })
   @Expose()
   public link: Data['link'];
 
@@ -20,7 +20,7 @@ export class CreateLinkPostDto implements Data {
     type: 'string',
     example: 'Avylando website',
   })
-  @IsString({ message: CreatePostValidationMessage.description })
+  @IsString({ message: LinkPostValidation.description.validType.message })
   @Expose()
   public description: Data['description'];
 }

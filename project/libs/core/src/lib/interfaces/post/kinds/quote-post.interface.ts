@@ -5,7 +5,7 @@ import { PostKind } from '../post-kind.enum';
 type QuotePost = BasePost<
   PostKind.Quote,
   {
-    quoteAuthorId: User['id'];
+    authorName: string;
     quote: string;
   }
 >;
