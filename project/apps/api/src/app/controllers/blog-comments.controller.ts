@@ -30,9 +30,9 @@ import {
   UpdateCommentDto as LibUpdateCommentDto,
 } from '@project/blog-comment';
 import { join } from 'node:path';
-import { CheckAuthGuard } from '../guards/check-auth.guard';
 import { CreateCommentDto } from '../dto/create-comment/create-comment.dto';
 import { UpdateCommentDto } from '../dto/update-comment/update-comment.dto';
+import { Public } from '../decorators/public.decorator';
 
 @ApiTags('blog', 'comments')
 @Controller('blog/posts/:postId/comments')
@@ -68,6 +68,7 @@ class BlogCommentsController {
     private readonly services: ApiServicesConfig
   ) {}
 
+  @Public()
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Get comments by post id',
@@ -82,7 +83,6 @@ class BlogCommentsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Comment created' })
   @Post(BlogCommentsEndpoint.COMMENTS)
   public async createComment(
@@ -110,7 +110,6 @@ class BlogCommentsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.OK, description: 'Comment updated' })
   @Put(BlogCommentsEndpoint.COMMENT)
   public async updateComment(
@@ -132,7 +131,6 @@ class BlogCommentsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'Comment deleted',

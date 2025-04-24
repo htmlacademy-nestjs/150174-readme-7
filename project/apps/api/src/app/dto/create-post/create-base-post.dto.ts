@@ -5,7 +5,6 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
-  IsMongoId,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -58,14 +57,6 @@ export class CreateBasePostDto
   })
   @Expose()
   public image?: Express.Multer.File;
-
-  @ApiProperty({
-    description: 'Post video',
-    type: 'string',
-    format: 'binary',
-  })
-  @Expose()
-  public video?: Express.Multer.File;
 
   @ApiProperty({
     description: 'Repost flag',

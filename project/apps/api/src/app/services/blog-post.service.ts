@@ -43,30 +43,21 @@ class BlogPostService {
     post: CreatePostDto,
     files?: {
       image?: Express.Multer.File[];
-      video?: Express.Multer.File[];
     }
   ): Promise<Omit<LibCreatePostDto, 'authorId'>> {
-    const { image, video } = files || {};
+    const { image } = files || {};
     const postImage = image?.[0];
-    const postVideo = video?.[0];
-    if (
-      (post.kind === 'image' && !postImage) ||
-      (post.kind === 'video' && !postVideo)
-    ) {
+    if (post.kind === 'image' && !postImage) {
       throw new BadRequestException(`Post kind and file type mismatch`);
     }
 
-    let postData: LibCreatePostDto['data'] = { ...post.data };
+    let postData: LibCreatePostDto['data'] = {
+      ...post.data,
+    } as LibCreatePostDto['data'];
     if (postImage) {
       const file = await this.uploadPostImage(postImage);
       this.logger.log(`Image file uploaded: ${file.path}`);
       postData = { ...postData, imageSrc: file.path };
-    }
-
-    if (postVideo) {
-      const file = await this.uploadPostVideo(postVideo);
-      this.logger.log(`Video file uploaded: ${file.path}`);
-      postData = { ...postData, videoSrc: file.path };
     }
 
     return {
@@ -77,10 +68,6 @@ class BlogPostService {
 
   private async uploadPostImage(file: Express.Multer.File) {
     return this.uploadPostFile(file, this.getPostImageUploadPath());
-  }
-
-  private async uploadPostVideo(file: Express.Multer.File) {
-    return this.uploadPostFile(file, this.getPostVideoUploadPath());
   }
 
   private async uploadPostFile(

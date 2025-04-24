@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ApiConfigModule, getApiRabbitMQOptions } from '@project/api-config';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { APP_GUARD } from '@nestjs/core';
 
 import { HttpModule } from '@nestjs/axios';
 import { ApiNotifyModule } from '@project/api-notify';
@@ -23,6 +24,12 @@ import { BlogCommentsController } from './controllers/blog-comments.controller';
     ApiNotifyModule,
   ],
   controllers: [UsersController, BlogPostsController, BlogCommentsController],
-  providers: [CheckAuthGuard, BlogPostService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: CheckAuthGuard,
+    },
+    BlogPostService,
+  ],
 })
 export class AppModule {}

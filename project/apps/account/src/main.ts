@@ -10,7 +10,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { ConfigService } from '@nestjs/config';
 import { AccountConfigNamespace } from '@project/account-config';
-import { PrismaClientExceptionFilter } from '@project/exception-filters';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +18,7 @@ async function bootstrap() {
     .setTitle('Account service')
     .setDescription('The Account service API for "Readme" project')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('spec', app, documentFactory);
@@ -35,7 +35,6 @@ async function bootstrap() {
       transform: true,
     })
   );
-  app.useGlobalFilters(new PrismaClientExceptionFilter());
 
   await app.listen(port);
   Logger.log(

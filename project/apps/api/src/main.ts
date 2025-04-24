@@ -19,10 +19,7 @@ async function bootstrap() {
     .setTitle('API-Gateway service')
     .setDescription('The API-Gateway service for "Readme" project')
     .setVersion('1.0')
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
-      'JWT'
-    )
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('spec', app, documentFactory);

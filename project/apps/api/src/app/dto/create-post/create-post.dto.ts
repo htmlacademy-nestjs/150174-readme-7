@@ -5,9 +5,9 @@ import {
   CreateLinkPostDto,
   CreateQuotePostDto,
   CreateTextPostDto,
-  CreateImagePostDto,
   CreateVideoPostDto,
 } from '@project/blog-post';
+import { CreateImagePostDto } from './create-image-post.dto';
 
 @ApiExtraModels(
   CreateImagePostDto,

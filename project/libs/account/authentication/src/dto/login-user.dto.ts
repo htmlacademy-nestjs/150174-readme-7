@@ -7,7 +7,7 @@ export class LoginUserDto {
   @ApiProperty({
     description: 'User email',
     type: 'string',
-    example: 'example@mail.com',
+    example: 'wasd@mail.com',
   })
   @IsEmail({}, { message: LoginUserValidationMessage.email })
   @Expose()
@@ -16,7 +16,7 @@ export class LoginUserDto {
   @ApiProperty({
     description: 'User password',
     type: 'string',
-    example: 'password',
+    example: 'ed323cw!4cds!D',
   })
   @IsString({ message: LoginUserValidationMessage.password })
   @Expose()

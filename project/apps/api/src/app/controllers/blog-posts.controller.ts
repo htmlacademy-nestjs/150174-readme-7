@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -41,12 +40,13 @@ import {
   BlogPostsEndpoint,
 } from '@project/blog-post';
 import { join } from 'node:path';
-import { CheckAuthGuard } from '../guards/check-auth.guard';
 import { RequestWithTokenPayload } from '@avylando-readme/core';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { BlogPostService } from '../services/blog-post.service';
 import { UpdatePostDto } from '../dto/update-post/update-post.dto';
+import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
+import { Public } from '../decorators/public.decorator';
 
 @ApiTags('blog', 'posts')
 @Controller('blog/posts')
@@ -84,6 +84,7 @@ class BlogPostsController {
     private readonly notifyService: ApiNotifyService
   ) {}
 
+  @Public()
   @ApiResponse({ status: HttpStatus.OK, description: 'Get posts' })
   @Get('/')
   public async getPosts(
@@ -96,24 +97,17 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'image', maxCount: 1 },
-      { name: 'video', maxCount: 1 },
-    ])
-  )
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
   @ApiConsumes('multipart/form-data')
-  @ApiBearerAuth('JWT')
+  @ApiBearerAuth()
   @Post('/')
   public async createPost(
     @Req() { user }: RequestWithTokenPayload,
     @Body() dto: CreatePostDto,
-    @UploadedFiles()
+    @UploadedFiles(ValidatePostImagePipe)
     files: {
       image?: Express.Multer.File[];
-      video?: Express.Multer.File[];
     }
   ) {
     if (!user) {
@@ -132,6 +126,7 @@ class BlogPostsController {
     return data;
   }
 
+  @Public()
   @ApiResponse({ status: HttpStatus.OK, description: 'Find post' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
   @Get('/:id')
@@ -143,7 +138,6 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
   @Put('/:id')
   public async updatePost(
@@ -169,7 +163,6 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })
   @Delete('/:id')
   public async deletePost(
@@ -183,7 +176,6 @@ class BlogPostsController {
     await this.httpService.axiosRef.delete(this.getPostPath(id));
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Post added to favorites',
@@ -205,7 +197,6 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Post removed from favorites',

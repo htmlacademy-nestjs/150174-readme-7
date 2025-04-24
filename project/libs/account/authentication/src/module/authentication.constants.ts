@@ -13,4 +13,5 @@ export const AuthEndpoints = {
   USER_AVATAR: ':id/avatar',
   REFRESH_TOKEN: 'refresh',
   CHECK_TOKEN: 'check',
+  LOGOUT: 'logout',
 } as const;
