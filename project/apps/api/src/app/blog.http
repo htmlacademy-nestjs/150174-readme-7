@@ -1,7 +1,7 @@
 
 # Create a new post
 POST http://localhost:4000/api/blog/posts HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ1NTMxOTE5LCJleHAiOjE3NDU1MzkxMTl9.-wOaVft3F-UNW0kV3zr_IW9StBNVuN6WYqWs03dyxkc
 Content-Type: application/json
 
 {
@@ -33,35 +33,18 @@ Content-Disposition: form-data; name="image"; filename="blog.http"
 
 # Create a new video post
 POST http://localhost:4000/api/blog/posts HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="status";
-
-published
---boundary
-Content-Disposition: form-data; name="tags";
-Content-Type: application/json
-
-["tag1", "tag2"]
---boundary
-Content-Disposition: form-data; name="kind";
-
-video
---boundary
-Content-Disposition: form-data; name="data";
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ1NTMxOTE5LCJleHAiOjE3NDU1MzkxMTl9.-wOaVft3F-UNW0kV3zr_IW9StBNVuN6WYqWs03dyxkc
 Content-Type: application/json
 
 {
-  "title": "Post title",
+  "status": "published",
+  "tags": ["tag1", "tag2"],
+  "kind": "video",
+  "data": {
+    "title": "Post 1",
+    "videoSrc": "https://example.com/video.mp4"
+  }
 }
---boundary
-Content-Disposition: form-data; name="video"; filename="blog.http"
-Content-Type: text/html
-
-< ./blog.http
---boundary--
 
 ###
 

@@ -15,7 +15,6 @@ import {
   Req,
   UnauthorizedException,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -30,7 +29,6 @@ import {
   API_SERVICES_PROVIDER_NAME,
   ApiServicesConfig,
 } from '@project/api-config';
-import { ApiNotifyService } from '@project/api-notify';
 import {
   UpdatePostDto as LibUpdatePostDto,
   CreatePostDto as LibCreatePostDto,
@@ -80,8 +78,7 @@ class BlogPostsController {
     private readonly httpService: HttpService,
     @Inject(API_SERVICES_PROVIDER_NAME)
     private readonly services: ApiServicesConfig,
-    private readonly blogPostService: BlogPostService,
-    private readonly notifyService: ApiNotifyService
+    private readonly blogPostService: BlogPostService
   ) {}
 
   @Public()
@@ -110,9 +107,6 @@ class BlogPostsController {
       image?: Express.Multer.File[];
     }
   ) {
-    if (!user) {
-      throw new UnauthorizedException();
-    }
     const postData = await this.blogPostService.handlePostAssets(dto, files);
     const libDto: LibCreatePostDto = {
       ...postData,
@@ -142,7 +136,7 @@ class BlogPostsController {
   @Put('/:id')
   public async updatePost(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Req() { user }: RequestWithTokenPayload,
     @Body() dto: UpdatePostDto
   ) {
     const existingPost = await this.findPost(id);
@@ -167,7 +161,7 @@ class BlogPostsController {
   @Delete('/:id')
   public async deletePost(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>
+    @Req() { user }: RequestWithTokenPayload
   ) {
     const existingPost = await this.findPost(id);
     if (existingPost.authorId !== user.sub) {
@@ -187,7 +181,7 @@ class BlogPostsController {
   @Post('/:id/favorites')
   public async addPostToFavorites(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>
+    @Req() { user }: RequestWithTokenPayload
   ) {
     const { data } = await this.httpService.axiosRef.post<PostRdo>(
       this.getPostLikePath(id),
@@ -208,7 +202,7 @@ class BlogPostsController {
   @Delete('/:id/favorites')
   public async removePostFromFavorites(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>
+    @Req() { user }: RequestWithTokenPayload
   ) {
     const { data } = await this.httpService.axiosRef.delete<PostRdo>(
       this.getPostLikePath(id),

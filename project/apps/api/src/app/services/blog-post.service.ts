@@ -1,10 +1,10 @@
-import { fileToFormData, Post } from '@avylando-readme/core';
+import { fileToFormData } from '@avylando-readme/core';
 import { HttpService } from '@nestjs/axios';
 import {
-  BadRequestException,
   Inject,
   Injectable,
   Logger,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import {
   API_SERVICES_PROVIDER_NAME,
@@ -26,13 +26,6 @@ class BlogPostService {
     );
   }
 
-  private getPostVideoUploadPath() {
-    return join(
-      this.services.fileStorageServiceUri,
-      FileUploaderEndpoint.POST_VIDEO
-    );
-  }
-
   constructor(
     private readonly httpService: HttpService,
     @Inject(API_SERVICES_PROVIDER_NAME)
@@ -45,15 +38,22 @@ class BlogPostService {
       image?: Express.Multer.File[];
     }
   ): Promise<Omit<LibCreatePostDto, 'authorId'>> {
+    console.log('Handling post assets', post, files);
+    if (post.kind !== 'image')
+      return post as Omit<LibCreatePostDto, 'authorId'>;
+
     const { image } = files || {};
     const postImage = image?.[0];
     if (post.kind === 'image' && !postImage) {
-      throw new BadRequestException(`Post kind and file type mismatch`);
+      throw new UnprocessableEntityException(
+        `Post kind and file type mismatch`
+      );
     }
 
     let postData: LibCreatePostDto['data'] = {
       ...post.data,
     } as LibCreatePostDto['data'];
+
     if (postImage) {
       const file = await this.uploadPostImage(postImage);
       this.logger.log(`Image file uploaded: ${file.path}`);

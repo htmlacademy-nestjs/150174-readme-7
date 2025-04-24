@@ -87,7 +87,7 @@ class BlogCommentsController {
   @Post(BlogCommentsEndpoint.COMMENTS)
   public async createComment(
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Req() { user }: RequestWithTokenPayload,
     @Body() dto: CreateCommentDto
   ) {
     const libDto: LibCreateCommentDto = { ...dto, authorId: user.sub };
@@ -115,7 +115,7 @@ class BlogCommentsController {
   public async updateComment(
     @Param('postId', ParseUUIDPipe) postId: string,
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Req() { user }: RequestWithTokenPayload,
     @Body() dto: UpdateCommentDto
   ) {
     const existingComment = await this.getComment(postId, id);
@@ -139,7 +139,7 @@ class BlogCommentsController {
   @Delete(BlogCommentsEndpoint.COMMENT)
   public async deleteComment(
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Req() { user }: RequestWithTokenPayload,
     @Param('id', ParseUUIDPipe) id: string
   ) {
     const existingComment = await this.getComment(postId, id);

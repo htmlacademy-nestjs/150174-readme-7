@@ -8,6 +8,7 @@ import {
 import { ImagePostValidation } from '../dto/create-post/create-image-post.dto';
 
 export const ValidatePostImagePipe = new ParseFilePipe({
+  fileIsRequired: false,
   validators: [
     new MaxFileSizeValidator(ImagePostValidation.image.size),
     new FileTypeValidator(ImagePostValidation.image.type),

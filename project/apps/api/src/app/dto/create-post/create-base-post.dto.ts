@@ -55,6 +55,7 @@ export class CreateBasePostDto
     type: 'string',
     format: 'binary',
   })
+  @IsOptional()
   @Expose()
   public image?: Express.Multer.File;
 
