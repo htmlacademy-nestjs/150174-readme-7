@@ -1,7 +1,7 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Expose, Type, TypeHelpOptions } from 'class-transformer';
-import { CreateBasePostDto } from './create-base-post.dto';
 import {
+  CreateBasePostDto,
   CreateLinkPostDto,
   CreateQuotePostDto,
   CreateTextPostDto,

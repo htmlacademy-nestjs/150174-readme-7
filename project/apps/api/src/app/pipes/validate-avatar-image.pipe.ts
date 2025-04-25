@@ -5,7 +5,7 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
 } from '@nestjs/common';
-import { ApiUserValidation } from '../dto/user/dto-validation.const';
+import { ApiUserValidation } from '../dto/users/dto-validation.const';
 
 export const ValidateAvatarImagePipe = new ParseFilePipe({
   fileIsRequired: false,

@@ -30,8 +30,8 @@ import {
   UpdateCommentDto as LibUpdateCommentDto,
 } from '@project/blog-comment';
 import { join } from 'node:path';
-import { CreateCommentDto } from '../dto/create-comment/create-comment.dto';
-import { UpdateCommentDto } from '../dto/update-comment/update-comment.dto';
+import { CreateCommentDto } from '../dto/blog-comments/create-comment.dto';
+import { UpdateCommentDto } from '../dto/blog-comments/update-comment.dto';
 import { Public } from '../decorators/public.decorator';
 
 @ApiTags('blog', 'comments')

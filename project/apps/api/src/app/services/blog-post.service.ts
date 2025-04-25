@@ -10,10 +10,14 @@ import {
   API_SERVICES_PROVIDER_NAME,
   ApiServicesConfig,
 } from '@project/api-config';
-import { CreatePostDto as LibCreatePostDto } from '@project/blog-post';
+import {
+  CreatePostDto as LibCreatePostDto,
+  UpdatePostDto as LibUpdatePostDto,
+} from '@project/blog-post';
 import { FileUploaderEndpoint, UploadedFileRdo } from '@project/file-uploader';
 import { join } from 'node:path';
-import { CreatePostDto } from '../dto/create-post/create-post.dto';
+import { CreatePostDto } from '../dto/blog-posts/create-post/create-post.dto';
+import { UpdatePostDto } from '../dto/blog-posts/update-post.dto';
 
 @Injectable()
 class BlogPostService {
@@ -32,8 +36,8 @@ class BlogPostService {
     private readonly services: ApiServicesConfig
   ) {}
 
-  public async handlePostAssets(
-    post: CreatePostDto,
+  public async handlePostAssets<T extends CreatePostDto | UpdatePostDto>(
+    post: T,
     files?: {
       image?: Express.Multer.File[];
     }
@@ -44,8 +48,8 @@ class BlogPostService {
     return this.handlePostImage(post, files);
   }
 
-  private async handlePostImage(
-    post: CreatePostDto,
+  private async handlePostImage<T extends CreatePostDto | UpdatePostDto>(
+    post: T,
     files?: {
       image?: Express.Multer.File[];
     }
@@ -63,7 +67,7 @@ class BlogPostService {
     return {
       ...post,
       data: { ...post.data, imageSrc: file.path },
-    };
+    } as Omit<LibCreatePostDto, 'authorId'>;
   }
 
   private async uploadPostImage(file: Express.Multer.File) {

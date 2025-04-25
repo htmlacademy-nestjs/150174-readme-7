@@ -18,6 +18,8 @@ export { PostRdo } from './rdo/post.rdo';
 export { PostQuery } from './query/post.query';
 
 // Constants
+export { BasePostValidation } from './dto/dto-validations.const';
+
 export {
   BLOG_POSTS_CONTROLLER_NAME,
   BlogPostsEndpoint,

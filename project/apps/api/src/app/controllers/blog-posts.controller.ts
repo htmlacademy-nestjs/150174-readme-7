@@ -38,10 +38,10 @@ import {
 } from '@project/blog-post';
 import { join } from 'node:path';
 import { RequestWithTokenPayload } from '@avylando-readme/core';
-import { CreatePostDto } from '../dto/create-post/create-post.dto';
+import { CreatePostDto } from '../dto/blog-posts/create-post/create-post.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { BlogPostService } from '../services/blog-post.service';
-import { UpdatePostDto } from '../dto/update-post/update-post.dto';
+import { UpdatePostDto } from '../dto/blog-posts/update-post.dto';
 import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
 import { Public } from '../decorators/public.decorator';
 import { ParseFormDataJsonPipe } from '@project/pipes';
@@ -138,20 +138,28 @@ class BlogPostsController {
     return data;
   }
 
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
+  @ApiConsumes('multipart/form-data', 'application/json')
   @Put('/:id')
   public async updatePost(
     @Param('id', ParseUUIDPipe) id: string,
     @Req() { user }: RequestWithTokenPayload,
-    @Body() dto: UpdatePostDto
+    @Body() dto: UpdatePostDto,
+    @UploadedFiles(ValidatePostImagePipe)
+    files: {
+      image?: Express.Multer.File[];
+    }
   ) {
     const existingPost = await this.findPost(id);
     if (existingPost.authorId !== user.sub) {
       throw new ForbiddenException('You are not the author of this post');
     }
 
+    const postData = await this.blogPostService.handlePostAssets(dto, files);
+
     const libDto: LibUpdatePostDto = {
-      ...dto,
+      ...postData,
       authorId: user.sub,
     };
 

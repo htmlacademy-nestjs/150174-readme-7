@@ -34,7 +34,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RegisterUserApiDto } from '../dto/user/register-user.dto';
+import { RegisterUserApiDto } from '../dto/users/register-user.dto';
 import { AuthTokens, buildURI } from '@avylando-readme/core';
 import { ValidateMongoIdPipe } from '@project/pipes';
 import { Public } from '../decorators/public.decorator';
