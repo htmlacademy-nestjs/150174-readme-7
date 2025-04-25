@@ -1,7 +1,7 @@
 import { VideoPost } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsString, IsUrl, Length } from 'class-validator';
 import { VideoPostValidation } from '../dto-validations.const';
 
 type Data = VideoPost['data'];
@@ -21,12 +21,13 @@ export class CreateVideoPostDto implements Data {
     example: 'Post title',
   })
   @IsString({ message: VideoPostValidation.title.validType.message })
-  @MinLength(VideoPostValidation.title.length.min, {
-    message: VideoPostValidation.title.length.message,
-  })
-  @MaxLength(VideoPostValidation.title.length.max, {
-    message: VideoPostValidation.title.length.message,
-  })
+  @Length(
+    VideoPostValidation.title.length.min,
+    VideoPostValidation.title.length.max,
+    {
+      message: VideoPostValidation.title.length.message,
+    }
+  )
   @Expose()
   public title: Data['title'];
 }

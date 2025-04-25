@@ -1,5 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type, TypeHelpOptions } from 'class-transformer';
 import { CreateBasePostDto } from './create-base-post.dto';
 import {
   CreateLinkPostDto,
@@ -8,6 +8,8 @@ import {
   CreateVideoPostDto,
 } from '@project/blog-post';
 import { CreateImageWithFilePostDto } from './create-image-with-file-post.dto';
+import { ValidateNested } from 'class-validator';
+import { Post } from '@avylando-readme/core';
 
 @ApiExtraModels(
   CreateImageWithFilePostDto,
@@ -25,6 +27,25 @@ export class CreatePostDto extends CreateBasePostDto {
       { $ref: getSchemaPath(CreateQuotePostDto) },
       { $ref: getSchemaPath(CreateVideoPostDto) },
     ],
+  })
+  @ValidateNested()
+  @Type((opts: TypeHelpOptions) => {
+    const kind = opts.object['kind'] as Post['kind'];
+    console.log('kind', kind, opts);
+    switch (kind) {
+      case 'text':
+        return CreateTextPostDto;
+      case 'link':
+        return CreateLinkPostDto;
+      case 'quote':
+        return CreateQuotePostDto;
+      case 'video':
+        return CreateVideoPostDto;
+      case 'image':
+        return CreateImageWithFilePostDto;
+      default:
+        throw new Error(`Unknown post kind: ${kind}`);
+    }
   })
   @Expose()
   public data:

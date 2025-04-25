@@ -13,9 +13,9 @@ import {
   Put,
   Query,
   Req,
-  UnauthorizedException,
   UploadedFiles,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -45,6 +45,7 @@ import { BlogPostService } from '../services/blog-post.service';
 import { UpdatePostDto } from '../dto/update-post/update-post.dto';
 import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
 import { Public } from '../decorators/public.decorator';
+import { ParseFormDataJsonPipe } from '@project/pipes';
 
 @ApiTags('blog', 'posts')
 @Controller('blog/posts')
@@ -101,23 +102,30 @@ class BlogPostsController {
   @Post('/')
   public async createPost(
     @Req() { user }: RequestWithTokenPayload,
-    @Body() dto: CreatePostDto,
+    @Body(new ParseFormDataJsonPipe({ except: ['image'] }))
+    dto: CreatePostDto,
     @UploadedFiles(ValidatePostImagePipe)
     files: {
       image?: Express.Multer.File[];
     }
   ) {
+    console.log(dto);
     const postData = await this.blogPostService.handlePostAssets(dto, files);
     const libDto: LibCreatePostDto = {
       ...postData,
       authorId: user.sub,
     };
-    const { data } = await this.httpService.axiosRef.post<PostRdo>(
-      this.getShowPostsPath(),
-      libDto
-    );
-    this.logger.log(`Post created: ${data.id}`);
-    return data;
+    try {
+      const { data } = await this.httpService.axiosRef.post<PostRdo>(
+        this.getShowPostsPath(),
+        libDto
+      );
+      this.logger.log(`Post created: ${data.id}`);
+      return data;
+    } catch (error) {
+      this.logger.error(`Error creating post: ${error.message}`);
+      throw error;
+    }
   }
 
   @Public()
