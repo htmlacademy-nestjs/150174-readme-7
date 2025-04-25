@@ -10,4 +10,6 @@ type User = WithOptionalDbAttributes<{
   passwordHash?: string;
 }>;
 
-export type { User };
+type WritableUser = Omit<User, 'role' | 'passwordHash'>;
+
+export type { User, WritableUser };

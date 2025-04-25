@@ -19,7 +19,6 @@ import { extension } from 'mime-types';
 import { StoredFile } from '@avylando-readme/core';
 import { FileFactory } from './file-uploader.factory';
 import { FileEntity } from './file-uploader.entity';
-import { UpdateAvatarDto } from '@project/account-notify';
 import { FileStorageNotifyService } from '@project/file-storage-notify';
 
 class FileUploaderService {
@@ -30,25 +29,15 @@ class FileUploaderService {
     @Inject(FileStorageAppConfig.KEY)
     private readonly appConfig: FileStorageConfig,
     private readonly fileRepository: FileRepository,
-    private readonly fileFactory: FileFactory,
-    private readonly notifyService: FileStorageNotifyService
+    private readonly fileFactory: FileFactory
   ) {}
 
-  public async uploadUserAvatar({
-    userId,
-    file,
-  }: UpdateAvatarDto): Promise<FileEntity> {
+  public async uploadUserAvatar(
+    file: Express.Multer.File
+  ): Promise<FileEntity> {
     const fileEntity = await this.uploadFile(
       file,
       this.getAvatarUploadDirectoryPath()
-    );
-
-    const published = await this.notifyService.notifyAvatarUploaded({
-      userId,
-      path: fileEntity.path,
-    });
-    this.logger.log(
-      `Avatar uploaded for user ${userId} and published to RabbitMQ: ${published}`
     );
 
     return fileEntity;

@@ -6,7 +6,7 @@ export { EntityFactory } from './lib/interfaces/base/entity-factory.interface';
 
 // User
 export { UserRole } from './lib/interfaces/user/user-role.type';
-export { User } from './lib/interfaces/user/user.interface';
+export { User, WritableUser } from './lib/interfaces/user/user.interface';
 
 // Comment
 export { Comment } from './lib/interfaces/comment/comment.interface';
@@ -58,6 +58,7 @@ export { FileValidation } from './lib/interfaces/validation/file-validation.inte
 export { StringValidation } from './lib/interfaces/validation/string-validation.interface';
 export { UrlValidation } from './lib/interfaces/validation/url-validation.interface';
 export { EnumValidation } from './lib/interfaces/validation/enum-validation.interface';
+export { EmailValidation } from './lib/interfaces/validation/email-validation.interface';
 export {
   Validation,
   ValidationType,

@@ -23,23 +23,14 @@ const registerConfig = createRabbitMqConfig(FileStorageRabbitConfigSchema, {
   fileStorageRabbitQueue: { envVariable: 'FILE_STORAGE_RABBIT_QUEUE' },
 });
 
-export const ApiRabbitHandlerName = {
-  UPLOAD_AVATAR: 'handleAvatar',
-} as const;
+export const ApiRabbitHandlerName = {} as const;
 
 export const getApiRabbitMQOptions = () =>
   getRabbitMQOptions<
     typeof ApiConfigNamespace.RABBIT,
     RabbitMqConfig & ApiRabbitConfig
   >(ApiConfigNamespace.RABBIT, (configService) => ({
-    handlers: {
-      [ApiRabbitHandlerName.UPLOAD_AVATAR]: {
-        exchange: configService.get<string>(
-          `${ApiConfigNamespace.RABBIT}.exchange`
-        ),
-        routingKey: RabbitMqRouting.NotifyAvatarUploaded,
-      },
-    },
+    handlers: {},
   }));
 
 export default registerConfig(ApiConfigNamespace.RABBIT);

@@ -14,7 +14,9 @@ import { RequestIdInterceptor } from '@project/interceptors';
 import { AxiosExceptionFilter } from './app/filters/axios-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: true,
+  });
   const config = new DocumentBuilder()
     .setTitle('API-Gateway service')
     .setDescription('The API-Gateway service for "Readme" project')

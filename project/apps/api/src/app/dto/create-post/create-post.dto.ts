@@ -31,7 +31,6 @@ export class CreatePostDto extends CreateBasePostDto {
   @ValidateNested()
   @Type((opts: TypeHelpOptions) => {
     const kind = opts.object['kind'] as Post['kind'];
-    console.log('kind', kind, opts);
     switch (kind) {
       case 'text':
         return CreateTextPostDto;

@@ -130,7 +130,6 @@ export class AuthenticationController {
   @Post(AuthEndpoints.LOGOUT)
   @HttpCode(HttpStatus.NO_CONTENT)
   async logout(@Req() req: RequestWithLogout) {
-    console.log('Logout', req);
     return req.logout(() => {});
   }
 }

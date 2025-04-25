@@ -12,6 +12,7 @@ import { UsersController } from './controllers/users.controller';
 import { BlogPostsController } from './controllers/blog-posts.controller';
 import { BlogPostService } from './services/blog-post.service';
 import { BlogCommentsController } from './controllers/blog-comments.controller';
+import { UserService } from './services/user.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { BlogCommentsController } from './controllers/blog-comments.controller';
       useClass: CheckAuthGuard,
     },
     BlogPostService,
+    UserService,
   ],
 })
 export class AppModule {}

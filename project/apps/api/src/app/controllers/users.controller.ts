@@ -17,13 +17,13 @@ import {
 import {
   AUTH_CONTROLLER_NAME,
   AuthEndpoints,
+  CreateUserDto,
   LoginUserDto,
   UpdateUserDto,
   UserRdo,
 } from '@project/authentication';
 import {
   API_SERVICES_PROVIDER_NAME,
-  ApiRabbitHandlerName,
   ApiServicesConfig,
 } from '@project/api-config';
 import { join } from 'node:path';
@@ -34,13 +34,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { RegisterUserDto } from '../dto/register-user.dto';
-import { ApiNotifyService } from '@project/api-notify';
-import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { RegisterUserApiDto } from '../dto/user/register-user.dto';
 import { AuthTokens, buildURI } from '@avylando-readme/core';
-import { NotifyAvatarUploadedDto } from '@project/file-storage-notify';
 import { ValidateMongoIdPipe } from '@project/pipes';
 import { Public } from '../decorators/public.decorator';
+import { UserService } from '../services/user.service';
+import { ValidateAvatarImagePipe } from '../pipes/validate-avatar-image.pipe';
 
 @ApiTags('account')
 @ApiBearerAuth()
@@ -48,11 +47,45 @@ import { Public } from '../decorators/public.decorator';
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
+  private getAuthenticationServicePath() {
+    return join(this.services.accountServiceUri, AUTH_CONTROLLER_NAME);
+  }
+
+  private getLoginPath() {
+    return join(this.getAuthenticationServicePath(), AuthEndpoints.LOGIN);
+  }
+
+  private getRegisterPath() {
+    return join(this.getAuthenticationServicePath(), AuthEndpoints.REGISTER);
+  }
+
+  private getUserPath(userId: string) {
+    return buildURI(
+      join(this.getAuthenticationServicePath(), AuthEndpoints.USER),
+      { pathParams: { id: userId } }
+    );
+  }
+
+  private getRefreshTokenPath() {
+    return join(
+      this.getAuthenticationServicePath(),
+      AuthEndpoints.REFRESH_TOKEN
+    );
+  }
+
+  private getCheckTokenPath() {
+    return join(this.getAuthenticationServicePath(), AuthEndpoints.CHECK_TOKEN);
+  }
+
+  private getLogoutPath() {
+    return join(this.getAuthenticationServicePath(), AuthEndpoints.LOGOUT);
+  }
+
   constructor(
     private readonly httpService: HttpService,
     @Inject(API_SERVICES_PROVIDER_NAME)
     private readonly services: ApiServicesConfig,
-    private readonly notifyService: ApiNotifyService
+    private readonly userService: UserService
   ) {}
 
   @Public()
@@ -86,20 +119,26 @@ export class UsersController {
   @Post(AuthEndpoints.REGISTER)
   @HttpCode(HttpStatus.CREATED)
   public async register(
-    @Body() dto: RegisterUserDto,
-    @UploadedFile() avatar?: Express.Multer.File
+    @Body() dto: RegisterUserApiDto,
+    @UploadedFile(ValidateAvatarImagePipe) avatar?: Express.Multer.File
   ): Promise<UserRdo> {
+    let userData: CreateUserDto = dto;
+    if (avatar) {
+      const userAssetsData = await this.userService.handleUserAssets(avatar);
+      userData = {
+        ...dto,
+        ...userAssetsData,
+      };
+
+      this.logger.log(
+        `Avatar uploaded successfully: ${userAssetsData.avatarSrc}`
+      );
+    }
+
     const { data } = await this.httpService.axiosRef.post<UserRdo>(
       this.getRegisterPath(),
-      dto
+      userData
     );
-
-    if (avatar) {
-      await this.notifyService.uploadUserAvatar({
-        userId: data.id,
-        file: avatar,
-      });
-    }
 
     return data;
   }
@@ -115,18 +154,25 @@ export class UsersController {
   public async updateUser(
     @Param('id', ValidateMongoIdPipe) id: string,
     @Body() dto: UpdateUserDto,
-    @UploadedFile() avatar?: Express.Multer.File
+    @UploadedFile(ValidateAvatarImagePipe) avatar?: Express.Multer.File
   ): Promise<UserRdo> {
+    let userData: UpdateUserDto = dto;
+    if (avatar) {
+      const userAssetsData = await this.userService.handleUserAssets(avatar);
+      userData = {
+        ...dto,
+        ...userAssetsData,
+      };
+      this.logger.log(
+        `Avatar uploaded successfully: ${userAssetsData.avatarSrc}`
+      );
+    }
+
     const { data } = await this.httpService.axiosRef.put<UserRdo>(
       this.getUserPath(id),
-      dto
+      userData
     );
-    if (avatar) {
-      await this.notifyService.uploadUserAvatar({
-        userId: data.id,
-        file: avatar,
-      });
-    }
+
     return data;
   }
 
@@ -205,59 +251,5 @@ export class UsersController {
         },
       }
     );
-  }
-
-  @RabbitSubscribe({
-    name: ApiRabbitHandlerName.UPLOAD_AVATAR,
-  })
-  public async uploadUserAvatar(dto: NotifyAvatarUploadedDto) {
-    this.logger.log(
-      'Uploading avatar for user',
-      this.getUserAvatarPath(dto.userId)
-    );
-    this.httpService.axiosRef.put(this.getUserAvatarPath(dto.userId), {
-      avatarSrc: dto.path,
-    });
-  }
-
-  private getAuthenticationServicePath() {
-    return join(this.services.accountServiceUri, AUTH_CONTROLLER_NAME);
-  }
-
-  private getLoginPath() {
-    return join(this.getAuthenticationServicePath(), AuthEndpoints.LOGIN);
-  }
-
-  private getRegisterPath() {
-    return join(this.getAuthenticationServicePath(), AuthEndpoints.REGISTER);
-  }
-
-  private getUserPath(userId: string) {
-    return buildURI(
-      join(this.getAuthenticationServicePath(), AuthEndpoints.USER),
-      { pathParams: { id: userId } }
-    );
-  }
-
-  private getUserAvatarPath(userId: string) {
-    return buildURI(
-      join(this.getAuthenticationServicePath(), AuthEndpoints.USER_AVATAR),
-      { pathParams: { id: userId } }
-    );
-  }
-
-  private getRefreshTokenPath() {
-    return join(
-      this.getAuthenticationServicePath(),
-      AuthEndpoints.REFRESH_TOKEN
-    );
-  }
-
-  private getCheckTokenPath() {
-    return join(this.getAuthenticationServicePath(), AuthEndpoints.CHECK_TOKEN);
-  }
-
-  private getLogoutPath() {
-    return join(this.getAuthenticationServicePath(), AuthEndpoints.LOGOUT);
   }
 }

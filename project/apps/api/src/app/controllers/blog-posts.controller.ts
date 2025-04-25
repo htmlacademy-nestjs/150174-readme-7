@@ -15,7 +15,6 @@ import {
   Req,
   UploadedFiles,
   UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -109,7 +108,6 @@ class BlogPostsController {
       image?: Express.Multer.File[];
     }
   ) {
-    console.log(dto);
     const postData = await this.blogPostService.handlePostAssets(dto, files);
     const libDto: LibCreatePostDto = {
       ...postData,
