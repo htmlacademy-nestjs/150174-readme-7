@@ -35,6 +35,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { RegisterUserApiDto } from '../dto/users/register-user.dto';
+import { UpdateUserApiDto } from '../dto/users/update-user.dto';
 import { AuthTokens, buildURI } from '@avylando-readme/core';
 import { ValidateMongoIdPipe } from '@project/pipes';
 import { Public } from '../decorators/public.decorator';
@@ -153,7 +154,7 @@ export class UsersController {
   @Put(AuthEndpoints.USER)
   public async updateUser(
     @Param('id', ValidateMongoIdPipe) id: string,
-    @Body() dto: UpdateUserDto,
+    @Body() dto: UpdateUserApiDto,
     @UploadedFile(ValidateAvatarImagePipe) avatar?: Express.Multer.File
   ): Promise<UserRdo> {
     let userData: UpdateUserDto = dto;

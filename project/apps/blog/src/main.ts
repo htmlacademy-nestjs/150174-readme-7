@@ -18,6 +18,7 @@ async function bootstrap() {
     .setTitle('Blog service')
     .setDescription('The Blog service API for "Readme" project')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('spec', app, documentFactory);
