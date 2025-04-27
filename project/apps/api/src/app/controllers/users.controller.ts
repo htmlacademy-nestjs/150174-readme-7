@@ -42,9 +42,9 @@ import { Public } from '../decorators/public.decorator';
 import { UserService } from '../services/user.service';
 import { ValidateAvatarImagePipe } from '../pipes/validate-avatar-image.pipe';
 
-@ApiTags('account')
-@ApiBearerAuth()
 @Controller('users')
+@ApiTags('account')
+@ApiBearerAuth('JWT')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 

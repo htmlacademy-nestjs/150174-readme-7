@@ -15,9 +15,8 @@ import {
   Post,
   Put,
   Req,
-  UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   API_SERVICES_PROVIDER_NAME,
   ApiServicesConfig,
@@ -34,8 +33,9 @@ import { CreateCommentDto } from '../dto/blog-comments/create-comment.dto';
 import { UpdateCommentDto } from '../dto/blog-comments/update-comment.dto';
 import { Public } from '../decorators/public.decorator';
 
-@ApiTags('blog', 'comments')
 @Controller('blog/posts/:postId/comments')
+@ApiTags('blog', 'comments')
+@ApiBearerAuth('JWT')
 class BlogCommentsController {
   private readonly logger = new Logger(BlogCommentsController.name);
 

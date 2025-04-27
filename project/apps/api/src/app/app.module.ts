@@ -20,7 +20,7 @@ import { UserService } from './services/user.service';
       timeout: HTTP_CLIENT_TIMEOUT,
       maxRedirects: HTTP_CLIENT_MAX_REDIRECTS,
     }),
-    RabbitMQModule.forRootAsync(RabbitMQModule, getApiRabbitMQOptions()),
+    RabbitMQModule.forRootAsync(getApiRabbitMQOptions()),
     ApiConfigModule,
     ApiNotifyModule,
   ],

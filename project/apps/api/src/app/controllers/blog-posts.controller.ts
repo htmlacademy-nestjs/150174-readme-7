@@ -46,8 +46,9 @@ import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
 import { Public } from '../decorators/public.decorator';
 import { ParseFormDataJsonPipe } from '@project/pipes';
 
-@ApiTags('blog', 'posts')
 @Controller('blog/posts')
+@ApiTags('blog', 'posts')
+@ApiBearerAuth('JWT')
 class BlogPostsController {
   private readonly logger = new Logger(BlogPostsController.name);
 
@@ -97,11 +98,10 @@ class BlogPostsController {
   @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
   @ApiConsumes('multipart/form-data', 'application/json')
-  @ApiBearerAuth()
   @Post('/')
   public async createPost(
     @Req() { user }: RequestWithTokenPayload,
-    @Body(new ParseFormDataJsonPipe({ except: ['image'] }))
+    @Body()
     dto: CreatePostDto,
     @UploadedFiles(ValidatePostImagePipe)
     files: {

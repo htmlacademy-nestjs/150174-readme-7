@@ -18,7 +18,6 @@ async function bootstrap() {
     .setTitle('Account service')
     .setDescription('The Account service API for "Readme" project')
     .setVersion('1.0')
-    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('spec', app, documentFactory);

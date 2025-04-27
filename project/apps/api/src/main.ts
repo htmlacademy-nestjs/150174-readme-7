@@ -21,7 +21,17 @@ async function bootstrap() {
     .setTitle('API-Gateway service')
     .setDescription('The API-Gateway service for "Readme" project')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        description: `Please enter access token`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer',
+        scheme: 'Bearer',
+        type: 'http',
+        in: 'Header',
+      },
+      'JWT'
+    )
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('spec', app, documentFactory);
@@ -33,7 +43,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix(globalPrefix);
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useGlobalInterceptors(new RequestIdInterceptor());
   app.useGlobalFilters(new AxiosExceptionFilter());
 

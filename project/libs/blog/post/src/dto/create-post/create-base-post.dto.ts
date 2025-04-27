@@ -1,6 +1,6 @@
 import { BasePost, PostKind } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
@@ -43,6 +43,12 @@ export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
   })
   @IsString({ each: true, message: BasePostValidation.tags.validType.message })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((tag) => tag.trim());
+    }
+    return value;
+  })
   @Expose()
   public tags?: BasePost['tags'];
 

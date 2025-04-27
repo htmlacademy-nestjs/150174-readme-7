@@ -1,5 +1,6 @@
+import 'multer';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { Expose, Type, TypeHelpOptions } from 'class-transformer';
+import { Expose, Transform, Type, TypeHelpOptions } from 'class-transformer';
 import {
   CreateBasePostDto,
   CreateLinkPostDto,
@@ -46,6 +47,7 @@ export class CreatePostDto extends CreateBasePostDto {
         throw new Error(`Unknown post kind: ${kind}`);
     }
   })
+  @Transform(({ value }) => JSON.parse(value))
   @Expose()
   public data:
     | CreateImageWithFilePostDto
@@ -53,4 +55,12 @@ export class CreatePostDto extends CreateBasePostDto {
     | CreateTextPostDto
     | CreateQuotePostDto
     | CreateVideoPostDto;
+
+  @ApiProperty({
+    description: 'Image file',
+    type: 'string',
+    format: 'binary',
+  })
+  @Expose()
+  public image?: CreateImageWithFilePostDto['image'];
 }
