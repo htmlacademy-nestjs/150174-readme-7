@@ -5,9 +5,7 @@ import { getApiRabbitMQOptions } from '@project/api-config';
 import { ApiNotifyService } from './api-notify.service';
 
 @Module({
-  imports: [
-    RabbitMQModule.forRootAsync(RabbitMQModule, getApiRabbitMQOptions()),
-  ],
+  imports: [RabbitMQModule.forRootAsync(getApiRabbitMQOptions())],
   providers: [ApiNotifyService],
   exports: [ApiNotifyService],
 })

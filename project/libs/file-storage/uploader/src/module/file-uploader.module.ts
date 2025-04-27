@@ -38,10 +38,7 @@ const SERVE_ROOT = '/static';
       },
     }),
     MongooseModule.forFeature([{ name: FileModel.name, schema: FileSchema }]),
-    RabbitMQModule.forRootAsync(
-      RabbitMQModule,
-      getFileStorageRabbitMQOptions()
-    ),
+    RabbitMQModule.forRootAsync(getFileStorageRabbitMQOptions()),
     FileStorageConfigModule,
     FileStorageNotifyModule,
   ],

@@ -5,12 +5,7 @@ import { getFileStorageRabbitMQOptions } from '@project/file-storage-config';
 import { FileStorageNotifyService } from './file-storage-notify.service';
 
 @Module({
-  imports: [
-    RabbitMQModule.forRootAsync(
-      RabbitMQModule,
-      getFileStorageRabbitMQOptions()
-    ),
-  ],
+  imports: [RabbitMQModule.forRootAsync(getFileStorageRabbitMQOptions())],
   providers: [FileStorageNotifyService],
   exports: [FileStorageNotifyService],
 })

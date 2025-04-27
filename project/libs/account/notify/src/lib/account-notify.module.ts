@@ -8,7 +8,6 @@ import { AccountNotifyService } from './account-notify.service';
 @Module({
   imports: [
     RabbitMQModule.forRootAsync(
-      RabbitMQModule,
       getRabbitMQOptions(AccountConfigNamespace.RABBIT)
     ),
   ],
