@@ -62,6 +62,11 @@ const ImagePostValidation: ImagePostConstraints = {
     validType: {
       message: 'Image should be a valid URL',
     },
+    urlOptions: {
+      require_tld: false,
+      require_valid_protocol: false,
+      require_host: false,
+    },
   },
 };
 

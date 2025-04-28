@@ -38,31 +38,28 @@ class BlogPostService {
 
   public async handlePostAssets<T extends CreatePostDto | UpdatePostDto>(
     post: T,
-    files?: {
-      image?: Express.Multer.File[];
+    files: {
+      image?: Express.Multer.File;
     }
   ): Promise<Omit<LibCreatePostDto, 'authorId'>> {
     if (post.kind !== 'image')
       return post as Omit<LibCreatePostDto, 'authorId'>;
 
-    return this.handlePostImage(post, files);
-  }
-
-  private async handlePostImage<T extends CreatePostDto | UpdatePostDto>(
-    post: T,
-    files?: {
-      image?: Express.Multer.File[];
-    }
-  ): Promise<Omit<LibCreatePostDto, 'authorId'>> {
-    const { image } = files || {};
-    const postImage = image?.[0];
-    if (!postImage) {
+    const { image } = files;
+    if (post.kind === 'image' && !image) {
       throw new UnprocessableEntityException(
         `Post kind and file type mismatch`
       );
     }
 
-    const file = await this.uploadPostImage(postImage);
+    return this.handlePostImage(post, image);
+  }
+
+  private async handlePostImage<T extends CreatePostDto | UpdatePostDto>(
+    post: T,
+    image: Express.Multer.File
+  ): Promise<Omit<LibCreatePostDto, 'authorId'>> {
+    const file = await this.uploadPostImage(image);
     this.logger.log(`Image file uploaded: ${file.path}`);
     return {
       ...post,

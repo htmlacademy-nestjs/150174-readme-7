@@ -13,7 +13,7 @@ import {
   Put,
   Query,
   Req,
-  UploadedFiles,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -39,12 +39,11 @@ import {
 import { join } from 'node:path';
 import { RequestWithTokenPayload } from '@avylando-readme/core';
 import { CreatePostDto } from '../dto/blog-posts/create-post/create-post.dto';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { BlogPostService } from '../services/blog-post.service';
 import { UpdatePostDto } from '../dto/blog-posts/update-post.dto';
 import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
 import { Public } from '../decorators/public.decorator';
-import { ParseFormDataJsonPipe } from '@project/pipes';
 
 @Controller('blog/posts')
 @ApiTags('blog', 'posts')
@@ -95,7 +94,7 @@ class BlogPostsController {
     return data;
   }
 
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
+  @UseInterceptors(FileInterceptor('image'))
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
   @ApiConsumes('multipart/form-data', 'application/json')
   @Post('/')
@@ -103,16 +102,18 @@ class BlogPostsController {
     @Req() { user }: RequestWithTokenPayload,
     @Body()
     dto: CreatePostDto,
-    @UploadedFiles(ValidatePostImagePipe)
-    files: {
-      image?: Express.Multer.File[];
-    }
+    @UploadedFile(ValidatePostImagePipe)
+    image?: Express.Multer.File
   ) {
-    const postData = await this.blogPostService.handlePostAssets(dto, files);
+    const postData = await this.blogPostService.handlePostAssets(dto, {
+      image,
+    });
     const libDto: LibCreatePostDto = {
       ...postData,
       authorId: user.sub,
     };
+    console.log(user, libDto);
+
     try {
       const { data } = await this.httpService.axiosRef.post<PostRdo>(
         this.getShowPostsPath(),
@@ -138,7 +139,7 @@ class BlogPostsController {
     return data;
   }
 
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'image', maxCount: 1 }]))
+  @UseInterceptors(FileInterceptor('image'))
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
   @ApiConsumes('multipart/form-data', 'application/json')
   @Put('/:id')
@@ -146,17 +147,17 @@ class BlogPostsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Req() { user }: RequestWithTokenPayload,
     @Body() dto: UpdatePostDto,
-    @UploadedFiles(ValidatePostImagePipe)
-    files: {
-      image?: Express.Multer.File[];
-    }
+    @UploadedFile('image', ValidatePostImagePipe)
+    image?: Express.Multer.File
   ) {
     const existingPost = await this.findPost(id);
     if (existingPost.authorId !== user.sub) {
       throw new ForbiddenException('You are not the author of this post');
     }
 
-    const postData = await this.blogPostService.handlePostAssets(dto, files);
+    const postData = await this.blogPostService.handlePostAssets(dto, {
+      image,
+    });
 
     const libDto: LibUpdatePostDto = {
       ...postData,

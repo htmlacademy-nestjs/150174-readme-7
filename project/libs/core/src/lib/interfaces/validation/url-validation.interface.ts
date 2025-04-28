@@ -1,23 +1,11 @@
 import { CommonValidationsMap } from './common-validation.interface';
-import { Validation, ValidationType } from './validation.interface';
+import { ValidationType } from './validation.interface';
+import type { IsURLOptions } from 'validator/lib/isURL';
 
-interface UrlPatternValidation
-  extends Validation<{
-    pattern: RegExp;
-  }> {}
-
-interface UrlProtocolValidation
-  extends Validation<{
-    allowedProtocols?: string[];
-  }> {}
-
-type UrlValidationMap = CommonValidationsMap & {
-  pattern?: UrlPatternValidation;
-  protocol?: UrlProtocolValidation;
-};
+type UrlValidationMap = CommonValidationsMap;
 
 type UrlValidation<
-  Keys extends keyof UrlValidationMap = keyof CommonValidationsMap
-> = ValidationType<UrlValidationMap, Keys>;
+  Keys extends keyof UrlValidationMap = keyof UrlValidationMap
+> = ValidationType<UrlValidationMap, Keys> & { urlOptions?: IsURLOptions };
 
 export type { UrlValidation };

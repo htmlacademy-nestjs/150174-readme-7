@@ -2,15 +2,21 @@ import 'multer';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { Expose, Transform, Type, TypeHelpOptions } from 'class-transformer';
 import {
-  CreateBasePostDto,
+  BasePostValidation,
   CreateLinkPostDto,
   CreateQuotePostDto,
   CreateTextPostDto,
   CreateVideoPostDto,
 } from '@project/blog-post';
 import { CreateImageWithFilePostDto } from './create-image-with-file-post.dto';
-import { ValidateNested } from 'class-validator';
-import { Post } from '@avylando-readme/core';
+import {
+  IsArray,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { BasePost, Post, PostKind } from '@avylando-readme/core';
 
 @ApiExtraModels(
   CreateImageWithFilePostDto,
@@ -19,7 +25,51 @@ import { Post } from '@avylando-readme/core';
   CreateQuotePostDto,
   CreateVideoPostDto
 )
-export class CreatePostDto extends CreateBasePostDto {
+export class CreatePostDto implements Omit<BasePost, 'authorId'> {
+  @ApiProperty({
+    description: 'Post status',
+    type: 'string',
+    example: 'published',
+  })
+  @IsEnum(['published', 'draft'], {
+    message: BasePostValidation.status.enum.message,
+  })
+  @Expose()
+  public status: Post['status'];
+
+  @ApiProperty({
+    description: 'Post tags',
+    type: 'array',
+    items: {
+      type: 'string',
+    },
+    example: ['tag1', 'tag2'],
+  })
+  @IsArray({
+    message: BasePostValidation.tags.validType.message,
+  })
+  @IsString({ each: true, message: BasePostValidation.tags.validType.message })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return value.split(',').map((tag) => tag.trim());
+    }
+    return value;
+  })
+  @Expose()
+  public tags?: Post['tags'];
+
+  @ApiProperty({
+    description: 'Post kind',
+    type: 'string',
+    example: 'text',
+  })
+  @IsEnum(PostKind, {
+    message: BasePostValidation.kind.enum.message,
+  })
+  @Expose()
+  public kind: Post['kind'];
+
   @ApiProperty({
     oneOf: [
       { $ref: getSchemaPath(CreateImageWithFilePostDto) },

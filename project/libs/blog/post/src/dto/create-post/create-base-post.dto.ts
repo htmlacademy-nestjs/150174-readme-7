@@ -13,6 +13,7 @@ import { BasePostValidation } from '../dto-validations.const';
 export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
   @ApiProperty({
     description: 'Post author ID',
+    type: 'string',
     example: '60f5b2b3c4e9d2b9c8b2c8b2c',
   })
   @IsMongoId({ message: BasePostValidation.authorId.validType.message })

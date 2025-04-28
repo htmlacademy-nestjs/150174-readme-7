@@ -11,7 +11,9 @@ export class CreateImagePostDto implements Data {
     type: 'string',
     example: '/images/image.jpg',
   })
-  @IsUrl({}, { message: ImagePostValidation.imageSrc.validType.message })
+  @IsUrl(ImagePostValidation.imageSrc.urlOptions, {
+    message: ImagePostValidation.imageSrc.validType.message,
+  })
   @Expose()
   public imageSrc: Data['imageSrc'];
 }
