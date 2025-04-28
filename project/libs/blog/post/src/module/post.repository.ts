@@ -11,7 +11,7 @@ import { $Enums, Prisma } from '@prisma/client';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
-import { PostQuery } from '../query/post.query';
+import { PostQuery } from '../query/post-query.dto';
 
 type PostOptionalIncludes = Extract<
   keyof Prisma.PostInclude,

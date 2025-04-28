@@ -15,7 +15,7 @@ import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto, PaginationResult } from '@avylando-readme/core';
 import { PostRdo } from '../rdo/post.rdo';
-import { PostQuery } from '../query/post.query';
+import { PostQuery } from '../query/post-query.dto';
 import { LikePostDto } from '../dto/like-post-dto/like-post.dto';
 import { UpdatePostDto } from '../dto/update-post/update-post.dto';
 import {
@@ -29,7 +29,10 @@ class PostController {
   constructor(private readonly postService: PostService) {}
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Get posts' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Posts not found' })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Posts not found',
+  })
   @Get(BlogPostsEndpoint.POSTS)
   public async getPosts(
     @Query() query: PostQuery
@@ -51,7 +54,10 @@ class PostController {
   }
 
   @ApiResponse({ status: HttpStatus.OK, description: 'Find post' })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Post not found',
+  })
   @Get(BlogPostsEndpoint.POST)
   public async findPost(@Param('id', ParseUUIDPipe) id: string) {
     const post = await this.postService.findPost(id);

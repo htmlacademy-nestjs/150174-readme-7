@@ -5,7 +5,7 @@ import { PostRepository } from './post.repository';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { PostFactory } from './post.factory';
 import { UpdatePostDto } from '../dto/update-post/update-post.dto';
-import { PostQuery } from '../query/post.query';
+import { PostQuery } from '../query/post-query.dto';
 
 @Injectable()
 class PostService {
