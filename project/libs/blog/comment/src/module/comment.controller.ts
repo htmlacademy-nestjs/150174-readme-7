@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
@@ -19,6 +20,7 @@ import {
   BLOG_COMMENTS_CONTROLLER_NAME,
   BlogCommentsEndpoint,
 } from './comment.constants';
+import { CommentQuery } from '../query/comment-query.dto';
 
 @ApiTags('comments', 'blog')
 @Controller(BLOG_COMMENTS_CONTROLLER_NAME)
@@ -31,9 +33,13 @@ class CommentController {
   })
   @Get(BlogCommentsEndpoint.COMMENTS)
   public async getCommentsByPostId(
-    @Param('postId', ParseUUIDPipe) postId: string
+    @Param('postId', ParseUUIDPipe) postId: string,
+    @Query() query: CommentQuery
   ) {
-    const comments = await this.commentService.getCommentsByPostId(postId);
+    const comments = await this.commentService.getCommentsByPostId(
+      postId,
+      query
+    );
     return fillDto(
       CommentRdo,
       comments.map((comment) => comment.toPlainObject())

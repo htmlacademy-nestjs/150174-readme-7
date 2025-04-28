@@ -14,6 +14,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -24,6 +25,7 @@ import {
 import {
   BLOG_COMMENTS_CONTROLLER_NAME,
   BlogCommentsEndpoint,
+  CommentQuery,
   CommentRdo,
   CreateCommentDto as LibCreateCommentDto,
   UpdateCommentDto as LibUpdateCommentDto,
@@ -46,10 +48,10 @@ class BlogCommentsController {
     );
   }
 
-  private getShowCommentsPath(postId: string) {
-    return join(
-      this.getCommentsServicePath(postId),
-      BlogCommentsEndpoint.COMMENTS
+  private getShowCommentsPath(postId: string, query?: CommentQuery) {
+    return buildURI(
+      join(this.getCommentsServicePath(postId), BlogCommentsEndpoint.COMMENTS),
+      { query: { ...query } }
     );
   }
 
@@ -75,10 +77,12 @@ class BlogCommentsController {
   })
   @Get('/')
   public async getCommentsByPostId(
-    @Param('postId', ParseUUIDPipe) postId: string
+    @Param('postId', ParseUUIDPipe) postId: string,
+    @Query() query: CommentQuery
   ) {
+    console.log(this.getShowCommentsPath(postId, query));
     const { data } = await this.httpService.axiosRef.get<CommentRdo[]>(
-      this.getShowCommentsPath(postId)
+      this.getShowCommentsPath(postId, query)
     );
     return data;
   }

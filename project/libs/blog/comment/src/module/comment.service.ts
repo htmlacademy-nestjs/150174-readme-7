@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CommentRepository } from './comment.repository';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { CommentFactory } from './comment.factory';
 import { CommentEntity } from './comment.entity';
 import { UpdateCommentDto } from '../dto/update-comment.dto';
+import { CommentQuery } from '../query/comment-query.dto';
 
 @Injectable()
 class CommentService {
@@ -20,8 +21,11 @@ class CommentService {
     return this.commentRepository.save(comment);
   }
 
-  async getCommentsByPostId(postId: string): Promise<CommentEntity[]> {
-    return this.commentRepository.getCommentsByPostId(postId);
+  async getCommentsByPostId(
+    postId: string,
+    query: CommentQuery
+  ): Promise<CommentEntity[]> {
+    return this.commentRepository.getCommentsByPostId(postId, query);
   }
 
   async findComment(commentId: string): Promise<CommentEntity> {

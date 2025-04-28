@@ -4,6 +4,8 @@ import { PostgresRepository } from '@avylando-readme/core';
 
 import { CommentEntity } from './comment.entity';
 import { CommentFactory } from './comment.factory';
+import { CommentQuery } from '../query/comment-query.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 class CommentRepository extends PostgresRepository<CommentEntity> {
@@ -76,13 +78,31 @@ class CommentRepository extends PostgresRepository<CommentEntity> {
     });
   }
 
-  public async getCommentsByPostId(postId: string): Promise<CommentEntity[]> {
+  public async getCommentsByPostId(
+    postId: string,
+    query: CommentQuery
+  ): Promise<CommentEntity[]> {
     const comments = await this.client.comment.findMany({
-      where: {
-        postId,
-      },
+      ...this.getQueryOptions(postId, query),
     });
     return comments.map((comment) => this.createEntityFromDocument(comment));
+  }
+
+  private getQueryOptions(
+    postId: string,
+    query: CommentQuery
+  ): Prisma.CommentFindManyArgs {
+    const { limit, page } = query;
+
+    const where: Prisma.CommentWhereInput = {
+      postId,
+    };
+
+    return {
+      take: limit,
+      skip: (page - 1) * limit,
+      where,
+    };
   }
 }
 
