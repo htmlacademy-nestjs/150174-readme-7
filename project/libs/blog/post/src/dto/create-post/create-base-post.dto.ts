@@ -1,12 +1,14 @@
-import { BasePost, PostKind } from '@avylando-readme/core';
+import { BasePost, cleanTags, PostKind } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Transform } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsEnum,
   IsMongoId,
   IsOptional,
   IsString,
+  Length,
 } from 'class-validator';
 import { BasePostValidation } from '../dto-validations.const';
 
@@ -39,14 +41,25 @@ export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
     },
     example: ['tag1', 'tag2'],
   })
+  @ArrayMaxSize(BasePostValidation.tags.size.max, {
+    message: BasePostValidation.tags.size.message,
+  })
   @IsArray({
     message: BasePostValidation.tags.validType.message,
   })
+  @Length(
+    BasePostValidation.tags.length.min,
+    BasePostValidation.tags.length.max,
+    { message: BasePostValidation.tags.length.message, each: true }
+  )
   @IsString({ each: true, message: BasePostValidation.tags.validType.message })
   @IsOptional()
   @Transform(({ value }) => {
+    if (Array.isArray(value)) {
+      return cleanTags(value);
+    }
     if (typeof value === 'string') {
-      return value.split(',').map((tag) => tag.trim());
+      return cleanTags(value.split(','));
     }
     return value;
   })

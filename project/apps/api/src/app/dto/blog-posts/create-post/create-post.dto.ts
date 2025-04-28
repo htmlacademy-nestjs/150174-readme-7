@@ -10,13 +10,15 @@ import {
 } from '@project/blog-post';
 import { CreateImageWithFilePostDto } from './create-image-with-file-post.dto';
 import {
+  ArrayMaxSize,
   IsArray,
   IsEnum,
   IsOptional,
   IsString,
+  Length,
   ValidateNested,
 } from 'class-validator';
-import { BasePost, Post, PostKind } from '@avylando-readme/core';
+import { BasePost, cleanTags, Post, PostKind } from '@avylando-readme/core';
 
 @ApiExtraModels(
   CreateImageWithFilePostDto,
@@ -45,14 +47,25 @@ export class CreatePostDto implements Omit<BasePost, 'authorId'> {
     },
     example: ['tag1', 'tag2'],
   })
+  @ArrayMaxSize(BasePostValidation.tags.size.max, {
+    message: BasePostValidation.tags.size.message,
+  })
   @IsArray({
     message: BasePostValidation.tags.validType.message,
   })
+  @Length(
+    BasePostValidation.tags.length.min,
+    BasePostValidation.tags.length.max,
+    { message: BasePostValidation.tags.length.message, each: true }
+  )
   @IsString({ each: true, message: BasePostValidation.tags.validType.message })
   @IsOptional()
   @Transform(({ value }) => {
+    if (Array.isArray(value)) {
+      return cleanTags(value);
+    }
     if (typeof value === 'string') {
-      return value.split(',').map((tag) => tag.trim());
+      return cleanTags(value.split(','));
     }
     return value;
   })

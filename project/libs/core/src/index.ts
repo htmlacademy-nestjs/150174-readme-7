@@ -59,6 +59,7 @@ export { StringValidation } from './lib/interfaces/validation/string-validation.
 export { UrlValidation } from './lib/interfaces/validation/url-validation.interface';
 export { EnumValidation } from './lib/interfaces/validation/enum-validation.interface';
 export { EmailValidation } from './lib/interfaces/validation/email-validation.interface';
+export { ArrayValidation } from './lib/interfaces/validation/array-validation.interface';
 export {
   Validation,
   ValidationType,
@@ -77,6 +78,8 @@ export {
   createRefreshJWTPayload,
 } from './lib/helpers/jwt.helpers';
 export { parseTime } from './lib/helpers/datetime.helpers';
+export { uniqueArray } from './lib/helpers/array.helpers';
+export { cleanTags } from './lib/helpers/tag.helpers';
 
 // Utility types
 export type {

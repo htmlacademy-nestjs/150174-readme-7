@@ -1,4 +1,5 @@
 import {
+  ArrayValidation,
   EnumValidation,
   StringValidation,
   UrlValidation,
@@ -8,7 +9,7 @@ type BasePostConstraints = {
   status: EnumValidation;
   authorId: StringValidation<'validType'>;
   kind: EnumValidation;
-  tags: StringValidation<'validType'>;
+  tags: StringValidation<'validType' | 'length'> & ArrayValidation<'size'>;
 };
 
 type VideoPostConstraints = {

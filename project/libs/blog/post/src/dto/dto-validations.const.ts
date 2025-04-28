@@ -36,6 +36,16 @@ const BasePostValidation: BasePostConstraints = {
     validType: {
       message: 'Invalid tags',
     },
+    length: {
+      min: 3,
+      max: 10,
+      message: 'Tag length should be between 3 and 10',
+    },
+    size: {
+      min: 0,
+      max: 8,
+      message: 'Tags array should have between 8 items maximum',
+    },
   },
 };
 
