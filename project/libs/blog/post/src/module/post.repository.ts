@@ -12,6 +12,7 @@ import { $Enums, Prisma } from '@prisma/client';
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
 import { PostQuery } from '../query/post-query.dto';
+import { PostSearchQuery } from '../query/post-search-query.dto';
 
 type PostOptionalIncludes = Extract<
   keyof Prisma.PostInclude,
@@ -186,6 +187,32 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     };
   }
 
+  public async findBySearch(
+    query: PostSearchQuery
+  ): Promise<PaginationResult<BlogPostEntity>> {
+    const { limit, page } = query;
+
+    const options = this.getSearchOptions(query);
+
+    const [posts, totalItems] = await Promise.all([
+      this.client.post.findMany({
+        ...options,
+        include: this.prepareInclude(),
+      }),
+      this.getPostCount(options.where as Prisma.PostWhereInput),
+    ]);
+
+    return {
+      entities: posts.map((post) =>
+        this.createEntityFromDocument(this.adaptRawDataToPost(post))
+      ),
+      totalItems,
+      totalPages: this.calculatePostsPage(totalItems, limit),
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
   public async addPostToFavorites(
     postId: string,
     userId: string
@@ -242,7 +269,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           quote: true,
           text: true,
           video: true,
-        } as Prisma.PostToKindSelect,
+        },
       },
       tags: {
         select: {
@@ -251,7 +278,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       },
     };
 
-    if (includes) {
+    if (includes.comments) {
       include.comments = true;
     }
 
@@ -283,6 +310,39 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
 
   private calculatePostsPage(totalCount: number, limit: number): number {
     return Math.ceil(totalCount / limit);
+  }
+
+  private getSearchOptions({
+    title,
+    ...rest
+  }: PostSearchQuery): Prisma.PostFindManyArgs {
+    const options = this.getQueryOptions(rest);
+    options.where = {
+      ...options.where,
+      OR: [
+        {
+          data: {
+            video: {
+              title: {
+                contains: title,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+        {
+          data: {
+            text: {
+              title: {
+                contains: title,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+      ],
+    };
+    return options;
   }
 
   private getQueryOptions(query: PostQuery): Prisma.PostFindManyArgs {

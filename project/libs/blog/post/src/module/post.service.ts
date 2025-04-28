@@ -6,6 +6,7 @@ import { CreatePostDto } from '../dto/create-post/create-post.dto';
 import { PostFactory } from './post.factory';
 import { UpdatePostDto } from '../dto/update-post/update-post.dto';
 import { PostQuery } from '../query/post-query.dto';
+import { PostSearchQuery } from '../query/post-search-query.dto';
 
 @Injectable()
 class PostService {
@@ -54,6 +55,11 @@ class PostService {
 
   public async getPosts(query: PostQuery) {
     const posts = await this.postRepository.findMany(query);
+    return posts;
+  }
+
+  public async searchPosts(query: PostSearchQuery) {
+    const posts = await this.postRepository.findBySearch(query);
     return posts;
   }
 

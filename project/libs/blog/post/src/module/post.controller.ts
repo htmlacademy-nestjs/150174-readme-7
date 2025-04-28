@@ -22,6 +22,7 @@ import {
   BLOG_POSTS_CONTROLLER_NAME,
   BlogPostsEndpoint,
 } from './post.constants';
+import { PostSearchQuery } from '../query/post-search-query.dto';
 
 @ApiTags('posts', 'blog')
 @Controller(BLOG_POSTS_CONTROLLER_NAME)
@@ -38,6 +39,23 @@ class PostController {
     @Query() query: PostQuery
   ): Promise<PaginationResult<PostRdo>> {
     const result = await this.postService.getPosts(query);
+    return {
+      ...result,
+      entities: result.entities.map((post) =>
+        fillDto(PostRdo, post.toPlainObject())
+      ),
+    };
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get posts by user search',
+  })
+  @Get(BlogPostsEndpoint.SEARCH)
+  public async getPostsBySearch(
+    @Query() query: PostSearchQuery
+  ): Promise<PaginationResult<PostRdo>> {
+    const result = await this.postService.searchPosts(query);
     return {
       ...result,
       entities: result.entities.map((post) =>

@@ -45,6 +45,7 @@ import { BlogPostService } from '../services/blog-post.service';
 import { UpdatePostDto } from '../dto/blog-posts/update-post.dto';
 import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
 import { Public } from '../decorators/public.decorator';
+import { PostSearchQuery } from 'libs/blog/post/src/query/post-search-query.dto';
 
 @Controller('blog/posts')
 @ApiTags('blog', 'posts')
@@ -60,6 +61,13 @@ class BlogPostsController {
     return buildURI(join(this.getPostsServicePath(), BlogPostsEndpoint.POSTS), {
       query: { ...query },
     });
+  }
+
+  private getSearchPostsPath(query: PostSearchQuery) {
+    return buildURI(
+      join(this.getPostsServicePath(), BlogPostsEndpoint.SEARCH),
+      { query: { ...query } }
+    );
   }
 
   private getPostPath(postId: string) {
@@ -95,6 +103,19 @@ class BlogPostsController {
     return data;
   }
 
+  @Public()
+  @ApiResponse({ status: HttpStatus.OK, description: 'Search posts' })
+  @Get('/search')
+  public async getPostsByUserSearch(
+    @Query() query: PostSearchQuery
+  ): Promise<PaginationResult<PostRdo>> {
+    const { data } = await this.httpService.axiosRef.get<
+      PaginationResult<PostRdo>
+    >(this.getSearchPostsPath(query), {});
+
+    return data;
+  }
+
   @UseInterceptors(FileInterceptor('image'))
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
   @ApiConsumes('multipart/form-data', 'application/json')
@@ -113,7 +134,6 @@ class BlogPostsController {
       ...postData,
       authorId: user.sub,
     };
-    console.log(user, libDto);
 
     try {
       const { data } = await this.httpService.axiosRef.post<PostRdo>(
