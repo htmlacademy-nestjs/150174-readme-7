@@ -15,6 +15,7 @@ const BlogPostsEndpoint = {
   LIKE_POST: ':id/like',
   COMMENTS: ':id/comments',
   SEARCH: '/search',
+  DRAFTS: '/drafts',
 } as const;
 
 export {

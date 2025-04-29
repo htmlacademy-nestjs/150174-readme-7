@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpStatus,
   Param,
@@ -12,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from '../dto/create-post/create-post.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { fillDto, PaginationResult } from '@avylando-readme/core';
 import { PostRdo } from '../rdo/post.rdo';
 import { PostQuery } from '../query/post-query.dto';
@@ -64,6 +65,31 @@ class PostController {
     };
   }
 
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get user drafts',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Request forbidden',
+  })
+  @Get(BlogPostsEndpoint.DRAFTS)
+  public async getDrafts(
+    @Query() query: PostQuery
+  ): Promise<PaginationResult<PostRdo>> {
+    if (!query.authorId) {
+      throw new ForbiddenException();
+    }
+    const result = await this.postService.getDraftPosts(query.authorId, query);
+    return {
+      ...result,
+      entities: result.entities.map((post) =>
+        fillDto(PostRdo, post.toPlainObject())
+      ),
+    };
+  }
+
+  @ApiConsumes('application/json')
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
   @Post(BlogPostsEndpoint.POSTS)
   public async createPost(@Body() post: CreatePostDto) {
@@ -82,6 +108,7 @@ class PostController {
     return fillDto(PostRdo, post.toPlainObject());
   }
 
+  @ApiConsumes('application/json')
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
   @Put(BlogPostsEndpoint.POST)
   public async updatePost(

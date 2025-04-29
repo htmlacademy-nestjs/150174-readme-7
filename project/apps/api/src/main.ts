@@ -15,7 +15,7 @@ import { AxiosExceptionFilter } from './app/filters/axios-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    bodyParser: true,
+    bodyParser: false,
   });
   const config = new DocumentBuilder()
     .setTitle('API-Gateway service')

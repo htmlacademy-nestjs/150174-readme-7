@@ -58,6 +58,11 @@ class PostService {
     return posts;
   }
 
+  public async getDraftPosts(userId: string, query: PostQuery) {
+    const posts = await this.postRepository.findDrafts(userId, query);
+    return posts;
+  }
+
   public async searchPosts(query: PostSearchQuery) {
     const posts = await this.postRepository.findBySearch(query);
     return posts;

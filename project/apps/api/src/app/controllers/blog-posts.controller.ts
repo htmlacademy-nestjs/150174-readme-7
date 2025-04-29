@@ -19,7 +19,6 @@ import {
 import {
   ApiBearerAuth,
   ApiConsumes,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -46,6 +45,7 @@ import { UpdatePostDto } from '../dto/blog-posts/update-post.dto';
 import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
 import { Public } from '../decorators/public.decorator';
 import { PostSearchQuery } from 'libs/blog/post/src/query/post-search-query.dto';
+import { ParseJsonInterceptor } from '@project/interceptors';
 
 @Controller('blog/posts')
 @ApiTags('blog', 'posts')
@@ -66,6 +66,13 @@ class BlogPostsController {
   private getSearchPostsPath(query: PostSearchQuery) {
     return buildURI(
       join(this.getPostsServicePath(), BlogPostsEndpoint.SEARCH),
+      { query: { ...query } }
+    );
+  }
+
+  private getDraftsPath(query: PostQuery) {
+    return buildURI(
+      join(this.getPostsServicePath(), BlogPostsEndpoint.DRAFTS),
       { query: { ...query } }
     );
   }
@@ -116,7 +123,27 @@ class BlogPostsController {
     return data;
   }
 
-  @UseInterceptors(FileInterceptor('image'))
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get user drafts',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Request forbidden',
+  })
+  @Get('/drafts')
+  public async getDrafts(
+    @Query() query: Omit<PostQuery, 'authorId'>,
+    @Req() { user }: RequestWithTokenPayload
+  ): Promise<PaginationResult<PostRdo>> {
+    const { data } = await this.httpService.axiosRef.get<
+      PaginationResult<PostRdo>
+    >(this.getDraftsPath({ ...query, authorId: user.sub }));
+
+    return data;
+  }
+
+  @UseInterceptors(FileInterceptor('image'), ParseJsonInterceptor(['data']))
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
   @ApiConsumes('multipart/form-data', 'application/json')
   @Post('/')

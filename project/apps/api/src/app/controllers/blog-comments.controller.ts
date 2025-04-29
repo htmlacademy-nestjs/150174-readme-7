@@ -80,7 +80,6 @@ class BlogCommentsController {
     @Param('postId', ParseUUIDPipe) postId: string,
     @Query() query: CommentQuery
   ) {
-    console.log(this.getShowCommentsPath(postId, query));
     const { data } = await this.httpService.axiosRef.get<CommentRdo[]>(
       this.getShowCommentsPath(postId, query)
     );

@@ -105,12 +105,11 @@ export class CreatePostDto implements Omit<BasePost, 'authorId'> {
       case 'video':
         return CreateVideoPostDto;
       case 'image':
-        return CreateImageWithFilePostDto;
+        return undefined;
       default:
         throw new Error(`Unknown post kind: ${kind}`);
     }
   })
-  @Transform(({ value }) => JSON.parse(value))
   @Expose()
   public data:
     | CreateImageWithFilePostDto
