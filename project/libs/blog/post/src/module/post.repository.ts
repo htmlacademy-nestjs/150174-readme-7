@@ -235,6 +235,59 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     return this.createEntityFromDocument(post);
   }
 
+  // Feed subscription methods
+  public async subscribeToAuthor(
+    userId: string,
+    authorId: string
+  ): Promise<void> {
+    await this.client.feedSubscription.create({
+      data: {
+        subscriberId: userId,
+        subscriptionId: authorId,
+      },
+    });
+  }
+
+  public async unsubscribeFromAuthor(
+    userId: string,
+    authorId: string
+  ): Promise<void> {
+    await this.client.feedSubscription.deleteMany({
+      where: {
+        subscriberId: userId,
+        subscriptionId: authorId,
+      },
+    });
+  }
+
+  public async getSubscriptions(userId: string): Promise<string[]> {
+    const result = await this.client.feedSubscription.findMany({
+      where: {
+        subscriberId: userId,
+      },
+      select: {
+        subscriptionId: true,
+      },
+    });
+    return result.map((el) => el.subscriptionId);
+  }
+
+  public async getUserFeed(
+    userId: string,
+    query: PostQuery
+  ): Promise<PaginationResult<BlogPostEntity>> {
+    const subscriptions = await this.getSubscriptions(userId);
+    const options = this.getQueryOptions(query);
+    options.where = {
+      ...options.where,
+      authorId: {
+        in: subscriptions,
+      },
+    };
+    const result = await this.getPaginationResult(options, query);
+    return result;
+  }
+
   private async getPaginationResult(
     options: Prisma.PostFindManyArgs,
     { limit, page }: Pick<PostQuery, 'limit' | 'page'>,

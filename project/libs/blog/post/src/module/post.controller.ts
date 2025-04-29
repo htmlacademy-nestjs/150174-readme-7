@@ -4,6 +4,7 @@ import {
   Delete,
   ForbiddenException,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -24,6 +25,8 @@ import {
   BlogPostsEndpoint,
 } from './post.constants';
 import { PostSearchQuery } from '../query/post-search-query.dto';
+import { FeedSubscribeDto } from '../dto/subscribe/subscribe.dto';
+import { ValidateMongoIdPipe } from '@project/pipes';
 
 @ApiTags('posts', 'blog')
 @Controller(BLOG_POSTS_CONTROLLER_NAME)
@@ -157,6 +160,53 @@ class PostController {
   ) {
     const post = await this.postService.removePostFromFavorites(id, dto.userId);
     return fillDto(PostRdo, post.toPlainObject());
+  }
+
+  // Feed
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Subscribed to author posts',
+  })
+  @HttpCode(HttpStatus.CREATED)
+  @Post(BlogPostsEndpoint.SUBSCRIBE)
+  public async subscribeToAuthor(
+    @Param('authorId', ValidateMongoIdPipe) authorId: string,
+    @Body() dto: FeedSubscribeDto
+  ) {
+    await this.postService.subscribeToAuthor(dto.userId, authorId);
+  }
+
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Unsubscribed from author posts',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(BlogPostsEndpoint.SUBSCRIBE)
+  public async unsubscribeFromAuthor(
+    @Param('authorId', ValidateMongoIdPipe) authorId: string,
+    @Body() dto: FeedSubscribeDto
+  ) {
+    await this.postService.unsubscribeFromAuthor(dto.userId, authorId);
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get user feed',
+  })
+  @Get(BlogPostsEndpoint.FEED)
+  public async getFeed(
+    @Query() query: PostQuery
+  ): Promise<PaginationResult<PostRdo>> {
+    if (!query.authorId) {
+      throw new ForbiddenException();
+    }
+    const result = await this.postService.getUserFeed(query.authorId, query);
+    return {
+      ...result,
+      entities: result.entities.map((post) =>
+        fillDto(PostRdo, post.toPlainObject())
+      ),
+    };
   }
 }
 

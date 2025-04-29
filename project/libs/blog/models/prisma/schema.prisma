@@ -151,3 +151,12 @@ model PostLike {
   @@id([postId, userId])
   @@map("post_likes")
 }
+
+model FeedSubscription {
+  subscriberId    String   @map("subscriber_id") @db.VarChar(30)
+  subscriptionId  String   @map("subscription_id") @db.VarChar(30)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@id([subscriberId, subscriptionId])
+  @@map("feed_subscriptions")
+}

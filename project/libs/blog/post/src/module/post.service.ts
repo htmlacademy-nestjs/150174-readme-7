@@ -77,6 +77,23 @@ class PostService {
     const post = await this.postRepository.removePostFromFavorites(id, userId);
     return post;
   }
+
+  public async subscribeToAuthor(userId: string, authorId: string) {
+    const author = await this.postRepository.subscribeToAuthor(
+      userId,
+      authorId
+    );
+    return author;
+  }
+
+  public async unsubscribeFromAuthor(userId: string, authorId: string) {
+    await this.postRepository.unsubscribeFromAuthor(userId, authorId);
+  }
+
+  public async getUserFeed(userId: string, query: PostQuery) {
+    const posts = await this.postRepository.getUserFeed(userId, query);
+    return posts;
+  }
 }
 
 export { PostService };

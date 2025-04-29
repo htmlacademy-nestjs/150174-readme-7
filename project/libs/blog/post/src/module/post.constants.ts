@@ -16,6 +16,8 @@ const BlogPostsEndpoint = {
   COMMENTS: ':id/comments',
   SEARCH: '/search',
   DRAFTS: '/drafts',
+  FEED: '/feed',
+  SUBSCRIBE: '/subscribe/:authorId',
 } as const;
 
 export {
