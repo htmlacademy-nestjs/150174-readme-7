@@ -15,9 +15,11 @@ export { LikePostDto } from './dto/like-post-dto/like-post.dto';
 export { PostRdo } from './rdo/post.rdo';
 
 // Query
-export { PostQuery } from './query/post.query';
+export { PostQuery } from './query/post-query.dto';
 
 // Constants
+export { BasePostValidation } from './dto/dto-validations.const';
+
 export {
   BLOG_POSTS_CONTROLLER_NAME,
   BlogPostsEndpoint,

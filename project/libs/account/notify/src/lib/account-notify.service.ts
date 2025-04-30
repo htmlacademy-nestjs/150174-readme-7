@@ -16,7 +16,7 @@ export class AccountNotifyService {
   ) {}
 
   public async registerSubscriber(dto: CreateSubscriberDto) {
-    return this.rabbitClient.publish<CreateSubscriberDto>(
+    return this.rabbitClient.publish(
       this.rabbitOptions.exchange,
       RabbitMqRouting.AddSubscriber,
       { ...dto }
@@ -24,7 +24,7 @@ export class AccountNotifyService {
   }
 
   public async deleteSubscriber(email: string) {
-    return this.rabbitClient.publish<string>(
+    return this.rabbitClient.publish(
       this.rabbitOptions.exchange,
       RabbitMqRouting.DeleteSubscriber,
       email

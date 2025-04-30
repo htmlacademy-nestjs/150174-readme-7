@@ -6,7 +6,7 @@ export { EntityFactory } from './lib/interfaces/base/entity-factory.interface';
 
 // User
 export { UserRole } from './lib/interfaces/user/user-role.type';
-export { User } from './lib/interfaces/user/user.interface';
+export { User, WritableUser } from './lib/interfaces/user/user.interface';
 
 // Comment
 export { Comment } from './lib/interfaces/comment/comment.interface';
@@ -42,6 +42,7 @@ export { JwtTokenPayload } from './lib/interfaces/auth/jwt-payload.interface';
 export { JwtToken } from './lib/interfaces/auth/jwt-token.interface';
 export { RefreshTokenPayload } from './lib/interfaces/auth/refresh-token-payload.interface';
 export { RequestWithTokenPayload } from './lib/interfaces/auth/request-with-token-payload.interface';
+export { RequestWithLogout } from './lib/interfaces/auth/request-with-logout.interface';
 
 // Query
 export { PaginationResult } from './lib/interfaces/query/pagination-result.interface';
@@ -51,6 +52,18 @@ export { PostSortBy } from './lib/interfaces/query/sort-by.enum';
 // Notification
 export { RabbitMqRouting } from './lib/interfaces/notification/rabbit-routing.enum';
 export { NotificationSubscriber } from './lib/interfaces/notification/subscriber.interface';
+
+// Validation
+export { FileValidation } from './lib/interfaces/validation/file-validation.interface';
+export { StringValidation } from './lib/interfaces/validation/string-validation.interface';
+export { UrlValidation } from './lib/interfaces/validation/url-validation.interface';
+export { EnumValidation } from './lib/interfaces/validation/enum-validation.interface';
+export { EmailValidation } from './lib/interfaces/validation/email-validation.interface';
+export { ArrayValidation } from './lib/interfaces/validation/array-validation.interface';
+export {
+  Validation,
+  ValidationType,
+} from './lib/interfaces/validation/validation.interface';
 
 // Schema
 export { ConfigSchema } from './lib/classes/config-schema';
@@ -65,6 +78,8 @@ export {
   createRefreshJWTPayload,
 } from './lib/helpers/jwt.helpers';
 export { parseTime } from './lib/helpers/datetime.helpers';
+export { uniqueArray } from './lib/helpers/array.helpers';
+export { cleanTags } from './lib/helpers/tag.helpers';
 
 // Utility types
 export type {

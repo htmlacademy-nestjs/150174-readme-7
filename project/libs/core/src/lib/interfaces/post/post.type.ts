@@ -11,6 +11,8 @@ type Post = Extract<
   BasePost
 >;
 
-type PostData = UnionToIntersection<Pick<Post, 'data'>['data']>;
+type PostData<T extends Post = Post> = UnionToIntersection<
+  Pick<T, 'data'>['data']
+>;
 
 export type { Post, PostData };

@@ -1,22 +1,24 @@
-import { BasePost, PostKind } from '@avylando-readme/core';
+import { BasePost, cleanTags, PostKind } from '@avylando-readme/core';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
-  IsBoolean,
   IsEnum,
   IsMongoId,
   IsOptional,
   IsString,
+  Length,
 } from 'class-validator';
-import { CreatePostValidationMessage } from '../dto-validations.const';
+import { BasePostValidation } from '../dto-validations.const';
 
 export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
   @ApiProperty({
     description: 'Post author ID',
+    type: 'string',
     example: '60f5b2b3c4e9d2b9c8b2c8b2c',
   })
-  @IsMongoId({ message: CreatePostValidationMessage.authorId })
+  @IsMongoId({ message: BasePostValidation.authorId.validType.message })
   @Expose()
   public authorId: string;
 
@@ -26,7 +28,7 @@ export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
     example: 'published',
   })
   @IsEnum(['published', 'draft'], {
-    message: CreatePostValidationMessage.status,
+    message: BasePostValidation.status.enum.message,
   })
   @Expose()
   public status: BasePost['status'];
@@ -39,11 +41,28 @@ export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
     },
     example: ['tag1', 'tag2'],
   })
-  @IsArray({
-    message: CreatePostValidationMessage.tags,
+  @ArrayMaxSize(BasePostValidation.tags.size.max, {
+    message: BasePostValidation.tags.size.message,
   })
-  @IsString({ each: true, message: CreatePostValidationMessage.tags })
+  @IsArray({
+    message: BasePostValidation.tags.validType.message,
+  })
+  @Length(
+    BasePostValidation.tags.length.min,
+    BasePostValidation.tags.length.max,
+    { message: BasePostValidation.tags.length.message, each: true }
+  )
+  @IsString({ each: true, message: BasePostValidation.tags.validType.message })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (Array.isArray(value)) {
+      return cleanTags(value);
+    }
+    if (typeof value === 'string') {
+      return cleanTags(value.split(','));
+    }
+    return value;
+  })
   @Expose()
   public tags?: BasePost['tags'];
 
@@ -53,18 +72,8 @@ export class CreateBasePostDto implements Omit<BasePost, 'id' | 'data'> {
     example: 'text',
   })
   @IsEnum(PostKind, {
-    message: CreatePostValidationMessage.kind,
+    message: BasePostValidation.kind.enum.message,
   })
   @Expose()
   public kind: BasePost['kind'];
-
-  @ApiProperty({
-    description: 'Repost flag',
-    type: 'boolean',
-    example: true,
-  })
-  @IsOptional()
-  @IsBoolean({ message: CreatePostValidationMessage.repost })
-  @Expose()
-  public repost?: boolean;
 }

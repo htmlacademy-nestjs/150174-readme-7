@@ -1,4 +1,4 @@
-import { ConfigSchema, PlainObject } from '@avylando-readme/core';
+import { ConfigSchema } from '@avylando-readme/core';
 import {
   ConfigExtensions,
   GetConfigFromExtensions,

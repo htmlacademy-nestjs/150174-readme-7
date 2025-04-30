@@ -14,10 +14,10 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   Req,
-  UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   API_SERVICES_PROVIDER_NAME,
   ApiServicesConfig,
@@ -25,17 +25,19 @@ import {
 import {
   BLOG_COMMENTS_CONTROLLER_NAME,
   BlogCommentsEndpoint,
+  CommentQuery,
   CommentRdo,
   CreateCommentDto as LibCreateCommentDto,
   UpdateCommentDto as LibUpdateCommentDto,
 } from '@project/blog-comment';
 import { join } from 'node:path';
-import { CheckAuthGuard } from '../guards/check-auth.guard';
-import { CreateCommentDto } from '../dto/create-comment/create-comment.dto';
-import { UpdateCommentDto } from '../dto/update-comment/update-comment.dto';
+import { CreateCommentDto } from '../dto/blog-comments/create-comment.dto';
+import { UpdateCommentDto } from '../dto/blog-comments/update-comment.dto';
+import { Public } from '../decorators/public.decorator';
 
-@ApiTags('blog', 'comments')
 @Controller('blog/posts/:postId/comments')
+@ApiTags('blog', 'comments')
+@ApiBearerAuth('JWT')
 class BlogCommentsController {
   private readonly logger = new Logger(BlogCommentsController.name);
 
@@ -46,10 +48,10 @@ class BlogCommentsController {
     );
   }
 
-  private getShowCommentsPath(postId: string) {
-    return join(
-      this.getCommentsServicePath(postId),
-      BlogCommentsEndpoint.COMMENTS
+  private getShowCommentsPath(postId: string, query?: CommentQuery) {
+    return buildURI(
+      join(this.getCommentsServicePath(postId), BlogCommentsEndpoint.COMMENTS),
+      { query: { ...query } }
     );
   }
 
@@ -68,26 +70,27 @@ class BlogCommentsController {
     private readonly services: ApiServicesConfig
   ) {}
 
+  @Public()
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Get comments by post id',
   })
   @Get('/')
   public async getCommentsByPostId(
-    @Param('postId', ParseUUIDPipe) postId: string
+    @Param('postId', ParseUUIDPipe) postId: string,
+    @Query() query: CommentQuery
   ) {
     const { data } = await this.httpService.axiosRef.get<CommentRdo[]>(
-      this.getShowCommentsPath(postId)
+      this.getShowCommentsPath(postId, query)
     );
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Comment created' })
   @Post(BlogCommentsEndpoint.COMMENTS)
   public async createComment(
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Req() { user }: RequestWithTokenPayload,
     @Body() dto: CreateCommentDto
   ) {
     const libDto: LibCreateCommentDto = { ...dto, authorId: user.sub };
@@ -110,13 +113,12 @@ class BlogCommentsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.OK, description: 'Comment updated' })
   @Put(BlogCommentsEndpoint.COMMENT)
   public async updateComment(
     @Param('postId', ParseUUIDPipe) postId: string,
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Req() { user }: RequestWithTokenPayload,
     @Body() dto: UpdateCommentDto
   ) {
     const existingComment = await this.getComment(postId, id);
@@ -132,7 +134,6 @@ class BlogCommentsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({
     status: HttpStatus.NO_CONTENT,
     description: 'Comment deleted',
@@ -141,7 +142,7 @@ class BlogCommentsController {
   @Delete(BlogCommentsEndpoint.COMMENT)
   public async deleteComment(
     @Param('postId', ParseUUIDPipe) postId: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
+    @Req() { user }: RequestWithTokenPayload,
     @Param('id', ParseUUIDPipe) id: string
   ) {
     const existingComment = await this.getComment(postId, id);

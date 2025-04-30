@@ -12,4 +12,12 @@ const BlogCommentsEndpoint = {
   COMMENT: ':id',
 } as const;
 
-export { BLOG_COMMENTS_CONTROLLER_NAME, BlogCommentsEndpoint };
+const DEFAULT_COMMENTS_LIMIT = 50;
+const DEFAULT_COMMENTS_PAGE = 1;
+
+export {
+  BLOG_COMMENTS_CONTROLLER_NAME,
+  BlogCommentsEndpoint,
+  DEFAULT_COMMENTS_LIMIT,
+  DEFAULT_COMMENTS_PAGE,
+};

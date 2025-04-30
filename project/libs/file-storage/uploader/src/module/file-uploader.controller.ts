@@ -9,15 +9,12 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ValidateImagePipe, ValidateMongoIdPipe } from '@project/pipes';
+import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { UploadedFileRdo } from '../rdo/uploaded-file.rdo';
 import { FileUploaderService } from './file-uploader.service';
 import { fillDto } from '@avylando-readme/core';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { UpdateAvatarDto } from '@project/account-notify';
-import { FileStorageRabbitHandlerName } from '@project/file-storage-config';
 import { FileUploaderEndpoint } from './file-uploader.constant';
 
 @Controller('/')
@@ -43,15 +40,26 @@ export class FileUploaderController {
     return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 
-  @RabbitSubscribe({
-    name: FileStorageRabbitHandlerName.NOTIFY_AVATAR_UPLOADED,
+  @Post(FileUploaderEndpoint.AVATAR)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
   })
   @UseInterceptors(FileInterceptor('file'))
   public async uploadAvatar(
-    @UploadedFile(ValidateImagePipe)
-    dto: UpdateAvatarDto
+    @UploadedFile()
+    file: Express.Multer.File
   ) {
-    this.fileUploaderService.uploadUserAvatar(dto);
+    const fileEntity = await this.fileUploaderService.uploadUserAvatar(file);
+    return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 
   @Post(FileUploaderEndpoint.POST_IMAGE)
@@ -68,29 +76,8 @@ export class FileUploaderController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  public async uploadPostImage(
-    @UploadedFile(ValidateImagePipe) file: Express.Multer.File
-  ) {
+  public async uploadPostImage(@UploadedFile() file: Express.Multer.File) {
     const fileEntity = await this.fileUploaderService.uploadPostImage(file);
-    return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
-  }
-
-  @Post(FileUploaderEndpoint.POST_VIDEO)
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  @UseInterceptors(FileInterceptor('file'))
-  public async uploadPostVideo(@UploadedFile() file: Express.Multer.File) {
-    const fileEntity = await this.fileUploaderService.uploadPostVideo(file);
     return fillDto(UploadedFileRdo, fileEntity.toPlainObject());
   }
 

@@ -10,7 +10,7 @@ export const AuthEndpoints = {
   LOGIN: 'login',
   REGISTER: 'register',
   USER: ':id',
-  USER_AVATAR: ':id/avatar',
   REFRESH_TOKEN: 'refresh',
   CHECK_TOKEN: 'check',
+  LOGOUT: 'logout',
 } as const;

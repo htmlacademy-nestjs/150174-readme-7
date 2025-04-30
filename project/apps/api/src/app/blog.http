@@ -1,7 +1,7 @@
 
 # Create a new post
 POST http://localhost:4000/api/blog/posts HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ1NTM3NjI3LCJleHAiOjE3NDU1NDQ4Mjd9.0fpHANRQjs1hsdky24X04r_IYiU7YQheHCC96qkmyww
 Content-Type: application/json
 
 {
@@ -9,9 +9,9 @@ Content-Type: application/json
   "tags": ["tag1", "tag2"],
   "kind": "text",
   "data": {
-    "title": "Post 1",
-    "content": "Content 1",
-    "preview": "Preview 1"
+    "title": "Long post title to pass the validation",
+    "content": "This is a sample text with exactly one hundred and one characters to meet the requirement............",
+    "preview": "This is a preview text with exactly eighty characters for validation."
   }
 }
 
@@ -19,13 +19,21 @@ Content-Type: application/json
 
 # Create a new image post
 POST http://localhost:4000/api/blog/posts HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
-Content-Type: multipart/form-data; boundary=boundary
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ1NjE4Njg1LCJleHAiOjE3NDU2MjU4ODV9.Ug_NDPgT-SVfPb1eUM0VpvhvKzDz5SFXgzLvsZrawjI
+Content-Type: multipart/form-data; boundary=boundary;
 
 --boundary
 Content-Disposition: form-data; name="image"; filename="blog.http"
 
 < ./blog.http
+
+--boundary
+Content-Disposition: form-data; name="status"
+published
+
+--boundary
+Content-Disposition: form-data; name="kind"
+image
 
 --boundary--
 
@@ -33,35 +41,18 @@ Content-Disposition: form-data; name="image"; filename="blog.http"
 
 # Create a new video post
 POST http://localhost:4000/api/blog/posts HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ0NzUxMTU3LCJleHAiOjE3NDQ3NTgzNTd9.DacBReMb1w4-XGIYU1u52HkQ30JaZCZWuLtUlLkOFE4
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="status";
-
-published
---boundary
-Content-Disposition: form-data; name="tags";
-Content-Type: application/json
-
-["tag1", "tag2"]
---boundary
-Content-Disposition: form-data; name="kind";
-
-video
---boundary
-Content-Disposition: form-data; name="data";
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y4NWQyMzMzNDZjYTNlM2Y1Zjc3MTQiLCJlbWFpbCI6Indhc2RAbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImxhc3ROYW1lIjoiZWFzZCIsImZpcnN0TmFtZSI6ImVkIiwiaWF0IjoxNzQ1NTMxOTE5LCJleHAiOjE3NDU1MzkxMTl9.-wOaVft3F-UNW0kV3zr_IW9StBNVuN6WYqWs03dyxkc
 Content-Type: application/json
 
 {
-  "title": "Post title",
+  "status": "published",
+  "tags": ["tag1", "tag2"],
+  "kind": "video",
+  "data": {
+    "title": "Post 1",
+    "videoSrc": "https://example.com/video.mp4"
+  }
 }
---boundary
-Content-Disposition: form-data; name="video"; filename="blog.http"
-Content-Type: text/html
-
-< ./blog.http
---boundary--
 
 ###
 

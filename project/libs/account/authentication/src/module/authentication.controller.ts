@@ -14,12 +14,17 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { fillDto, User, RequestWithTokenPayload } from '@avylando-readme/core';
+import {
+  fillDto,
+  User,
+  RequestWithTokenPayload,
+  RequestWithLogout,
+} from '@avylando-readme/core';
 import { ValidateMongoIdPipe } from '@project/pipes';
 
 import { AuthenticationService } from './authentication.service';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoggedUserRdo } from '../rdo/logged-user.rdo';
 import { UserRdo } from '../rdo/user.rdo';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
@@ -33,6 +38,7 @@ import { RequestWithUser } from './request-with-user.interface';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 
 @ApiTags('authentication')
+@ApiBearerAuth()
 @Controller(AUTH_CONTROLLER_NAME)
 export class AuthenticationController {
   private readonly logger = new Logger(AuthenticationController.name);
@@ -97,31 +103,6 @@ export class AuthenticationController {
 
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'User avatar updated',
-  })
-  @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Avatar source is required',
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: 'User already has an avatar',
-  })
-  @Put(AuthEndpoints.USER_AVATAR)
-  @HttpCode(HttpStatus.OK)
-  public async setAvatar(
-    @Param('id', ValidateMongoIdPipe) id: string,
-    @Body() dto: UpdateUserDto
-  ): Promise<User> {
-    const user = await this.authenticationService.initUserAvatar(id, {
-      avatarSrc: dto.avatarSrc,
-    });
-    return fillDto(UserRdo, user.toPlainObject());
-  }
-
-  @ApiResponse({
-    status: HttpStatus.OK,
     description: 'Get a new access/refresh tokens',
   })
   @UseGuards(JwtRefreshGuard)
@@ -139,5 +120,16 @@ export class AuthenticationController {
   @HttpCode(HttpStatus.OK)
   public async checkToken(@Req() { user: payload }: RequestWithTokenPayload) {
     return payload;
+  }
+
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'User logged out',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post(AuthEndpoints.LOGOUT)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(@Req() req: RequestWithLogout) {
+    return req.logout(() => {});
   }
 }

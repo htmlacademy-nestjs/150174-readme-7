@@ -4,6 +4,7 @@ import {
   PlainObject,
   PaginationResult,
   PostSortBy,
+  PostStatus,
 } from '@avylando-readme/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientService } from '@project/blog-models';
@@ -11,7 +12,8 @@ import { $Enums, Prisma } from '@prisma/client';
 
 import { PostFactory } from './post.factory';
 import { BlogPostEntity } from './post.entity';
-import { PostQuery } from '../query/post.query';
+import { PostQuery } from '../query/post-query.dto';
+import { PostSearchQuery } from '../query/post-search-query.dto';
 
 type PostOptionalIncludes = Extract<
   keyof Prisma.PostInclude,
@@ -160,30 +162,33 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
   public async findMany(
     query: PostQuery
   ): Promise<PaginationResult<BlogPostEntity>> {
-    const { limit, page } = query;
-
     const options = this.getQueryOptions(query);
+    const result = await this.getPaginationResult(options, query, {
+      comments: true,
+      likes: true,
+    });
+    return result;
+  }
 
-    const [posts, totalItems] = await Promise.all([
-      this.client.post.findMany({
-        ...options,
-        include: this.prepareInclude({
-          comments: true,
-          likes: true,
-        }),
-      }),
-      this.getPostCount(options.where as Prisma.PostWhereInput),
-    ]);
-
-    return {
-      entities: posts.map((post) =>
-        this.createEntityFromDocument(this.adaptRawDataToPost(post))
-      ),
-      totalItems,
-      totalPages: this.calculatePostsPage(totalItems, limit),
-      currentPage: page,
-      itemsPerPage: limit,
+  public async findDrafts(
+    userId: string,
+    query: PostQuery
+  ): Promise<PaginationResult<BlogPostEntity>> {
+    const options = this.getQueryOptions(query, 'draft');
+    options.where = {
+      ...options.where,
+      authorId: userId,
     };
+    const result = await this.getPaginationResult(options, query);
+    return result;
+  }
+
+  public async findBySearch(
+    query: PostSearchQuery
+  ): Promise<PaginationResult<BlogPostEntity>> {
+    const options = this.getSearchOptions(query);
+    const result = await this.getPaginationResult(options, query);
+    return result;
   }
 
   public async addPostToFavorites(
@@ -230,6 +235,83 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     return this.createEntityFromDocument(post);
   }
 
+  // Feed subscription methods
+  public async subscribeToAuthor(
+    userId: string,
+    authorId: string
+  ): Promise<void> {
+    await this.client.feedSubscription.create({
+      data: {
+        subscriberId: userId,
+        subscriptionId: authorId,
+      },
+    });
+  }
+
+  public async unsubscribeFromAuthor(
+    userId: string,
+    authorId: string
+  ): Promise<void> {
+    await this.client.feedSubscription.deleteMany({
+      where: {
+        subscriberId: userId,
+        subscriptionId: authorId,
+      },
+    });
+  }
+
+  public async getSubscriptions(userId: string): Promise<string[]> {
+    const result = await this.client.feedSubscription.findMany({
+      where: {
+        subscriberId: userId,
+      },
+      select: {
+        subscriptionId: true,
+      },
+    });
+    return result.map((el) => el.subscriptionId);
+  }
+
+  public async getUserFeed(
+    userId: string,
+    query: PostQuery
+  ): Promise<PaginationResult<BlogPostEntity>> {
+    const subscriptions = await this.getSubscriptions(userId);
+    const options = this.getQueryOptions(query);
+    options.where = {
+      ...options.where,
+      authorId: {
+        in: subscriptions,
+      },
+    };
+    const result = await this.getPaginationResult(options, query);
+    return result;
+  }
+
+  private async getPaginationResult(
+    options: Prisma.PostFindManyArgs,
+    { limit, page }: Pick<PostQuery, 'limit' | 'page'>,
+    includes: Partial<Record<PostOptionalIncludes, true>> = {}
+  ): Promise<PaginationResult<BlogPostEntity>> {
+    const [posts, totalItems] = await Promise.all([
+      this.client.post.findMany({
+        ...options,
+        include: this.prepareInclude(includes),
+      }),
+      this.getPostCount(options.where as Prisma.PostWhereInput),
+    ]);
+
+    return {
+      entities: posts.map((post) =>
+        this.createEntityFromDocument(this.adaptRawDataToPost(post))
+      ),
+      totalItems,
+      totalPages: this.calculatePostsPage(totalItems, limit),
+      currentPage: page,
+      itemsPerPage: limit,
+    };
+  }
+
   // This method is used to prepare the include object for Prisma queries
   private prepareInclude(
     includes: Partial<Record<PostOptionalIncludes, true>> = {}
@@ -242,7 +324,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
           quote: true,
           text: true,
           video: true,
-        } as Prisma.PostToKindSelect,
+        },
       },
       tags: {
         select: {
@@ -251,7 +333,7 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
       },
     };
 
-    if (includes) {
+    if (includes.comments) {
       include.comments = true;
     }
 
@@ -285,12 +367,52 @@ class PostRepository extends PostgresRepository<BlogPostEntity> {
     return Math.ceil(totalCount / limit);
   }
 
-  private getQueryOptions(query: PostQuery): Prisma.PostFindManyArgs {
+  private getSearchOptions({
+    title,
+    ...rest
+  }: PostSearchQuery): Prisma.PostFindManyArgs {
+    const options = this.getQueryOptions(rest);
+    options.where = {
+      ...options.where,
+      OR: [
+        {
+          data: {
+            video: {
+              title: {
+                contains: title,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+        {
+          data: {
+            text: {
+              title: {
+                contains: title,
+                mode: 'insensitive',
+              },
+            },
+          },
+        },
+      ],
+    };
+    return options;
+  }
+
+  private getQueryOptions(
+    query: PostQuery,
+    status: PostStatus = 'published'
+  ): Prisma.PostFindManyArgs {
     const { limit, page, sortDirection, sortBy, tags, authorId } = query;
 
     const where: Prisma.PostWhereInput = {
-      status: 'published',
+      status,
     };
+
+    if (status === 'draft') {
+      where.authorId = authorId;
+    }
 
     const orderBy: Prisma.PostOrderByWithRelationInput = {};
 

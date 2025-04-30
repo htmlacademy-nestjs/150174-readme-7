@@ -1,19 +1,23 @@
-import { fileToFormData, Post } from '@avylando-readme/core';
+import { fileToFormData } from '@avylando-readme/core';
 import { HttpService } from '@nestjs/axios';
 import {
-  BadRequestException,
   Inject,
   Injectable,
   Logger,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import {
   API_SERVICES_PROVIDER_NAME,
   ApiServicesConfig,
 } from '@project/api-config';
-import { CreatePostDto as LibCreatePostDto } from '@project/blog-post';
+import {
+  CreatePostDto as LibCreatePostDto,
+  UpdatePostDto as LibUpdatePostDto,
+} from '@project/blog-post';
 import { FileUploaderEndpoint, UploadedFileRdo } from '@project/file-uploader';
 import { join } from 'node:path';
-import { CreatePostDto } from '../dto/create-post/create-post.dto';
+import { CreatePostDto } from '../dto/blog-posts/create-post/create-post.dto';
+import { UpdatePostDto } from '../dto/blog-posts/update-post.dto';
 
 @Injectable()
 class BlogPostService {
@@ -26,61 +30,45 @@ class BlogPostService {
     );
   }
 
-  private getPostVideoUploadPath() {
-    return join(
-      this.services.fileStorageServiceUri,
-      FileUploaderEndpoint.POST_VIDEO
-    );
-  }
-
   constructor(
     private readonly httpService: HttpService,
     @Inject(API_SERVICES_PROVIDER_NAME)
     private readonly services: ApiServicesConfig
   ) {}
 
-  public async handlePostAssets(
-    post: CreatePostDto,
-    files?: {
-      image?: Express.Multer.File[];
-      video?: Express.Multer.File[];
+  public async handlePostAssets<T extends CreatePostDto | UpdatePostDto>(
+    post: T,
+    files: {
+      image?: Express.Multer.File;
     }
   ): Promise<Omit<LibCreatePostDto, 'authorId'>> {
-    const { image, video } = files || {};
-    const postImage = image?.[0];
-    const postVideo = video?.[0];
-    if (
-      (post.kind === 'image' && !postImage) ||
-      (post.kind === 'video' && !postVideo)
-    ) {
-      throw new BadRequestException(`Post kind and file type mismatch`);
+    if (post.kind !== 'image')
+      return post as Omit<LibCreatePostDto, 'authorId'>;
+
+    const { image } = files;
+    if (post.kind === 'image' && !image) {
+      throw new UnprocessableEntityException(
+        `Post kind and file type mismatch`
+      );
     }
 
-    let postData: LibCreatePostDto['data'] = { ...post.data };
-    if (postImage) {
-      const file = await this.uploadPostImage(postImage);
-      this.logger.log(`Image file uploaded: ${file.path}`);
-      postData = { ...postData, imageSrc: file.path };
-    }
+    return this.handlePostImage(post, image);
+  }
 
-    if (postVideo) {
-      const file = await this.uploadPostVideo(postVideo);
-      this.logger.log(`Video file uploaded: ${file.path}`);
-      postData = { ...postData, videoSrc: file.path };
-    }
-
+  private async handlePostImage<T extends CreatePostDto | UpdatePostDto>(
+    post: T,
+    image: Express.Multer.File
+  ): Promise<Omit<LibCreatePostDto, 'authorId'>> {
+    const file = await this.uploadPostImage(image);
+    this.logger.log(`Image file uploaded: ${file.path}`);
     return {
       ...post,
-      data: postData,
-    };
+      data: { ...post.data, imageSrc: file.path },
+    } as Omit<LibCreatePostDto, 'authorId'>;
   }
 
   private async uploadPostImage(file: Express.Multer.File) {
     return this.uploadPostFile(file, this.getPostImageUploadPath());
-  }
-
-  private async uploadPostVideo(file: Express.Multer.File) {
-    return this.uploadPostFile(file, this.getPostVideoUploadPath());
   }
 
   private async uploadPostFile(

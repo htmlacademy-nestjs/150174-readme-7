@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -14,9 +13,7 @@ import {
   Put,
   Query,
   Req,
-  UnauthorizedException,
-  UploadedFiles,
-  UseGuards,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -31,7 +28,6 @@ import {
   API_SERVICES_PROVIDER_NAME,
   ApiServicesConfig,
 } from '@project/api-config';
-import { ApiNotifyService } from '@project/api-notify';
 import {
   UpdatePostDto as LibUpdatePostDto,
   CreatePostDto as LibCreatePostDto,
@@ -41,15 +37,19 @@ import {
   BlogPostsEndpoint,
 } from '@project/blog-post';
 import { join } from 'node:path';
-import { CheckAuthGuard } from '../guards/check-auth.guard';
 import { RequestWithTokenPayload } from '@avylando-readme/core';
-import { CreatePostDto } from '../dto/create-post/create-post.dto';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { CreatePostDto } from '../dto/blog-posts/create-post/create-post.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { BlogPostService } from '../services/blog-post.service';
-import { UpdatePostDto } from '../dto/update-post/update-post.dto';
+import { UpdatePostDto } from '../dto/blog-posts/update-post.dto';
+import { ValidatePostImagePipe } from '../pipes/validate-post-image.pipe';
+import { Public } from '../decorators/public.decorator';
+import { PostSearchQuery } from 'libs/blog/post/src/query/post-search-query.dto';
+import { ParseJsonInterceptor } from '@project/interceptors';
 
-@ApiTags('blog')
 @Controller('blog/posts')
+@ApiTags('blog', 'posts')
+@ApiBearerAuth('JWT')
 class BlogPostsController {
   private readonly logger = new Logger(BlogPostsController.name);
 
@@ -61,6 +61,20 @@ class BlogPostsController {
     return buildURI(join(this.getPostsServicePath(), BlogPostsEndpoint.POSTS), {
       query: { ...query },
     });
+  }
+
+  private getSearchPostsPath(query: PostSearchQuery) {
+    return buildURI(
+      join(this.getPostsServicePath(), BlogPostsEndpoint.SEARCH),
+      { query: { ...query } }
+    );
+  }
+
+  private getDraftsPath(query: PostQuery) {
+    return buildURI(
+      join(this.getPostsServicePath(), BlogPostsEndpoint.DRAFTS),
+      { query: { ...query } }
+    );
   }
 
   private getPostPath(postId: string) {
@@ -80,10 +94,10 @@ class BlogPostsController {
     private readonly httpService: HttpService,
     @Inject(API_SERVICES_PROVIDER_NAME)
     private readonly services: ApiServicesConfig,
-    private readonly blogPostService: BlogPostService,
-    private readonly notifyService: ApiNotifyService
+    private readonly blogPostService: BlogPostService
   ) {}
 
+  @Public()
   @ApiResponse({ status: HttpStatus.OK, description: 'Get posts' })
   @Get('/')
   public async getPosts(
@@ -96,42 +110,72 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'image', maxCount: 1 },
-      { name: 'video', maxCount: 1 },
-    ])
-  )
+  @Public()
+  @ApiResponse({ status: HttpStatus.OK, description: 'Search posts' })
+  @Get('/search')
+  public async getPostsByUserSearch(
+    @Query() query: PostSearchQuery
+  ): Promise<PaginationResult<PostRdo>> {
+    const { data } = await this.httpService.axiosRef.get<
+      PaginationResult<PostRdo>
+    >(this.getSearchPostsPath(query), {});
+
+    return data;
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get user drafts',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Request forbidden',
+  })
+  @Get('/drafts')
+  public async getDrafts(
+    @Query() query: Omit<PostQuery, 'authorId'>,
+    @Req() { user }: RequestWithTokenPayload
+  ): Promise<PaginationResult<PostRdo>> {
+    const { data } = await this.httpService.axiosRef.get<
+      PaginationResult<PostRdo>
+    >(this.getDraftsPath({ ...query, authorId: user.sub }));
+
+    return data;
+  }
+
+  @UseInterceptors(FileInterceptor('image'), ParseJsonInterceptor(['data']))
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Create post' })
-  @ApiConsumes('multipart/form-data')
-  @ApiBearerAuth('JWT')
+  @ApiConsumes('multipart/form-data', 'application/json')
   @Post('/')
   public async createPost(
     @Req() { user }: RequestWithTokenPayload,
-    @Body() dto: CreatePostDto,
-    @UploadedFiles()
-    files: {
-      image?: Express.Multer.File[];
-      video?: Express.Multer.File[];
-    }
+    @Body()
+    dto: CreatePostDto,
+    @UploadedFile(ValidatePostImagePipe)
+    image?: Express.Multer.File
   ) {
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    const postData = await this.blogPostService.handlePostAssets(dto, files);
+    const postData = await this.blogPostService.handlePostAssets(dto, {
+      image,
+    });
     const libDto: LibCreatePostDto = {
       ...postData,
       authorId: user.sub,
     };
-    const { data } = await this.httpService.axiosRef.post<PostRdo>(
-      this.getShowPostsPath(),
-      libDto
-    );
-    this.logger.log(`Post created: ${data.id}`);
-    return data;
+
+    try {
+      const { data } = await this.httpService.axiosRef.post<PostRdo>(
+        this.getShowPostsPath(),
+        libDto
+      );
+      this.logger.log(`Post created: ${data.id}`);
+      return data;
+    } catch (error) {
+      this.logger.error(`Error creating post: ${error.message}`);
+      throw error;
+    }
   }
 
+  @Public()
   @ApiResponse({ status: HttpStatus.OK, description: 'Find post' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Post not found' })
   @Get('/:id')
@@ -143,21 +187,28 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
+  @UseInterceptors(FileInterceptor('image'))
   @ApiResponse({ status: HttpStatus.OK, description: 'Update post' })
+  @ApiConsumes('multipart/form-data', 'application/json')
   @Put('/:id')
   public async updatePost(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>,
-    @Body() dto: UpdatePostDto
+    @Req() { user }: RequestWithTokenPayload,
+    @Body() dto: UpdatePostDto,
+    @UploadedFile('image', ValidatePostImagePipe)
+    image?: Express.Multer.File
   ) {
     const existingPost = await this.findPost(id);
     if (existingPost.authorId !== user.sub) {
       throw new ForbiddenException('You are not the author of this post');
     }
 
+    const postData = await this.blogPostService.handlePostAssets(dto, {
+      image,
+    });
+
     const libDto: LibUpdatePostDto = {
-      ...dto,
+      ...postData,
       authorId: user.sub,
     };
 
@@ -169,12 +220,11 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Delete post' })
   @Delete('/:id')
   public async deletePost(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>
+    @Req() { user }: RequestWithTokenPayload
   ) {
     const existingPost = await this.findPost(id);
     if (existingPost.authorId !== user.sub) {
@@ -183,7 +233,6 @@ class BlogPostsController {
     await this.httpService.axiosRef.delete(this.getPostPath(id));
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Post added to favorites',
@@ -195,7 +244,7 @@ class BlogPostsController {
   @Post('/:id/favorites')
   public async addPostToFavorites(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>
+    @Req() { user }: RequestWithTokenPayload
   ) {
     const { data } = await this.httpService.axiosRef.post<PostRdo>(
       this.getPostLikePath(id),
@@ -205,7 +254,6 @@ class BlogPostsController {
     return data;
   }
 
-  @UseGuards(CheckAuthGuard)
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Post removed from favorites',
@@ -217,7 +265,7 @@ class BlogPostsController {
   @Delete('/:id/favorites')
   public async removePostFromFavorites(
     @Param('id', ParseUUIDPipe) id: string,
-    @Req() { user }: Required<RequestWithTokenPayload>
+    @Req() { user }: RequestWithTokenPayload
   ) {
     const { data } = await this.httpService.axiosRef.delete<PostRdo>(
       this.getPostLikePath(id),

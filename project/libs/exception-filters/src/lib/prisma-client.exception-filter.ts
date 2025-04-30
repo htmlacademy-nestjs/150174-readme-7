@@ -16,6 +16,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
       response.status(statusCode).json({
         statusCode,
         message,
+        source: 'PrismaClientExceptionFilter',
       });
       return;
     }

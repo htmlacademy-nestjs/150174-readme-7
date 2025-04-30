@@ -104,7 +104,7 @@ model VideoPost {
 model QuotePost {
   id            String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
   quote         String       @db.Text()
-  quoteAuthorId String       @map("quote_author_id") @db.VarChar(30)
+  authorName    String       @map("autor_name") @db.VarChar(50)
   PostToKind    PostToKind[] @relation(name: "QuotePost")
 
   @@map("quote_posts")
@@ -113,7 +113,7 @@ model QuotePost {
 model LinkPost {
   id          String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid()
   link        String       @db.VarChar(255)
-  description String       @db.VarChar(255)
+  description String       @db.VarChar(300)
   PostToKind  PostToKind[] @relation(name: "LinkPost")
 
   @@map("link_posts")
@@ -150,4 +150,13 @@ model PostLike {
 
   @@id([postId, userId])
   @@map("post_likes")
+}
+
+model FeedSubscription {
+  subscriberId    String   @map("subscriber_id") @db.VarChar(30)
+  subscriptionId  String   @map("subscription_id") @db.VarChar(30)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@id([subscriberId, subscriptionId])
+  @@map("feed_subscriptions")
 }

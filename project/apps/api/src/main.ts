@@ -3,7 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app/app.module';
@@ -14,13 +14,22 @@ import { RequestIdInterceptor } from '@project/interceptors';
 import { AxiosExceptionFilter } from './app/filters/axios-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
+  });
   const config = new DocumentBuilder()
     .setTitle('API-Gateway service')
     .setDescription('The API-Gateway service for "Readme" project')
     .setVersion('1.0')
     .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', in: 'header' },
+      {
+        description: `Please enter access token`,
+        name: 'Authorization',
+        bearerFormat: 'Bearer',
+        scheme: 'Bearer',
+        type: 'http',
+        in: 'Header',
+      },
       'JWT'
     )
     .build();
@@ -34,6 +43,7 @@ async function bootstrap() {
   );
 
   app.setGlobalPrefix(globalPrefix);
+  app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
   app.useGlobalInterceptors(new RequestIdInterceptor());
   app.useGlobalFilters(new AxiosExceptionFilter());
 

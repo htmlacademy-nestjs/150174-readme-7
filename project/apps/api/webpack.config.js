@@ -14,7 +14,11 @@ module.exports = {
       assets: ['./src/assets'],
       optimization: false,
       outputHashing: 'none',
-      transformers: [{ name: '@nestjs/swagger/plugin' }],
+      transformers: [
+        {
+          name: '@nestjs/swagger/plugin',
+        },
+      ],
     }),
   ],
 };
